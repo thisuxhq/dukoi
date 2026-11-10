@@ -11,7 +11,7 @@ This doc covers how to set up the repo, make a change and get it merged. It's ai
 | Tool | For |
 | --- | --- |
 | Node.js 22+ and pnpm | CLI, dashboard, starters |
-| Android Studio (or JDK 17 + Android SDK) | The phone app |
+| [Android CLI](android-cli.md) (`android`), plus a JDK 17+ | The phone app: create, build, run, screenshots |
 | An arm64 Android phone, Android 10+ | Running it for real. An emulator works for UI only. |
 
 ## Set up
@@ -32,9 +32,11 @@ pnpm test             # all JS/TS tests
 
 ```bash
 cd android
-./gradlew installDebug   # build and install the APK on a connected phone
+android run              # build, install and launch on a connected phone
 ./gradlew test           # Kotlin unit tests
 ```
+
+Use the Android CLI for all phone work: running the app, screenshots (`android screen capture`) and finding UI elements (`android layout`). Use `adb` only where the CLI has no command. See [android-cli.md](android-cli.md).
 
 Then pair with the phone and try a starter:
 

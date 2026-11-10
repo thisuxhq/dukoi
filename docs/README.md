@@ -35,6 +35,7 @@ The source of truth for scope is the [DroidHost PRD](https://claude.ai/artifact/
 | [starters.md](starters.md) | The five starters and the rules they follow |
 | [device-lab.md](device-lab.md) | Test phones, acceptance checks and benchmarks |
 | [contributing.md](contributing.md) | Repo setup, making a change and the PR checklist |
+| [android-cli.md](android-cli.md) | How we build, run and test the phone app with `android` |
 | [writing-style.md](writing-style.md) | How DroidHost sounds in errors, alerts, UI and docs |
 | [glossary.md](glossary.md) | Every term in plain words |
 

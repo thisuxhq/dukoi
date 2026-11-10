@@ -118,7 +118,8 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 - **Proposed** layout. Details are in [architecture.md](architecture.md#repo-layout).
 - **Proposed** JS and TS tools: pnpm workspaces, Biome for lint and format, Vitest for tests.
-- **Proposed** Android tools: Gradle with Kotlin DSL, ktlint, and JUnit with Robolectric for unit tests.
+- **Decided** Android workflow: Google's [Android CLI](android-cli.md) (`android`) to create the project, run it on phones, take screenshots and inspect UI. Use `adb` only where the CLI has no command.
+- **Proposed** Android tools: Gradle with Kotlin DSL (from the `android create` template), ktlint, and JUnit with Robolectric for unit tests.
 - **Proposed** CI: GitHub Actions to build the APK and CLI on every PR. Device lab runs stay manual in phase 1.
 - **Proposed** load testing: `oha` (from the PRD's device lab plan).
 

@@ -39,6 +39,16 @@ The exact Redmi and Oppo models are an open question. See [decisions.md](decisio
 | Thermal | Low apps pause above 43 °C and resume below 40 °C |
 | Unplug | Power cut alert within 30 seconds |
 
+### Tools
+
+Run every test with the [Android CLI](android-cli.md):
+
+- `android run` to install the build under test.
+- `android screen capture -o <file>` for screenshots in reports.
+- `android layout` to check what's on screen, for example that the setup checklist shows green ticks.
+
+Use `adb` only for what the CLI can't do: `adb shell kill -9` for the kill test, `adb reboot` for the reboot test, and `adb shell input` for taps.
+
 ### Soak test (the phase 1 gate)
 
 - Run `hono-api`, `telegram-bot` and `static-site` on each phone for **7 days**.
