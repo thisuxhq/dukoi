@@ -1,0 +1,167 @@
+# Architecture
+
+This doc explains how DroidHost's parts fit together in phase 1, with one phone and one or more paired computers.
+
+**The one rule:** visitors only ever reach app ports. Everything that controls the phone stays private.
+
+---
+
+## The big picture
+
+```
+ Your computer                    Android phone (DroidHost APK)                  Internet
+┌────────────────┐   paired     ┌──────────────────────────────────────────┐
+│ CLI            │──channel────▶│ Control app (UI, setup, health)          │
+│ droidhost ...  │  (LAN only)  │ ┌──────────────────────────────────────┐ │
+│                │              │ │ Foreground service (specialUse)      │ │
+│ Web dashboard  │──────────────▶ │  Agent: admin API                    │ │
+│ (localhost)    │              │ │  Process manager: spawn, watch,      │ │
+└────────────────┘              │ │    restart, limits, logs             │ │
+                                │ └───────┬──────────────────┬───────────┘ │
+                                │         │ spawns           │ spawns      │
+                                │   ┌─────▼─────┐      ┌─────▼──────┐      │
+                                │   │ Node 22   │      │ cloudflared│◀─────┼──── Cloudflare ◀── Visitors
+                                │   │  my-api   │◀─────│  (outbound)│      │      edge        (HTTPS)
+                                │   │  my-bot   │      └────────────┘      │
+                                │   │  site     │                          │
+                                │   └───────────┘                          │
+                                │   Storage: apps, releases, logs, state   │
+                                └──────────────────────────────────────────┘
+```
+
+| Part | One-line job |
+| --- | --- |
+| **CLI** | Packs your folder and sends signed commands to the phone. |
+| **Web dashboard** | Shows apps, logs and health in a browser, served locally by the CLI. |
+| **Control app** | The phone UI: setup checklist, health score, pairing approval and app list. |
+| **Foreground service** | Keeps everything alive. Android protects it, and everything else is its child. |
+| **Agent** | The admin API. It checks signatures, accepts commands and streams logs and metrics. |
+| **Process manager** | Starts, stops, watches and restarts apps. Enforces limits and writes logs. |
+| **Node 22** | Runs your apps. Bundled in the APK. |
+| **cloudflared** | Opens an outbound tunnel so apps get a public HTTPS URL. |
+| **Storage** | App folders, releases, logs, encrypted secrets and the agent's own state. |
+
+The agent and process manager run in Kotlin inside the foreground service. See [tech-stack.md](tech-stack.md) for why.
+
+---
+
+## Key flows
+
+### 1. Setup (on the phone)
+
+1. Install the APK and open it.
+2. DroidHost scores the device using chip, RAM, storage and battery health, then gives a plain verdict.
+3. The checklist walks through each item: foreground service, battery optimization, child processes (the phantom process killer), and the steps for the detected brand.
+4. Each item ticks green only after Android confirms it.
+
+### 2. Pairing
+
+```
+CLI                                   Phone
+ │  droidhost pair                      │
+ │── mDNS: find "_droidhost._tcp" ────▶│  (< 3 s)
+ │── hello + public key ───────────────▶│
+ │                                      │  shows code "482 913"
+ │  shows code "482 913"                │  user taps Approve
+ │◀── approved + TLS cert fingerprint ──│  stores public key
+ │  saves key + pinned fingerprint      │
+```
+
+- No passwords. The key pair is made on the computer and only the public key is sent.
+- Removing a computer on the phone deletes its key, and the next request fails.
+- The dashboard pairs the same way with a QR code that the phone scans.
+
+### 3. Deploy
+
+```
+droidhost deploy ./my-api
+```
+
+1. **Pack.** The CLI tars the folder (skipping `node_modules`, `.git` and anything in `.gitignore`) and signs the request.
+2. **Upload.** The agent verifies the key and saves the bundle.
+3. **Unpack.** It becomes a new release: `apps/my-api/releases/<id>/`.
+4. **Install.** `npm install` runs with the bundled Node. Static sites skip this step.
+5. **Start.** The process manager starts the release on a free port and passes `PORT`.
+6. **Health check.** The new release must answer HTTP on its port. Workers must stay up for a few seconds.
+7. **Switch.** Traffic moves to the new release only after it passes. Then the old one stops.
+8. **Report.** The CLI prints the local URL, plus the public URL if a tunnel exists.
+
+If any step fails, the old release keeps running and the CLI shows a clear error.
+
+### 4. Keeping apps alive
+
+| Event | What happens |
+| --- | --- |
+| App crashes | Restart with doubling backoff. After 5 tries, no more than one restart every 30 seconds. |
+| Android kills the app | The watchdog notices and restarts it within 5 seconds, and records the reason. |
+| App passes its memory limit | Restart. |
+| Phone gets hot (above 43 °C) | Pause apps marked Low. Resume them below 40 °C. |
+| Phone reboots | The service starts on boot and restores every app that was running. |
+| Phone unplugged | Power cut alert within 30 seconds. |
+| Wi-Fi drops | `cloudflared` reconnects, and the public URL works again within 10 seconds. |
+
+### 5. Rollback
+
+The phone keeps the last 5 releases. A rollback points the app at an earlier release folder and restarts it, which takes about a second because there's nothing to reinstall.
+
+---
+
+## Ports and boundaries
+
+| Thing | Listens on | Reachable from |
+| --- | --- | --- |
+| Admin API | One port on the LAN, using TLS and signed requests | Paired computers only |
+| Each app | Its own port | The LAN (local URL), and the internet through the tunnel if exposed |
+| Dashboard | `localhost` on the computer | That computer only |
+
+The tunnel only ever maps to app ports. A security test from outside should find nothing else.
+
+---
+
+## Data on the phone
+
+All of this lives in DroidHost's private app storage:
+
+```
+droidhost/
+├── state.db                 # apps, releases, paired keys, audit log, settings
+├── apps/
+│   └── my-api/
+│       ├── releases/
+│       │   ├── 0005/        # current
+│       │   ├── 0004/
+│       │   └── ...          # last 5 kept
+│       ├── data/            # persists across releases (SQLite files etc.)
+│       ├── env.enc          # secrets, encrypted with a Keystore key
+│       └── logs/            # rotated, 5 MB cap per app
+└── tunnels/                 # cloudflared config and credentials
+```
+
+- `data/` is shared across releases, so an app's database survives a redeploy or rollback.
+- Shared storage is off by default. Turning it on needs an explicit setting and the "All files access" permission.
+
+---
+
+## Repo layout
+
+```
+droidhost/
+├── android/          # Control app, foreground service, agent, process manager (Kotlin)
+├── cli/              # droidhost CLI (TypeScript)
+├── dashboard/        # Web dashboard (SvelteKit, static)
+├── shared/           # Admin API types and protocol, shared by cli and dashboard
+├── starters/         # hono-api, telegram-bot, static-site, file-storage, mcp-server
+├── scripts/          # Fetch and pack Node + cloudflared into jniLibs
+└── docs/             # You are here
+```
+
+---
+
+## Later phases
+
+The phase 1 shape is built to grow without a rewrite:
+
+- **More runtimes** (phase 2): the process manager starts a different bundled binary. The rest stays the same.
+- **Phone hardware API** (phase 3): a new local-only API served by the foreground service, behind a permission gate the owner controls.
+- **Fleets** (phase 3): a computer can already pair with many phones. Scaling adds a coordinator and load balancing on top.
+- **Hosted relay** (phase 3): an alternative to `cloudflared` in the same tunnel slot.
