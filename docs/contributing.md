@@ -32,7 +32,8 @@ pnpm test             # all JS/TS tests
 
 ```bash
 cd android
-android run              # build, install and launch on a connected phone
+./gradlew assembleDebug   # build the APK
+android run --apks=app/build/outputs/apk/debug/app-debug.apk   # install and launch
 ./gradlew test           # Kotlin unit tests
 ```
 

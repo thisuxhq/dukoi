@@ -25,9 +25,10 @@ The spike's code isn't reused. What carries over is what we learn, which goes in
 ## Run it
 
 ```bash
-../../scripts/build-node-android.sh            # builds Node 24 from source, 30-60 min
+../../scripts/build-node-android.sh            # builds Node 24 from source in a Linux container, about 1 hour
 scripts/install-node.sh ../../build/node-android/v24.22.2/node
-android run
+./gradlew assembleDebug
+android run --apks=app/build/outputs/apk/debug/app-debug.apk
 ```
 
 On the phone, tap **Allow notifications**, **Turn off battery optimization**, then **Start server**. Open the URL it shows from your computer.

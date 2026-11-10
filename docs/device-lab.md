@@ -43,7 +43,7 @@ The exact Redmi and Oppo models are an open question. See [decisions.md](decisio
 
 Run every test with the [Android CLI](android-cli.md):
 
-- `android run` to install the build under test.
+- `android run --apks=<apk>` to install and launch the build under test.
 - `android screen capture -o <file>` for screenshots in reports.
 - `android layout` to check what's on screen, for example that the setup checklist shows green ticks.
 

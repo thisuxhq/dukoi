@@ -73,7 +73,7 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Date:** 2026-11-10
 - **Decision:** Build Node with the Android NDK from the official nodejs.org source, checked against its SHA-256 list (`scripts/build-node-android.sh`). Don't use community prebuilt binaries.
 - **Why:** Node.js publishes no Android builds. Community builds come from unknown publishers, and this binary runs everyone's apps.
-- **Trade-off:** A build takes 30 to 60 minutes, and Node upgrades are on us.
+- **Trade-off:** A build takes about an hour, and Node upgrades are on us. It must run on Linux: on a Mac the script uses a Docker container, because Node's Makefile passes GNU linker flags that macOS rejects.
 
 ---
 

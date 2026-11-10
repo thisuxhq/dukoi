@@ -25,7 +25,8 @@ Installers for Linux and Windows are listed in the CLI's own skill file at `~/.a
 | --- | --- |
 | Create a new project | `android create empty-activity --name="DroidHost" --output=./android` |
 | See templates | `android create --list` |
-| Build, install and launch | `android run` |
+| Build the APK | `./gradlew assembleDebug` (the CLI has no build command yet) |
+| Install and launch | `android run --apks=app/build/outputs/apk/debug/app-debug.apk` |
 | Install an APK only | `android install --apks=app-debug.apk` |
 | Screenshot | `android screen capture -o screen.png` |
 | Screenshot with numbered elements | `android screen capture --annotate -o screen.png` |
