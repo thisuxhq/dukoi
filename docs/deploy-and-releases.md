@@ -129,7 +129,7 @@ When install fails because of native code, the CLI names the module and suggests
 | --- | --- |
 | `sharp` | `jimp` |
 | `bcrypt` | `bcryptjs` |
-| `better-sqlite3`, `sqlite3` | `node:sqlite` (built into Node 22) |
+| `better-sqlite3`, `sqlite3` | `node:sqlite` (built into Node 24) |
 | `canvas` | `@napi-rs/canvas` (prebuilt arm64), or do it client side |
 | `argon2` | `@node-rs/argon2` (prebuilt arm64) or `hash-wasm` |
 

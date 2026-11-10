@@ -61,6 +61,20 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** Trust matters more than data.
 - **Trade-off:** Metrics come from a smaller sample.
 
+### D-007: Node.js 24 LTS, not Node 22
+- **Status:** Decided
+- **Date:** 2026-11-10
+- **Decision:** Bundle Node.js 24 LTS. This replaces the PRD's Node 22.
+- **Why:** Node 22 reaches end of life in April 2027, and Node 24 is the current LTS. `node:sqlite` works in both.
+- **Trade-off:** None for phase 1. Our apps don't depend on anything specific to Node 22.
+
+### D-008: Build Node for Android from the official source
+- **Status:** Decided
+- **Date:** 2026-11-10
+- **Decision:** Build Node with the Android NDK from the official nodejs.org source, checked against its SHA-256 list (`scripts/build-node-android.sh`). Don't use community prebuilt binaries.
+- **Why:** Node.js publishes no Android builds. Community builds come from unknown publishers, and this binary runs everyone's apps.
+- **Trade-off:** A build takes 30 to 60 minutes, and Node upgrades are on us.
+
 ---
 
 ## Proposed (in these docs, not yet confirmed)

@@ -25,7 +25,8 @@ The spike's code isn't reused. What carries over is what we learn, which goes in
 ## Run it
 
 ```bash
-scripts/install-node.sh <path-to-android-arm64-node>
+../../scripts/build-node-android.sh            # builds Node 24 from source, 30-60 min
+scripts/install-node.sh ../../build/node-android/v24.22.2/node
 android run
 ```
 

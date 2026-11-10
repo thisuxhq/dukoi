@@ -18,7 +18,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 | Control app | Phone | Kotlin, Jetpack Compose | Decided (Kotlin), Proposed (Compose) |
 | Agent and admin API | Phone | Kotlin, Ktor server, inside the foreground service | Proposed |
 | Process manager | Phone | Kotlin, inside the foreground service | Proposed |
-| App runtime | Phone | Node.js 22, bundled as `lib*.so` | Decided |
+| App runtime | Phone | Node.js 24 LTS, built from source with the NDK, bundled as `lib*.so` | Decided |
 | Tunnel | Phone | `cloudflared`, bundled as `lib*.so` | Decided |
 | CLI | Computer | TypeScript on Node.js, shipped on npm | Proposed |
 | Web dashboard | Computer | SvelteKit (static), shadcn-svelte, served by the CLI | Proposed |
@@ -52,7 +52,8 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 ### Bundled binaries
 
-- **Decided:** Node.js 22 and `cloudflared` ship inside the APK as native libraries.
+- **Decided:** Node.js 24 LTS and `cloudflared` ship inside the APK as native libraries. The PRD said Node 22, but Node 22 reaches end of life in April 2027, so we target the current LTS (see D-007).
+- Node.js publishes no Android builds, so we build Node from the official source with the Android NDK: `scripts/build-node-android.sh`.
 - They're packaged as `lib*.so` files in `jniLibs/arm64-v8a`, with `extractNativeLibs="true"`, and run from `nativeLibraryDir`.
 - **Why:** Android 10 and newer won't run binaries from app data storage. Native libraries are the allowed way.
 - `npm` runs through the bundled Node (`node npm-cli.js`).

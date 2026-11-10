@@ -10,7 +10,7 @@ This doc covers how to set up the repo, make a change and get it merged. It's ai
 
 | Tool | For |
 | --- | --- |
-| Node.js 22+ and pnpm | CLI, dashboard, starters |
+| Node.js 24+ and pnpm | CLI, dashboard, starters |
 | [Android CLI](android-cli.md) (`android`), plus a JDK 17+ | The phone app: create, build, run, screenshots |
 | An arm64 Android phone, Android 10+ | Running it for real. An emulator works for UI only. |
 

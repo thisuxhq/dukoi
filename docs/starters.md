@@ -28,7 +28,7 @@ droidhost deploy
 
 1. **No native modules.** Everything installs on a phone with no compiler.
 2. **Hono with `@hono/node-server`** for anything that opens a port.
-3. **`node:sqlite`** (built into Node 22) for data. No ORM.
+3. **`node:sqlite`** (built into Node 24) for data. No ORM.
 4. **Listen on `process.env.PORT`.**
 5. **Store data in `DATA_DIR`**, which DroidHost points at the app's `data/` folder so it survives deploys.
 6. **Read secrets from environment variables** and fail with a clear message if one is missing.

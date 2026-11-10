@@ -20,7 +20,7 @@ This doc explains how DroidHost's parts fit together in phase 1, with one phone 
                                 │ └───────┬──────────────────┬───────────┘ │
                                 │         │ spawns           │ spawns      │
                                 │   ┌─────▼─────┐      ┌─────▼──────┐      │
-                                │   │ Node 22   │      │ cloudflared│◀─────┼──── Cloudflare ◀── Visitors
+                                │   │ Node 24   │      │ cloudflared│◀─────┼──── Cloudflare ◀── Visitors
                                 │   │  my-api   │◀─────│  (outbound)│      │      edge        (HTTPS)
                                 │   │  my-bot   │      └────────────┘      │
                                 │   │  site     │                          │
@@ -37,7 +37,7 @@ This doc explains how DroidHost's parts fit together in phase 1, with one phone 
 | **Foreground service** | Keeps everything alive. Android protects it, and everything else is its child. |
 | **Agent** | The admin API. It checks signatures, accepts commands and streams logs and metrics. |
 | **Process manager** | Starts, stops, watches and restarts apps. Enforces limits and writes logs. |
-| **Node 22** | Runs your apps. Bundled in the APK. |
+| **Node 24** | Runs your apps. Bundled in the APK. |
 | **cloudflared** | Opens an outbound tunnel so apps get a public HTTPS URL. |
 | **Storage** | App folders, releases, logs, encrypted secrets and the agent's own state. |
 
