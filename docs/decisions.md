@@ -144,6 +144,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** The URL never changes across restarts, reinstalls and reboots. The login runs where the person already is (the computer's browser, or an in-app tab on the phone), and the certificate never leaves the phone. Managing DNS through the API means `--off` cleans up after itself and DroidHost never overwrites someone else's record.
 - **Trade-off:** It needs a domain on Cloudflare. Each login creates one API token in the user's account, and Cloudflare allows 50, so a full account has to delete old tokens first. Adding or removing a hostname restarts the phone's tunnel (about 2 seconds for that phone's other public apps).
 
+### D-110: Landing page as a static SvelteKit site in the repo
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** `site/` is a SvelteKit 3 app built with adapter-static: every page is prerendered to plain HTML, with the phone app's v4 design, square corners, Hugeicons solid-rounded copied into the repo and the app's own fonts and illustration.
+- **Why:** Same stack and design tokens as the dashboard, no server to run, and any static host works (Cloudflare Pages, GitHub Pages).
+- **Trade-off:** Hosting and the domain aren't chosen yet, and the page's Get the APK and `npx droidhost` steps only work once the APK and the npm package are published.
+
 ## Open questions
 
 | Question | Options | Decides |
