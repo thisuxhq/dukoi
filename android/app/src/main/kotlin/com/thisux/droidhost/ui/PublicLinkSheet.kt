@@ -81,11 +81,14 @@ fun PublicLinkSheet(app: AppInfo, onDismiss: () -> Unit) {
   }
   var picked by remember { mutableStateOf(current) }
   var zone by remember { mutableStateOf<String?>(null) }
+  var connected by remember { mutableStateOf(true) }
   var hostname by remember { mutableStateOf(app.domain ?: "") }
   var busy by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(Unit) {
-    zone = withContext(Dispatchers.IO) { Phone.domainStatus() }?.zone
+    val status = withContext(Dispatchers.IO) { Phone.domainStatus() }
+    zone = status?.zone
+    connected = status?.loggedIn ?: true
     if (hostname.isEmpty() && zone != null) hostname = "${app.name}.$zone"
   }
 
@@ -176,6 +179,16 @@ fun PublicLinkSheet(app: AppInfo, onDismiss: () -> Unit) {
               }
             },
           )
+          // Say up front that a browser tab is coming, and what to do in it.
+          val hint = when {
+            busy == "Waiting for Cloudflare" -> "Finish logging in to Cloudflare in the browser tab."
+            !connected -> "The first time, Cloudflare asks you to log in."
+            else -> null
+          }
+          if (hint != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(hint, style = Styles.Small)
+          }
         }
       }
 
