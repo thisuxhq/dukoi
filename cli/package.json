@@ -1,0 +1,16 @@
+{
+  "name": "droidhost",
+  "private": true,
+  "type": "module",
+  "description": "Deploy real apps to old Android phones. One command. No root. No cloud bill.",
+  "bin": {
+    "droidhost": "./src/main.ts"
+  },
+  "scripts": {
+    "build": "bun build src/main.ts --target=node --format=esm --outfile=dist/droidhost.mjs",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@droidhost/shared": "workspace:*"
+  }
+}

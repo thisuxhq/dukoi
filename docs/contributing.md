@@ -2,32 +2,32 @@
 
 This doc covers how to set up the repo, make a change and get it merged. It's aimed at making your first PR feel easy.
 
-> The repo doesn't exist yet. This doc describes the setup we're aiming for, so build the repo to match it.
-
 ---
 
 ## What you need
 
 | Tool | For |
 | --- | --- |
-| Node.js 24+ and pnpm | CLI, dashboard, starters |
+| Bun 1.4+ and Node.js 24+ | Installs, tests and bundling (Bun); the CLI and agent run on Node |
 | [Android CLI](android-cli.md) (`android`), plus a JDK 17+ | The phone app: create, build, run, screenshots |
 | An arm64 Android phone, Android 10+ | Running it for real. An emulator works for UI only. |
 
 ## Set up
 
 ```bash
-git clone <repo>
+git clone https://github.com/thisuxhq/droidhost.git
 cd droidhost
-pnpm install
-pnpm fetch-binaries   # downloads Node + cloudflared into android/app/src/main/jniLibs
+bun install
+scripts/prepare-android.sh   # fetches Node and bundles the agent into the APK
 ```
 
 ## Run it
 
 ```bash
-pnpm dev              # CLI + dashboard in watch mode
-pnpm test             # all JS/TS tests
+bun test             # all TypeScript tests
+bun run typecheck    # TypeScript in every package
+bun run lint         # Biome
+bun run cli --help   # run the CLI from source
 ```
 
 ```bash
@@ -42,8 +42,8 @@ Use the Android CLI for all phone work: running the app, screenshots (`android s
 Then pair with the phone and try a starter:
 
 ```bash
-pnpm cli pair
-pnpm cli init hono-api && cd hono-api && pnpm cli deploy
+bun run cli pair
+bun run cli deploy starters/hono-api
 ```
 
 ---
@@ -70,7 +70,7 @@ More detail is in [architecture.md](architecture.md).
 2. **Update the docs** in the same PR if the behaviour changes.
 3. **Add tests** for logic such as packing, backoff, signing and release switching.
 4. **Device-lab check** if the change touches process lifecycle, setup, networking or the service. Say which phones you tested on.
-5. **Run** `pnpm test` and `./gradlew test` before pushing.
+5. **Run** `bun test` and `./gradlew test` before pushing.
 
 ### Style
 

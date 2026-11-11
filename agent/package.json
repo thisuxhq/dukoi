@@ -1,0 +1,13 @@
+{
+  "name": "@droidhost/agent",
+  "private": true,
+  "type": "module",
+  "description": "Runs on the phone: admin API, process manager, deploys, logs and tunnels.",
+  "scripts": {
+    "build": "bun build src/main.ts --target=node --format=esm --outfile=dist/agent.mjs",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@droidhost/shared": "workspace:*"
+  }
+}
