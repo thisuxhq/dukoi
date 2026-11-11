@@ -62,3 +62,11 @@ test('a crashing app restarts after a backoff', async () => {
   expect(log.tail(5).join('\n')).toContain('Restarting in 1s')
   await proc.stop()
 })
+
+test('tail(0) returns no lines, not the whole log', () => {
+  const { log } = setup('')
+  log.note('one')
+  log.note('two')
+  expect(log.tail(0)).toEqual([])
+  expect(log.tail(1)).toHaveLength(1)
+})
