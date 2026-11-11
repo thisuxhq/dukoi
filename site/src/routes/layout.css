@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* The phone app's v4 design: canvas, square cards, one violet accent, plus soft pastels for the feature tiles. */
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/outfit.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter_regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter_medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter_semibold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/geist_mono.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --color-canvas: #f1f0f4;
+  --color-card: #ffffff;
+  --color-ink: #16161a;
+  --color-body: #4a4950;
+  --color-muted: #6e6d78;
+  --color-violet: #7b3ff2;
+  --color-divider: #ecebf0;
+  --color-line: #dad9e0;
+  --color-running: #18a957;
+  --color-restarting: #f5a524;
+
+  --color-night: #16161a;
+  --color-night-raised: #24232b;
+  --color-night-high: #34333c;
+  --color-night-muted: #a9a8b3;
+  --color-prompt: #7e7d8a;
+  --color-log-text: #ededf0;
+  --color-log-time: #6f6e7a;
+  --color-log-note: #b79cff;
+
+  --color-lavender: #ede7fb;
+  --color-mint: #ddf2e5;
+  --color-peach: #fce6d8;
+  --color-sky: #e0ecfb;
+  --color-rose: #fbe3ea;
+  --color-butter: #faf0c8;
+  --color-orange: #e0662a;
+  --color-blue: #2f6fd6;
+  --color-pink: #d2416e;
+  --color-amber: #b07d0a;
+}
+
+html {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}

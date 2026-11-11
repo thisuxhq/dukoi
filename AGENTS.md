@@ -6,6 +6,7 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 
 ## Start here
 
+- `README.md` is the front page for visitors: what DroidHost is and the quick start.
 - `docs/README.md` is the index of every doc.
 - `docs/mission.md` says what we build and who for.
 - `docs/architecture.md` explains how the parts fit together.
@@ -19,7 +20,8 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 | `agent/` | Runs on the phone on bundled Node: admin API, process manager, deploys, logs, tunnels |
 | `cli/` | The `droidhost` command |
 | `dashboard/` | The web dashboard: a SvelteKit 3 server with remote functions, started by `droidhost dashboard` on `127.0.0.1` |
-| `shared/` | Admin API types, request signing and archives, used by the agent and the CLI |
+| `site/` | The landing page: a static SvelteKit 3 site (D-110) |
+| `shared/` | Admin API types, request signing and archives, used by the agent, CLI and dashboard |
 | `starters/` | Apps that deploy with zero edits |
 | `docs/` | Product and engineering docs |
 | `spikes/` | Throwaway experiments. `node-survival` proved Node runs and survives; `cloudflared` proved public URLs work. |
@@ -35,6 +37,7 @@ bun run typecheck            # TypeScript in every package
 bun run lint                 # Biome
 bun run cli <command>        # run the CLI from source, e.g. bun run cli pair
 bun run --filter @droidhost/dashboard build && bun run cli dashboard   # the web dashboard
+bun run --filter @droidhost/site dev        # the landing page; build/ holds the static site after `build`
 
 scripts/prepare-android.sh   # fetch Node and bundle the agent into the APK
 cd android && ./gradlew assembleDebug
