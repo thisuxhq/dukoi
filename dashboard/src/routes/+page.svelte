@@ -15,7 +15,7 @@ const live = (state: string) => state === 'running'
 <div class="flex flex-col gap-5 md:gap-7">
 	<div class="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
 		<h1 class="font-display text-[36px] leading-10 font-medium tracking-[-0.03em] md:text-[44px] md:leading-[48px]">Apps</h1>
-		<CommandBox command="npx droidhost deploy" />
+		<CommandBox command="npx dukoi deploy" />
 	</div>
 
 	{#if data?.problem}<ProblemNote problem={data.problem} />{/if}

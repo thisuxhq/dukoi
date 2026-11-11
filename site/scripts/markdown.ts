@@ -121,11 +121,11 @@ const home = pages.get('/') ?? ''
 writeFileSync(
   join(BUILD, 'llms.txt'),
   [
-    '# DroidHost',
+    '# Dukoi',
     '',
     '> Deploy real apps to an old Android phone and get a live URL. No root, no Termux, no cloud bill.',
     '',
-    'Install the DroidHost app on the phone, run `npx droidhost pair` on a computer on the same Wi-Fi, then `npx droidhost deploy` in an app folder. Every command takes `--json` for output an agent can parse. Every page below is Markdown; llms-full.txt has them all in one file.',
+    'Install the Dukoi app on the phone, run `npx dukoi pair` on a computer on the same Wi-Fi, then `npx dukoi deploy` in an app folder. Every command takes `--json` for output an agent can parse. Every page below is Markdown; llms-full.txt has them all in one file.',
     '',
     ...sections.flatMap((s) => [
       `## ${s.title}`,
@@ -137,7 +137,7 @@ writeFileSync(
     ]),
     '## Optional',
     '',
-    `- [Home](/index.md): ${lead(home) || 'What DroidHost is'}`,
+    `- [Home](/index.md): ${lead(home) || 'What Dukoi is'}`,
     `- [Source code](${REPO}): the phone app, agent, CLI and dashboard`,
     '',
   ].join('\n'),
@@ -145,7 +145,7 @@ writeFileSync(
 
 writeFileSync(
   join(BUILD, 'llms-full.txt'),
-  `# DroidHost docs\n\n${docs.map((d) => pages.get(d.path) ?? '').join('\n---\n\n')}`,
+  `# Dukoi docs\n\n${docs.map((d) => pages.get(d.path) ?? '').join('\n---\n\n')}`,
 )
 
 console.log(`Wrote ${pages.size} Markdown pages, llms.txt and llms-full.txt`)

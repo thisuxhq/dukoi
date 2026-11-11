@@ -1,5 +1,5 @@
 // One app's log: lines with a time and stream, rotated at 5 MB.
-// Listeners get new lines as they're written, for `droidhost logs --follow`.
+// Listeners get new lines as they're written, for `dukoi logs --follow`.
 import { appendFileSync, mkdirSync, readFileSync, renameSync, statSync } from 'node:fs'
 import { dirname } from 'node:path'
 
@@ -33,7 +33,7 @@ export class LogFile {
     for (const l of lines) this.add(stream, l)
   }
 
-  /** A DroidHost message, shown among the app's own lines. */
+  /** A Dukoi message, shown among the app's own lines. */
   note(text: string): void {
     this.add('agent', text)
   }

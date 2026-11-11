@@ -27,9 +27,9 @@ step() { printf '\n\033[1m→ %s\033[0m\n' "$1"; }
 if [ "$(uname -s)" = "Darwin" ]; then
   docker info >/dev/null 2>&1 || { echo "✗ Docker isn't running. Start OrbStack." >&2; exit 1; }
   image=ubuntu:24.04
-  docker image inspect droidhost-native-tools:llvm21 >/dev/null 2>&1 && image=droidhost-native-tools:llvm21
+  docker image inspect dukoi-native-tools:llvm21 >/dev/null 2>&1 && image=dukoi-native-tools:llvm21
   exec docker run --rm --platform linux/arm64 \
-    -v droidhost-node-native:/cache \
+    -v dukoi-node-native:/cache \
     -v "$repo_dir/build:/work/build" \
     -v "$repo_dir/scripts:/work/scripts:ro" \
     -e IN_CONTAINER=1 \

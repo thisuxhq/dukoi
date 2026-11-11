@@ -10,18 +10,18 @@ A 2019 flagship phone has more compute than a $5 VPS. It draws 2 to 5 watts, and
 
 Today, running a server on a phone takes Termux, around ten manual steps and a lot of babysitting, because Android keeps killing the process. Getting a public URL is a second problem on top of that. Most home connections in India sit behind CGNAT, so port forwarding doesn't work.
 
-DroidHost makes this easy.
+Dukoi makes this easy.
 
 ## What we do
 
-DroidHost turns an old Android phone into an app server:
+Dukoi turns an old Android phone into an app server:
 
 1. Install one APK.
 2. Pair the phone with your computer.
-3. Run `droidhost deploy`.
+3. Run `dukoi deploy`.
 4. Get a live URL.
 
-That's all there is to it. No Termux and no root. You don't need to know anything about Android internals, because DroidHost handles the Android app killers for you.
+That's all there is to it. No Termux and no root. You don't need to know anything about Android internals, because Dukoi handles the Android app killers for you.
 
 ## Who we serve first
 
@@ -44,13 +44,13 @@ The phase 1 bar: deploy a Hono API to a phone in under two minutes after setup, 
 
 Everyone treats phones as weak servers. We treat them as **servers with superpowers no VPS has**: SMS, camera, GPS, sensors, Bluetooth, a battery and cellular data.
 
-Once the basics are rock solid, DroidHost will give deployed apps a simple local API for this hardware, protected by a permission gate the owner controls.
+Once the basics are rock solid, Dukoi will give deployed apps a simple local API for this hardware, protected by a permission gate the owner controls.
 
 ## What we promise
 
 - **The runtime stays free and open source.** We charge only for hosted parts that people can't easily run themselves, such as the relay, the hosted dashboard and backups.
 - **Your phone, your data.** App code, logs and secrets never leave the phone unless you send them somewhere yourself. Telemetry is opt-in.
-- **Honesty about limits.** A phone is not a data centre. We say plainly what DroidHost can't do: it has no container isolation and makes no production SaaS uptime promises, and quick tunnel URLs can change.
+- **Honesty about limits.** A phone is not a data centre. We say plainly what Dukoi can't do: it has no container isolation and makes no production SaaS uptime promises, and quick tunnel URLs can change.
 
 ## How we decide
 

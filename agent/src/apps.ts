@@ -26,7 +26,7 @@ import {
   type ReleaseInfo,
   type ReleaseManifest,
   unpack,
-} from '@droidhost/shared'
+} from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { AppProcess, killLeftover, type ProcessSpec } from './app-process.ts'
 import { HttpError } from './http.ts'
@@ -75,7 +75,7 @@ export class Apps {
   private sampler: NodeJS.Timeout
 
   constructor(private agent: Agent) {
-    // CPU and memory for `droidhost ps`, measured every 2 seconds.
+    // CPU and memory for `dukoi ps`, measured every 2 seconds.
     this.sampler = setInterval(() => {
       for (const rt of this.runtimes.values())
         rt.usage = this.stats.sample(rt.live?.proc.pid ?? null)
@@ -117,7 +117,7 @@ export class Apps {
           404,
           'NO_SUCH_APP',
           `There's no app called "${name}" on this phone.`,
-          'Run `droidhost ps` to see your apps.',
+          'Run `dukoi ps` to see your apps.',
         )
       saved = {
         name,
@@ -287,8 +287,8 @@ export class Apps {
       throw new HttpError(
         422,
         'NO_MANIFEST',
-        `Release ${release} has no DroidHost manifest.`,
-        'Deploy with the droidhost CLI.',
+        `Release ${release} has no Dukoi manifest.`,
+        'Deploy with the dukoi CLI.',
       )
     }
     const port = await freePort()
@@ -336,7 +336,7 @@ export class Apps {
       HOST: '127.0.0.1',
       NODE_ENV: 'production',
       DATA_DIR: join(rt.dir, 'data'),
-      DROIDHOST_APP: rt.saved.name,
+      DUKOI_APP: rt.saved.name,
       HOME: join(rt.dir, 'data'),
       TMPDIR: process.env.TMPDIR ?? '/tmp',
       PATH: process.env.PATH ?? '/system/bin',
@@ -455,7 +455,7 @@ export class Apps {
           404,
           'NO_RELEASE',
           to ? `There's no release ${to}.` : 'There’s no earlier release to roll back to.',
-          'Run `droidhost releases` to see them.',
+          'Run `dukoi releases` to see them.',
         )
       }
       rt.log.note(`Rolling back to release ${target}.`)
@@ -471,7 +471,7 @@ export class Apps {
         409,
         'NOT_DEPLOYED',
         `${name} hasn't been deployed yet.`,
-        'Run `droidhost deploy`.',
+        'Run `dukoi deploy`.',
       )
     if (!rt.live)
       await rt.serial(() => this.launch(rt, rt.saved.release as string, { waitHealthy: true }))

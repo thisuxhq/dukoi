@@ -13,13 +13,13 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, relative, sep } from 'node:path'
-import { MANIFEST_PATH, pack, type ReleaseManifest } from '@droidhost/shared'
+import { MANIFEST_PATH, pack, type ReleaseManifest } from '@dukoi/shared'
 import type { AppFolder } from './app-folder.ts'
 import { CliError } from './output.ts'
 
 export const CLI_VERSION = '0.1.0'
 
-const ALWAYS_IGNORE = ['.git', 'node_modules', '.DS_Store', '.droidhost', '.env', '.env.local']
+const ALWAYS_IGNORE = ['.git', 'node_modules', '.DS_Store', '.dukoi', '.env', '.env.local']
 
 /** Pure-JS swaps for common native modules. */
 const NATIVE_ALTERNATIVES: Record<string, string> = {
@@ -38,7 +38,7 @@ export function packApp(app: AppFolder, step: (msg: string) => void, quiet = fal
     step('Built on this computer')
   }
 
-  const staging = mkdtempSync(join(tmpdir(), 'droidhost-deploy-'))
+  const staging = mkdtempSync(join(tmpdir(), 'dukoi-deploy-'))
   try {
     stage(app.dir, staging, app.ignore)
     if (app.hasDependencies) {
@@ -66,7 +66,7 @@ export function packApp(app: AppFolder, step: (msg: string) => void, quiet = fal
       healthCheck: app.healthCheck,
       source: { files, bytes: 0, cli: CLI_VERSION },
     }
-    mkdirSync(join(staging, '.droidhost'), { recursive: true })
+    mkdirSync(join(staging, '.dukoi'), { recursive: true })
     writeFileSync(join(staging, MANIFEST_PATH), JSON.stringify(manifest, null, 2))
     manifest.source.bytes = pack(staging).bytes
     writeFileSync(join(staging, MANIFEST_PATH), JSON.stringify(manifest, null, 2))

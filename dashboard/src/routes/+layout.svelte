@@ -12,11 +12,11 @@ const data = $derived(overview.current)
 </script>
 
 <svelte:head>
-	<title>DroidHost</title>
+	<title>Dukoi</title>
 </svelte:head>
 
 <header class="flex h-16 items-center justify-between px-4 md:h-[72px] md:px-12">
-	<a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em]">DroidHost</a>
+	<a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em]">Dukoi</a>
 	<div class="flex items-center gap-3 md:gap-4">
 		{#if data}
 			<div class="flex h-10 items-center gap-2.5 bg-card px-3.5">

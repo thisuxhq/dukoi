@@ -1,6 +1,6 @@
 // The agent: one object that owns the store, the admin API and the apps.
 import type { Server } from 'node:http'
-import { type PhoneInfo, PROTOCOL_VERSION } from '@droidhost/shared'
+import { type PhoneInfo, PROTOCOL_VERSION } from '@dukoi/shared'
 import { appRoutes } from './app-routes.ts'
 import { Apps } from './apps.ts'
 import { AGENT_VERSION, type Config, paths } from './config.ts'
@@ -71,7 +71,7 @@ export class Agent {
     await this.tunnels.restore()
     await this.domains.restore()
     console.log(
-      `DroidHost agent ${AGENT_VERSION} on port ${this.config.adminPort} (Node ${process.version}, key ${this.store.state.identity.publicKey.slice(0, 8)}…)`,
+      `Dukoi agent ${AGENT_VERSION} on port ${this.config.adminPort} (Node ${process.version}, key ${this.store.state.identity.publicKey.slice(0, 8)}…)`,
     )
   }
 

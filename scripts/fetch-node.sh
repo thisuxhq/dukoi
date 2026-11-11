@@ -5,11 +5,11 @@
 #
 # Usage: scripts/fetch-node.sh [node-version]
 # Output: build/node-android/<version>/node
-# Needs:  gh (GitHub CLI), signed in with access to thisuxhq/droidhost
+# Needs:  gh (GitHub CLI), signed in with access to thisuxhq/dukoi
 set -euo pipefail
 
 NODE_VERSION="${1:-v24.22.2}"
-REPO=thisuxhq/droidhost
+REPO=thisuxhq/dukoi
 TAG="node-$NODE_VERSION-android-arm64"
 ASSET="$TAG.xz"
 

@@ -1,7 +1,7 @@
 // Runs one app process and keeps it alive.
 import { type ChildProcess, spawn } from 'node:child_process'
 import { readFileSync, rmSync, writeFileSync } from 'node:fs'
-import type { AppState } from '@droidhost/shared'
+import type { AppState } from '@dukoi/shared'
 import type { LogFile } from './log-file.ts'
 import { CRASH_LOOP_AFTER, describeExit, type Exit, nextRestart } from './restart-policy.ts'
 

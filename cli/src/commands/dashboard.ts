@@ -1,4 +1,4 @@
-// droidhost dashboard: the web dashboard, on this computer only.
+// dukoi dashboard: the web dashboard, on this computer only.
 //
 // Starts the dashboard's server (a SvelteKit app in dashboard/) on 127.0.0.1.
 // Its remote functions call the phone with this computer's key, exactly like
@@ -26,7 +26,7 @@ export async function dashboard(opts: DashboardOptions): Promise<void> {
   const url = `http://127.0.0.1:${port}`
 
   const server = spawn(process.execPath, [entry], {
-    env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), DROIDHOST_DEVICE: phone.name },
+    env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), DUKOI_DEVICE: phone.name },
     stdio: ['ignore', 'ignore', 'inherit'],
   })
   const stop = () => server.kill()
@@ -55,7 +55,7 @@ function serverEntry(): string {
     throw new CliError(
       'NO_DASHBOARD',
       'The dashboard hasn’t been built.',
-      'Run `bun run --filter @droidhost/dashboard build`, then try again.',
+      'Run `bun run --filter @dukoi/dashboard build`, then try again.',
     )
   }
   return found

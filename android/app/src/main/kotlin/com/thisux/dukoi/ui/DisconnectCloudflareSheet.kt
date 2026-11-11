@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,13 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.DomainStatus
-import com.thisux.droidhost.Phone
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Crashed
-import com.thisux.droidhost.ui.theme.Faint
-import com.thisux.droidhost.ui.theme.Styles
+import com.thisux.dukoi.DomainStatus
+import com.thisux.dukoi.Phone
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Crashed
+import com.thisux.dukoi.ui.theme.Faint
+import com.thisux.dukoi.ui.theme.Styles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,8 +64,8 @@ fun DisconnectCloudflareSheet(status: DomainStatus, onDismiss: () -> Unit, onDon
   val hostnames = status.domains.map { it.hostname }
   val impact = when (hostnames.size) {
     0 -> "No apps use it right now. You can connect again when you add a domain."
-    1 -> "${hostnames[0]} will stop working. DroidHost removes only the DNS records it made."
-    else -> "${hostnames.size} public links will stop working. DroidHost removes only the DNS records it made."
+    1 -> "${hostnames[0]} will stop working. Dukoi removes only the DNS records it made."
+    else -> "${hostnames.size} public links will stop working. Dukoi removes only the DNS records it made."
   }
 
   ModalBottomSheet(

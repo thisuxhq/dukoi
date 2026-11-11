@@ -1,4 +1,4 @@
-// Packs every template the way `droidhost deploy` would, so the phone can
+// Packs every template the way `dukoi deploy` would, so the phone can
 // deploy one with no computer (Try a template). Writes build/templates/<id>.tgz.
 // Usage: bun scripts/pack-templates.ts
 import { mkdirSync, writeFileSync } from 'node:fs'

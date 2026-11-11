@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,9 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Styles
-import com.thisux.droidhost.ui.theme.Violet
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Violet
 import kotlinx.coroutines.delay
 
 /** Welcome, then one screen per setup step that still needs doing, then Pair. */
@@ -49,7 +49,7 @@ private fun OnboardingFrame(
 ) {
   Column(Modifier.fillMaxSize().background(Canvas).systemBarsPadding()) {
     Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = Gutter), verticalAlignment = Alignment.CenterVertically) {
-      if (brand) Text("DroidHost", style = Styles.CardTitle)
+      if (brand) Text("Dukoi", style = Styles.CardTitle)
       Grow()
       ProgressDashes(TOTAL, step.ordinal + 1)
     }
@@ -85,7 +85,7 @@ fun PermissionScreen(step: OnboardingStep, onAction: () -> Unit, onSkip: () -> U
 @Composable
 fun PairScreen(onLater: () -> Unit) {
   OnboardingFrame(OnboardingStep.PAIR) {
-    CommandBox("npx droidhost pair", Modifier.fillMaxWidth())
+    CommandBox("npx dukoi pair", Modifier.fillMaxWidth())
     Spacer(Modifier.height(28.dp))
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
       WaitingDots()

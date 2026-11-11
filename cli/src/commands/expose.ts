@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import type { DomainStatus, ExposeResult } from '@droidhost/shared'
+import type { DomainStatus, ExposeResult } from '@dukoi/shared'
 import { call, pickPhone } from '../client.ts'
 import { CliError, c, info, ok } from '../output.ts'
 import { appName } from './apps.ts'
@@ -36,7 +36,7 @@ export async function expose(opts: ExposeOptions): Promise<void> {
   info(`\n  ${c.dim('Public')}  ${c.cyan(result.publicUrl)}\n`)
   info(
     c.dim(
-      '  Quick tunnel URLs change if the tunnel restarts. For one that never changes: droidhost expose --domain api.example.com',
+      '  Quick tunnel URLs change if the tunnel restarts. For one that never changes: dukoi expose --domain api.example.com',
     ),
   )
 }
@@ -104,7 +104,7 @@ async function connectToCloudflare(phone: Phone, hostname: string, json: boolean
   throw new CliError(
     'LOGIN_TIMEOUT',
     'Cloudflare login wasn’t finished within 10 minutes.',
-    `Run \`droidhost expose --domain ${hostname}\` again.`,
+    `Run \`dukoi expose --domain ${hostname}\` again.`,
   )
 }
 

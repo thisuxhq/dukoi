@@ -10,17 +10,17 @@ let copied = $state(false)
 let timer: ReturnType<typeof setTimeout> | undefined
 
 /** Built on click so the docs link carries this site's real address. */
-const prompt = () => `Set up DroidHost so I can host my apps on my old Android phone.
+const prompt = () => `Set up Dukoi so I can host my apps on my old Android phone.
 
-1. Ask me to install the DroidHost app on the phone from
+1. Ask me to install the Dukoi app on the phone from
    ${APK}
    and tap through its four setup steps. Wait until I say it's done.
-2. Run npx droidhost pair here. When it shows a six-digit code,
+2. Run npx dukoi pair here. When it shows a six-digit code,
    ask me to check it matches the phone and tap Approve.
-3. In my app's folder, run npx droidhost deploy. The app must
+3. In my app's folder, run npx dukoi deploy. The app must
    listen on process.env.PORT. If deploy fails, the error says why
    and what to change.
-4. If I want a public URL, run npx droidhost expose.
+4. If I want a public URL, run npx dukoi expose.
 
 Add --json to any command for output you can parse.
 Docs: ${location.origin}/llms.txt`

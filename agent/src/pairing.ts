@@ -5,7 +5,7 @@ import {
   type PairState,
   type PairStatus,
   pairingCode,
-} from '@droidhost/shared'
+} from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { HttpError } from './http.ts'
 
@@ -42,7 +42,7 @@ export function pairingRoutes(agent: Agent): void {
         404,
         'NO_PAIRING',
         'This computer hasn’t asked to pair.',
-        'Run `droidhost pair`.',
+        'Run `dukoi pair`.',
       )
     return { state: p.state, code, phone: agent.info() }
   }

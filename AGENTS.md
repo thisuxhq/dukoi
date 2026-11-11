@@ -1,12 +1,12 @@
-# DroidHost
+# Dukoi
 
-DroidHost turns old Android phones into app servers. You install one APK, pair the phone with your computer, run `droidhost deploy` and get a live URL. No root, no Termux, no cloud bill.
+Dukoi turns old Android phones into app servers. You install one APK, pair the phone with your computer, run `dukoi deploy` and get a live URL. No root, no Termux, no cloud bill.
 
 This file is for AI coding agents and people working in this repo. `CLAUDE.md` is a symlink to it, so edit this file only.
 
 ## Start here
 
-- `README.md` is the front page for visitors: what DroidHost is and the quick start.
+- `README.md` is the front page for visitors: what Dukoi is and the quick start.
 - `docs/README.md` is the index of every doc.
 - `docs/mission.md` says what we build and who for.
 - `docs/architecture.md` explains how the parts fit together.
@@ -18,9 +18,9 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 | --- | --- |
 | `android/` | The phone app (Kotlin). Keeps the agent alive, runs setup and approves pairing. |
 | `agent/` | Runs on the phone on bundled Node: admin API, process manager, deploys, logs, tunnels |
-| `cli/` | The `droidhost` command |
-| `dashboard/` | The web dashboard: a SvelteKit 3 server with remote functions, started by `droidhost dashboard` on `127.0.0.1` |
-| `site/` | The landing page and the user guide at `/docs`: a static SvelteKit 3 site (D-110). The build also writes a `.md` twin of every page, `llms.txt` and `llms-full.txt` for AI agents (`site/scripts/markdown.ts`) |
+| `cli/` | The `dukoi` command |
+| `dashboard/` | The web dashboard: a SvelteKit 3 server with remote functions, started by `dukoi dashboard` on `127.0.0.1` |
+| `site/` | The landing page and the user guide at `/docs` on dukoi.com: a static SvelteKit 3 site (D-110) served by Cloudflare Workers (D-112). The build also writes a `.md` twin of every page, `llms.txt` and `llms-full.txt` for AI agents (`site/scripts/markdown.ts`) |
 | `shared/` | Admin API types, request signing and archives, used by the agent, CLI and dashboard |
 | `starters/` | Apps that deploy with zero edits |
 | `docs/` | Product and engineering docs |
@@ -36,8 +36,9 @@ bun test                     # all TypeScript tests
 bun run typecheck            # TypeScript in every package
 bun run lint                 # Biome
 bun run cli <command>        # run the CLI from source, e.g. bun run cli pair
-bun run --filter @droidhost/dashboard build && bun run cli dashboard   # the web dashboard
-bun run --filter @droidhost/site dev        # the landing page; build/ holds the static site after `build`
+bun run --filter @dukoi/dashboard build && bun run cli dashboard   # the web dashboard
+bun run --filter @dukoi/site dev        # the landing page; build/ holds the static site after `build`
+bun run --filter @dukoi/site deploy     # publish the site to dukoi.com (needs wrangler login)
 
 scripts/prepare-android.sh   # fetch Node and bundle the agent into the APK
 cd android && ./gradlew assembleDebug

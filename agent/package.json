@@ -1,5 +1,5 @@
 {
-  "name": "@droidhost/agent",
+  "name": "@dukoi/agent",
   "private": true,
   "type": "module",
   "description": "Runs on the phone: admin API, process manager, deploys, logs and tunnels.",
@@ -8,6 +8,6 @@
     "typecheck": "tsc -p ."
   },
   "dependencies": {
-    "@droidhost/shared": "workspace:*"
+    "@dukoi/shared": "workspace:*"
   }
 }

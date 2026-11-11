@@ -1,6 +1,6 @@
 # Deploy and releases
 
-This doc explains what happens between `droidhost deploy` and a live URL, and how releases and rollback work.
+This doc explains what happens between `dukoi deploy` and a live URL, and how releases and rollback work.
 
 **The promise:** a Hono API goes live in under 2 minutes, and a bad deploy never takes down the good one.
 
@@ -34,8 +34,8 @@ The CLI shows each step as it happens. If any step fails, **the old release keep
 | What | Rule |
 | --- | --- |
 | Type | Node app if `package.json` is present. Static site if there's an `index.html` and no `package.json`. |
-| Name | `droidhost.json` `name`, then `package.json` `name`, then the folder name. |
-| Start | `droidhost.json` `start`, then `scripts.start`, then `node <main>`, then `node index.js`. |
+| Name | `dukoi.json` `name`, then `package.json` `name`, then the folder name. |
+| Start | `dukoi.json` `start`, then `scripts.start`, then `node <main>`, then `node index.js`. |
 | Build | If `scripts.build` exists, the CLI runs it **on the computer** before packing. Phones are slow builders. |
 
 ### 2. Pack
@@ -61,7 +61,7 @@ apps/my-api/releases/0006/
 
 - The CLI copies the app to a temporary folder and runs `npm install --omit=dev --ignore-scripts` there, **on your computer**. The upload includes `node_modules`, so the phone never runs npm (D-108).
 - Native modules are caught here, before anything is uploaded. See [Native modules](#native-modules).
-- The CLI also writes `.droidhost/manifest.json` with how to start the app and which path to health-check.
+- The CLI also writes `.dukoi/manifest.json` with how to start the app and which path to health-check.
 - Static sites skip this step.
 
 ### 7. Start
@@ -110,8 +110,8 @@ apps/my-api/
 ## Rollback
 
 ```bash
-droidhost rollback            # previous release
-droidhost rollback --to 0004  # a specific one
+dukoi rollback            # previous release
+dukoi rollback --to 0004  # a specific one
 ```
 
 - Points the app at the earlier release and restarts it. Its `node_modules` is already there.
@@ -145,6 +145,6 @@ Packages that ship **prebuilt** `linux-arm64` binaries can work, although Androi
 | `NO_START` | We couldn't find how to start the app. | Add `scripts.start` to `package.json`. |
 | `NATIVE_MODULE` | A dependency needs a compiler. | Use the suggested pure-JS package. |
 | `HEALTH_TIMEOUT` | The app started but didn't answer on `PORT`. | Make sure the app listens on `process.env.PORT`. |
-| `CRASHED_ON_START` | The app exited during the health check. | Run `droidhost logs` to see why. |
+| `CRASHED_ON_START` | The app exited during the health check. | Run `dukoi logs` to see why. |
 | `DISK_FULL` | The phone is out of storage. | Remove old apps, or free space on the phone. |
 | `SETUP_INCOMPLETE` | The deploy worked, but the phone may kill the app. | Finish the checklist on the phone. |

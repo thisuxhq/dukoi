@@ -7,10 +7,10 @@ A small JSON API for notes, built with [Hono](https://hono.dev). Notes are saved
 Edit `server.js`. Add your routes next to the notes ones, then run:
 
 ```bash
-npx droidhost deploy
+npx dukoi deploy
 ```
 
-Your notes survive deploys and rollbacks: they live in `DATA_DIR`, which DroidHost keeps.
+Your notes survive deploys and rollbacks: they live in `DATA_DIR`, which Dukoi keeps.
 
 ## Try it
 

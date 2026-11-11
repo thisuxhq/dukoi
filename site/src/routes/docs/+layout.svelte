@@ -39,7 +39,7 @@ function onScroll() {
 <svelte:window onscroll={onScroll} />
 
 <svelte:head>
-  <title>{current ? `${current.title} · DroidHost docs` : 'DroidHost docs'}</title>
+  <title>{current ? `${current.title} · Dukoi docs` : 'Dukoi docs'}</title>
 </svelte:head>
 
 <div class="flex flex-col gap-6 px-5 pt-6 pb-16 lg:flex-row lg:gap-16 lg:px-16 lg:pt-12 lg:pb-24">

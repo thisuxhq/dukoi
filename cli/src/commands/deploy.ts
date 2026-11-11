@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { type DeployResult, HEADER, signRequest } from '@droidhost/shared'
+import { type DeployResult, HEADER, signRequest } from '@dukoi/shared'
 import { readAppFolder } from '../app-folder.ts'
 import { parseVerified, pickPhone, unreachable } from '../client.ts'
 import { computerKey } from '../config.ts'
@@ -43,8 +43,8 @@ export async function deploy(opts: DeployOptions): Promise<DeployResult> {
     for (const line of opts.next) info(`  ${line}`)
     return result
   }
-  info(`  ${c.dim('Logs  ')}  droidhost logs ${app.name}`)
-  if (!result.app.publicUrl) info(`  ${c.dim('Public')}  droidhost expose ${app.name}`)
+  info(`  ${c.dim('Logs  ')}  dukoi logs ${app.name}`)
+  if (!result.app.publicUrl) info(`  ${c.dim('Public')}  dukoi expose ${app.name}`)
   info(c.dim(`\n  Done in ${((Date.now() - t0) / 1000).toFixed(1)}s`))
   return result
 }

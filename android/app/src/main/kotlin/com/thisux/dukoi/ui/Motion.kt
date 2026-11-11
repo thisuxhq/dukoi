@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -47,10 +47,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.thisux.droidhost.ui.theme.Ink
-import com.thisux.droidhost.ui.theme.LogError
-import com.thisux.droidhost.ui.theme.LogLive
-import com.thisux.droidhost.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Ink
+import com.thisux.dukoi.ui.theme.LogError
+import com.thisux.dukoi.ui.theme.LogLive
+import com.thisux.dukoi.ui.theme.Styles
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

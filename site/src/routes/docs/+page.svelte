@@ -31,7 +31,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
     On your computer, on the same Wi-Fi, run this. It finds the phone and shows a six-digit code. Check it matches the phone, then tap <strong>Approve</strong>.
   </p>
   <Terminal
-    command="npx droidhost pair"
+    command="npx dukoi pair"
     output={`
 ✓ Found a024 (Nothing A024, Android 16) at 192.168.0.112
 
@@ -44,10 +44,10 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="deploy" step={3} title="Deploy your app">
   <p>
-    In your app’s folder, run deploy. DroidHost packs the folder, ships it to the phone, starts it and waits until it answers.
+    In your app’s folder, run deploy. Dukoi packs the folder, ships it to the phone, starts it and waits until it answers.
   </p>
   <Terminal
-    command="npx droidhost deploy"
+    command="npx dukoi deploy"
     output={`
 ✓ Packed hono-api (48 KB)
 ✓ Uploaded to a024
@@ -55,8 +55,8 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
   Local    http://192.168.0.112:3000
 
-  Logs     droidhost logs hono-api
-  Public   droidhost expose hono-api
+  Logs     dukoi logs hono-api
+  Public   dukoi expose hono-api
 
   Done in 6.2s`}
   />
@@ -65,5 +65,5 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 <p class="pb-6">No app yet? Start from a <a href="/docs/templates">template</a>.</p>
 
 <Note title="Want a public URL?" icon="globe-02">
-  Run <code>npx droidhost expose</code> for a quick link, or add <code>--domain api.example.com</code> to use your own domain. See <a href="/docs/public-urls">Public URLs</a>.
+  Run <code>npx dukoi expose</code> for a quick link, or add <code>--domain api.example.com</code> to use your own domain. See <a href="/docs/public-urls">Public URLs</a>.
 </Note>

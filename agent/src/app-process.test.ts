@@ -11,7 +11,7 @@ afterEach(() => {
 })
 
 function setup(script: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'droidhost-test-'))
+  const dir = mkdtempSync(join(tmpdir(), 'dukoi-test-'))
   dirs.push(dir)
   const log = new LogFile(join(dir, 'app.log'))
   const proc = new AppProcess(

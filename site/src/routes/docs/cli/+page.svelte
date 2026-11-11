@@ -2,7 +2,7 @@
 import Header from '#lib/components/docs/Header.svelte'
 import Section from '#lib/components/docs/Section.svelte'
 
-// Every command the CLI has today, from `droidhost --help`.
+// Every command the CLI has today, from `dukoi --help`.
 const groups: { id: string; title: string; rows: [string, string][] }[] = [
   {
     id: 'pairing',
@@ -70,7 +70,7 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
   lead="Every command and flag the CLI has today. Commands that take an app use the one in the current folder when you leave it out."
 />
 
-<p class="pb-10">Run any command with <code>npx droidhost</code>, or install it once with <code>npm i -g droidhost</code>.</p>
+<p class="pb-10">Run any command with <code>npx dukoi</code>, or install it once with <code>npm i -g dukoi</code>.</p>
 
 {#each groups as group (group.id)}
   <Section id={group.id} title={group.title}>

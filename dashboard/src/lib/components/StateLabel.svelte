@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { AppState } from '@droidhost/shared'
+import type { AppState } from '@dukoi/shared'
 
 let { state, big = false }: { state: AppState; big?: boolean } = $props()
 

@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     sveltekit({
-      // `droidhost dashboard` runs the built server on 127.0.0.1 only.
+      // `dukoi dashboard` runs the built server on 127.0.0.1 only.
       adapter: adapter(),
       experimental: { remoteFunctions: true },
       compilerOptions: {
@@ -19,5 +19,5 @@ export default defineConfig({
     }),
   ],
   // The CLI's signed client is TypeScript source in the workspace; bundle it into the server.
-  ssr: { noExternal: ['droidhost', '@droidhost/shared'] },
+  ssr: { noExternal: ['dukoi', '@dukoi/shared'] },
 })

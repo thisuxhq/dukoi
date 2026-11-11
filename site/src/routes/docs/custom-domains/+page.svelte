@@ -16,7 +16,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="add" title="Add a domain">
   <Terminal
-    command="npx droidhost expose --domain api.example.com"
+    command="npx dukoi expose --domain api.example.com"
     output={`
 Pointing api.example.com at hono-api…
 
@@ -42,13 +42,13 @@ Pointing api.example.com at hono-api…
   <ul class="list">
     <li>Every name must be under the domain you picked at login, like <code>*.example.com</code>.</li>
     <li>A domain replaces the app’s quick link.</li>
-    <li>DroidHost only changes DNS records it made, and won’t take over a name that already points somewhere else.</li>
-    <li><code>droidhost expose --off</code> removes the name and its DNS record.</li>
+    <li>Dukoi only changes DNS records it made, and won’t take over a name that already points somewhere else.</li>
+    <li><code>dukoi expose --off</code> removes the name and its DNS record.</li>
   </ul>
 </Section>
 
 <Section id="disconnect" title="Disconnect from Cloudflare">
-  <p>On the phone, go to <strong>Settings → Cloudflare → Disconnect</strong>. Every app loses its domain, DroidHost deletes the DNS records and tunnel it made, and the phone deletes its certificate. Add a domain again to log in fresh, or to switch to another domain.</p>
+  <p>On the phone, go to <strong>Settings → Cloudflare → Disconnect</strong>. Every app loses its domain, Dukoi deletes the DNS records and tunnel it made, and the phone deletes its certificate. Add a domain again to log in fresh, or to switch to another domain.</p>
   <Note title="One thing to tidy up">
     The login’s API token stays in your Cloudflare account, because a token can’t delete itself. Remove it at <strong>dash.cloudflare.com → My Profile → API Tokens</strong>.
   </Note>

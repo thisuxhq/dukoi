@@ -30,7 +30,7 @@ const kinds: [string, string, string][] = [
 
 <Section id="quick-link" title="Get a quick link">
   <Terminal
-    command="npx droidhost expose"
+    command="npx dukoi expose"
     output={`
 Asking Cloudflare for a public URL…
 ✓ hono-api is public
@@ -38,11 +38,11 @@ Asking Cloudflare for a public URL…
   Public  https://shy-river-42.trycloudflare.com`}
   />
   <p>It takes a few seconds and needs no account. The phone opens an outbound tunnel to Cloudflare, so it works behind CGNAT and home routers that block incoming connections.</p>
-  <p>Quick links are good for demos, testing and webhooks you can update. The URL changes whenever the tunnel restarts, and <code>droidhost ps</code> always shows the current one.</p>
+  <p>Quick links are good for demos, testing and webhooks you can update. The URL changes whenever the tunnel restarts, and <code>dukoi ps</code> always shows the current one.</p>
 </Section>
 
 <Section id="off" title="Turn it off">
-  <Terminal command="npx droidhost expose --off" />
+  <Terminal command="npx dukoi expose --off" />
   <p>The app goes back to Wi-Fi only. You can also change it on the phone: open the app and tap the edit icon next to its public link.</p>
 </Section>
 

@@ -1,6 +1,6 @@
 # Tech stack
 
-This doc lists what DroidHost is built with and why. Some choices come straight from the PRD and others are proposals.
+This doc lists what Dukoi is built with and why. Some choices come straight from the PRD and others are proposals.
 
 Each choice is marked:
 
@@ -62,7 +62,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 ### Storage on the phone
 
-- App folders, releases, logs and the agent's own state live in DroidHost's private app storage.
+- App folders, releases, logs and the agent's own state live in Dukoi's private app storage.
 - **Proposed:** the agent stores its own state (apps, releases, paired keys and the audit log) in SQLite through Android's built-in SQLite. We don't need an extra database.
 - Secrets are encrypted with a key held in the Android Keystore.
 
@@ -72,7 +72,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 ### CLI: TypeScript on Node.js
 
-- **Proposed:** TypeScript, published to npm as `droidhost`, so `npx droidhost` works with no install.
+- **Proposed:** TypeScript, published to npm as `dukoi`, so `npx dukoi` works with no install.
 - **Why:** our users already have Node. It shares types with the dashboard and starters, and it's easy for contributors to read.
 - Keep dependencies few. Prefer Node's built-ins such as `fetch`, `node:crypto`, `node:test` and `util.parseArgs`.
 - Packing uses tar plus gzip, and ignores `node_modules`, `.git` and anything in `.gitignore`.
@@ -80,8 +80,8 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 ### Web dashboard: SvelteKit 3 with remote functions
 
-- `droidhost dashboard` starts the built SvelteKit server (adapter-node) on `127.0.0.1` and opens the browser.
-- Remote functions in `dashboard/src/lib/phone.remote.ts` talk to the phone. They use the CLI's signed client (`droidhost/client`), so they sign with this computer's key and check the phone's signature. `query.live` streams app status every 2 seconds and logs as they're written. `command` runs start, stop, restart and rollback. Settings (`settings.remote.ts`) shows the phone, paired computers and Cloudflare, and can disconnect Cloudflare, stop all apps or unpair this computer, each after a confirm dialog. Removing other computers stays on the phone.
+- `dukoi dashboard` starts the built SvelteKit server (adapter-node) on `127.0.0.1` and opens the browser.
+- Remote functions in `dashboard/src/lib/phone.remote.ts` talk to the phone. They use the CLI's signed client (`dukoi/client`), so they sign with this computer's key and check the phone's signature. `query.live` streams app status every 2 seconds and logs as they're written. `command` runs start, stop, restart and rollback. Settings (`settings.remote.ts`) shows the phone, paired computers and Cloudflare, and can disconnect Cloudflare, stop all apps or unpair this computer, each after a confirm dialog. Removing other computers stays on the phone.
 - Small hand-written Svelte components in the phone app's v4 style, Tailwind 4 and Hugeicons (stroke-rounded) copied in as SVG paths. The fonts are the phone app's.
 - **Why on the computer:** it keeps the admin API private. The dashboard talks to the phone through the CLI's paired channel, never through the internet. The hosted dashboard is a later Pro feature.
 

@@ -1,11 +1,11 @@
 // A notes API on Hono, with SQLite built into Node.
-// Deploy it: droidhost deploy
+// Deploy it: dukoi deploy
 import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 
-// DroidHost sets DATA_DIR to a folder that survives deploys and rollbacks.
+// Dukoi sets DATA_DIR to a folder that survives deploys and rollbacks.
 const db = new DatabaseSync(join(process.env.DATA_DIR ?? '.', 'notes.db'))
 db.exec(`CREATE TABLE IF NOT EXISTS notes (
   id INTEGER PRIMARY KEY,

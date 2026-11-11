@@ -1,6 +1,6 @@
-// droidhost env: an app's settings, like a bot token. They're kept on the
+// dukoi env: an app's settings, like a bot token. They're kept on the
 // phone and passed to the app as environment variables. Values never come back.
-import type { EnvChange, EnvNames } from '@droidhost/shared'
+import type { EnvChange, EnvNames } from '@dukoi/shared'
 import { call, pickPhone } from '../client.ts'
 import { CliError, c, info, ok } from '../output.ts'
 import { appName } from './apps.ts'
@@ -29,12 +29,12 @@ export async function env(
         throw new CliError(
           'BAD_ARGS',
           `"${pair}" isn't KEY=value.`,
-          'Like this: droidhost env set API_KEY=abc123',
+          'Like this: dukoi env set API_KEY=abc123',
         )
       set[pair.slice(0, at)] = pair.slice(at + 1)
     }
     if (!args.length)
-      throw new CliError('BAD_ARGS', 'Set what?', 'Like this: droidhost env set API_KEY=abc123')
+      throw new CliError('BAD_ARGS', 'Set what?', 'Like this: dukoi env set API_KEY=abc123')
     const { names } = await setEnv(name, { set }, opts.device)
     if (opts.json) return void console.log(JSON.stringify({ ok: true, app: name, names }))
     return void ok(
@@ -44,11 +44,7 @@ export async function env(
 
   if (action === 'unset') {
     if (!args.length)
-      throw new CliError(
-        'BAD_ARGS',
-        'Remove which setting?',
-        'Like this: droidhost env unset API_KEY',
-      )
+      throw new CliError('BAD_ARGS', 'Remove which setting?', 'Like this: dukoi env unset API_KEY')
     const { names } = await setEnv(name, { unset: args }, opts.device)
     if (opts.json) return void console.log(JSON.stringify({ ok: true, app: name, names }))
     return void ok(`Removed ${args.join(', ')} from ${name}`)
@@ -57,15 +53,10 @@ export async function env(
   if (action === undefined || action === 'list') {
     const { names } = await call<EnvNames>(pickPhone(opts.device), path)
     if (opts.json) return void console.log(JSON.stringify({ ok: true, app: name, names }))
-    if (!names.length)
-      return void info(`${name} has no settings. Add one: droidhost env set KEY=value`)
+    if (!names.length) return void info(`${name} has no settings. Add one: dukoi env set KEY=value`)
     info(names.map((n) => `${n}  ${c.dim('(set)')}`).join('\n'))
     return
   }
 
-  throw new CliError(
-    'BAD_ARGS',
-    `There's no "env ${action}".`,
-    'Use droidhost env set, unset or list.',
-  )
+  throw new CliError('BAD_ARGS', `There's no "env ${action}".`, 'Use dukoi env set, unset or list.')
 }

@@ -1,4 +1,4 @@
-package com.thisux.droidhost
+package com.thisux.dukoi
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

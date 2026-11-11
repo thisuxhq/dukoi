@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,14 +24,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.Pairing
-import com.thisux.droidhost.PairingRequest
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Ink
-import com.thisux.droidhost.ui.theme.Lavender
-import com.thisux.droidhost.ui.theme.Styles
-import com.thisux.droidhost.ui.theme.Violet
+import com.thisux.dukoi.Pairing
+import com.thisux.dukoi.PairingRequest
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Ink
+import com.thisux.dukoi.ui.theme.Lavender
+import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Violet
 import kotlinx.coroutines.delay
 
 /** Same as the agent: a pairing request lasts two minutes. */

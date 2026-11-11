@@ -3,13 +3,13 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { createServer, type Server } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { AppInfo, DomainStatus } from '@droidhost/shared'
+import type { AppInfo, DomainStatus } from '@dukoi/shared'
 import { Agent } from './agent.ts'
 
 // A fake cloudflared and a fake Cloudflare API, so the whole domain flow runs
 // without a real account.
 
-const home = mkdtempSync(join(tmpdir(), 'droidhost-domains-'))
+const home = mkdtempSync(join(tmpdir(), 'dukoi-domains-'))
 const TUNNEL_ID = '11111111-2222-3333-4444-555555555555'
 const cert = Buffer.from(
   JSON.stringify({ zoneID: 'z1', accountID: 'a1', apiToken: 't1' }),
@@ -167,7 +167,7 @@ test('a domain gets a proxied DNS record, a route and a stable public URL', asyn
     name: 'api.example.com',
     content: `${TUNNEL_ID}.cfargotunnel.com`,
     proxied: true,
-    comment: 'DroidHost',
+    comment: 'Dukoi',
   })
   const config = readFileSync(join(home, 'tunnels', 'config.yml'), 'utf8')
   expect(config).toContain('hostname: api.example.com')
@@ -219,7 +219,7 @@ test('disconnecting removes every domain, its DNS record, the tunnel and the log
   expect(status).toMatchObject({ loggedIn: false, zone: null, domains: [] })
 
   expect(records.filter((r) => r.name === 'news.example.com')).toHaveLength(0)
-  // A record DroidHost didn't make is left alone.
+  // A record Dukoi didn't make is left alone.
   expect(records.find((r) => r.id === 'x')?.content).toBe('1.2.3.4')
   expect(readFileSync(join(home, 'tunnels', 'deleted'), 'utf8')).toBe(TUNNEL_ID)
   expect(existsSync(join(home, 'tunnels', '.cloudflared', 'cert.pem'))).toBe(false)

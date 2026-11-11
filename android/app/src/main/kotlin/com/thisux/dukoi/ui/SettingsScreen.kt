@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,18 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.ChargeLimit
-import com.thisux.droidhost.DomainStatus
-import com.thisux.droidhost.PairedComputer
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Crashed
-import com.thisux.droidhost.ui.theme.Lavender
-import com.thisux.droidhost.ui.theme.Restarting
-import com.thisux.droidhost.ui.theme.Running
-import com.thisux.droidhost.ui.theme.SoftRed
-import com.thisux.droidhost.ui.theme.Styles
-import com.thisux.droidhost.ui.theme.Violet
+import com.thisux.dukoi.ChargeLimit
+import com.thisux.dukoi.DomainStatus
+import com.thisux.dukoi.PairedComputer
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Crashed
+import com.thisux.dukoi.ui.theme.Lavender
+import com.thisux.dukoi.ui.theme.Restarting
+import com.thisux.dukoi.ui.theme.Running
+import com.thisux.dukoi.ui.theme.SoftRed
+import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Violet
 
 @Composable
 fun SettingsScreen(
@@ -58,7 +58,7 @@ fun SettingsScreen(
 
       Section("Computers") {
         if (computers.isEmpty()) {
-          Text("None yet. Run npx droidhost pair on your computer.", style = Styles.Small.copy(fontSize = 14.sp))
+          Text("None yet. Run npx dukoi pair on your computer.", style = Styles.Small.copy(fontSize = 14.sp))
         }
         computers.forEach { pc ->
           Row(Modifier.fillMaxWidth().background(Card).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -74,8 +74,8 @@ fun SettingsScreen(
 
       Section("This phone") {
         Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
-          InfoRow("Name") { Text(phoneName, style = Styles.Log.copy(fontSize = 13.sp, color = com.thisux.droidhost.ui.theme.Ink)) }
-          InfoRow("Address") { Text(address ?: "Not on Wi-Fi", style = Styles.Log.copy(fontSize = 13.sp, color = com.thisux.droidhost.ui.theme.Ink)) }
+          InfoRow("Name") { Text(phoneName, style = Styles.Log.copy(fontSize = 13.sp, color = com.thisux.dukoi.ui.theme.Ink)) }
+          InfoRow("Address") { Text(address ?: "Not on Wi-Fi", style = Styles.Log.copy(fontSize = 13.sp, color = com.thisux.dukoi.ui.theme.Ink)) }
           InfoRow("Setup", if (setupDone) null else onFinishSetup) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
               Dot(if (setupDone) Running else Restarting)
@@ -93,7 +93,7 @@ fun SettingsScreen(
                 },
                 style = Styles.Label,
               )
-              Icon("arrow-right-01", 18.dp, com.thisux.droidhost.ui.theme.Muted)
+              Icon("arrow-right-01", 18.dp, com.thisux.dukoi.ui.theme.Muted)
             }
           }
         }

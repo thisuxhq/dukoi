@@ -3,14 +3,14 @@
 // One Cloudflare named tunnel per phone serves every app that has a domain.
 // cloudflared logs in, makes the tunnel and runs it. DNS records are managed
 // through Cloudflare's API with the token from the login certificate, and
-// DroidHost only ever replaces or deletes records it made itself (they carry
-// the comment "DroidHost"). Like quick tunnels, the tunnel only ever points at
+// Dukoi only ever replaces or deletes records it made itself (they carry
+// the comment "Dukoi"). Like quick tunnels, the tunnel only ever points at
 // app ports, never at the admin API.
 import { type ChildProcess, execFile, spawn } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import type { DomainStatus, ExposeResult } from '@droidhost/shared'
+import type { DomainStatus, ExposeResult } from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { AppProcess } from './app-process.ts'
 import { HttpError } from './http.ts'
@@ -20,7 +20,7 @@ const LOGIN_URL = /https:\/\/dash\.cloudflare\.com\/argotunnel\S+/
 const CREATED = /Created tunnel \S+ with id ([0-9a-f-]{36})/
 const REGISTERED = 'Registered tunnel connection'
 const HOSTNAME = /^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/
-const COMMENT = 'DroidHost'
+const COMMENT = 'Dukoi'
 export const DOMAIN_WAIT_MS = 30_000
 
 interface Cert {
@@ -127,7 +127,7 @@ export class Domains {
         409,
         'NEEDS_LOGIN',
         'This phone isn’t connected to Cloudflare yet.',
-        'Run `droidhost expose --domain` from your computer, or add a domain in the DroidHost app.',
+        'Run `dukoi expose --domain` from your computer, or add a domain in the Dukoi app.',
       )
     }
     const zone = await this.zone(cert)
@@ -177,7 +177,7 @@ export class Domains {
 
   /**
    * Disconnects the phone from Cloudflare. Every domain loses its public URL
-   * and the DNS record DroidHost made, then the phone's tunnel and the login
+   * and the DNS record Dukoi made, then the phone's tunnel and the login
    * certificate are deleted. The login's API token stays in the Cloudflare
    * account, because a token can't delete itself.
    */
@@ -272,7 +272,7 @@ export class Domains {
         504,
         'TUNNEL_TIMEOUT',
         'The tunnel didn’t connect to Cloudflare within 30 seconds.',
-        'Check the phone has internet. DroidHost keeps trying in the background.',
+        'Check the phone has internet. Dukoi keeps trying in the background.',
       )
     }
   }
@@ -282,7 +282,7 @@ export class Domains {
     const saved = this.agent.store.state.tunnel
     if (saved && existsSync(this.credentials(saved.id))) return saved.id
     const phone = this.agent.config.phone.name.replace(/[^a-z0-9-]/gi, '-').toLowerCase()
-    const name = `droidhost-${phone}-${randomBytes(2).toString('hex')}`
+    const name = `dukoi-${phone}-${randomBytes(2).toString('hex')}`
     const out = await this.run(['create', name])
     const id = out.match(CREATED)?.[1]
     if (!id) {
@@ -298,7 +298,7 @@ export class Domains {
     return id
   }
 
-  /** Points [hostname] at the tunnel. Only replaces records DroidHost made. */
+  /** Points [hostname] at the tunnel. Only replaces records Dukoi made. */
   private async pointDns(cert: Cert, hostname: string, tunnelId: string): Promise<void> {
     const target = `${tunnelId}.cfargotunnel.com`
     const existing = await this.records(cert, hostname)
@@ -431,8 +431,8 @@ export class Domains {
       throw new HttpError(
         501,
         'NO_CLOUDFLARED',
-        'This build of DroidHost has no cloudflared.',
-        'Update the DroidHost app.',
+        'This build of Dukoi has no cloudflared.',
+        'Update the Dukoi app.',
       )
     }
     return binary

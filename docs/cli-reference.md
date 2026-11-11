@@ -1,21 +1,21 @@
 # CLI reference
 
-This doc lists every `droidhost` command for phase 1: what it does, its flags and what it prints.
+This doc lists every `dukoi` command for phase 1: what it does, its flags and what it prints.
 
 Install nothing. Run it with:
 
 ```bash
-npx droidhost <command>
+npx dukoi <command>
 ```
 
-Or install it once with `npm i -g droidhost`.
+Or install it once with `npm i -g dukoi`.
 
 ---
 
 ## Rules for every command
 
 - **One required argument at most.** Everything else has a default.
-- **The app defaults to the current folder.** Inside `my-api/`, `droidhost logs` means `droidhost logs my-api`.
+- **The app defaults to the current folder.** Inside `my-api/`, `dukoi logs` means `dukoi logs my-api`.
 - **The device defaults to the only paired phone**, or the last one you used.
 - **Exit codes:** `0` means success, `1` means the command failed and `2` means you typed it wrong.
 
@@ -34,12 +34,12 @@ Or install it once with `npm i -g droidhost`.
 
 ## Pairing
 
-### `droidhost pair`
+### `dukoi pair`
 
 Finds a phone on the same Wi-Fi and links it to this computer.
 
 ```
-$ droidhost pair
+$ dukoi pair
 ✓ Found pixel-10a (192.168.1.24)
 
   Code on your phone: 482 913
@@ -53,11 +53,11 @@ $ droidhost pair
 | `--name <name>` | Nickname for the phone. Defaults to the model name. |
 | `--host <ip>` | Skip discovery and connect to this address. |
 
-### `droidhost devices`
+### `dukoi devices`
 
 Lists paired phones with their status, battery, temperature and number of apps.
 
-### `droidhost unpair <device>`
+### `dukoi unpair <device>`
 
 Forgets a phone on this computer. To revoke access from the phone side, remove the computer in the phone app.
 
@@ -65,12 +65,12 @@ Forgets a phone on this computer. To revoke access from the phone side, remove t
 
 ## Deploying
 
-### `droidhost deploy [folder]`
+### `dukoi deploy [folder]`
 
 Packs, uploads, installs, starts and health-checks an app. The folder defaults to `.`.
 
 ```
-$ droidhost deploy
+$ dukoi deploy
 ✓ Packed my-api (42 KB)
 ✓ Uploaded to pixel-10a
 ✓ Installed dependencies (8.1s)
@@ -87,12 +87,12 @@ $ droidhost deploy
 | `--memory <size>` | Memory limit, for example `256mb`. Defaults to a share of the phone's RAM. |
 | `--no-health-check` | Skip the HTTP check. Use this for workers that open no port. |
 
-### `droidhost init [template]`
+### `dukoi init [template]`
 
 Copies a template into a new folder and, if this computer is paired, deploys it straight away. Run it without a name to pick from a numbered list.
 
 ```
-$ droidhost init notes-api
+$ dukoi init notes-api
 ✓ Created notes-api/
 ✓ Installed dependencies
 ✓ Packed notes-api (346 KB)
@@ -101,20 +101,20 @@ $ droidhost init notes-api
 
   Local   http://192.168.0.112:3000
 
-  Make it yours: edit notes-api/server.js, then run droidhost deploy
+  Make it yours: edit notes-api/server.js, then run dukoi deploy
 ```
 
 Templates: `static-site`, `notes-api`, `file-drop`, `mcp-server`, `telegram-bot`. A template that needs a setting, like the bot's token, asks for it and saves it on the phone. If the computer isn't paired yet, it only makes the folder and says to pair. See [starters.md](starters.md).
 
-### `droidhost releases [app]`
+### `dukoi releases [app]`
 
 Lists the last 5 releases with their ID, time and size, and marks the one that's live.
 
-### `droidhost rollback [app]`
+### `dukoi rollback [app]`
 
 Switches back to the previous release, which takes about a second. Use `--to <release>` to pick a specific one.
 
-### `droidhost remove [app]`
+### `dukoi remove [app]`
 
 Stops the app and deletes it from the phone, including its releases, data and secrets. Asks before deleting. Use `--yes` to skip the question.
 
@@ -124,13 +124,13 @@ Stops the app and deletes it from the phone, including its releases, data and se
 
 | Command | What it does |
 | --- | --- |
-| `droidhost ps` | All apps, with status, CPU, memory, uptime and URLs |
-| `droidhost start [app]` | Starts a stopped app |
-| `droidhost stop [app]` | Stops an app. It stays stopped after a reboot. |
-| `droidhost restart [app]` | Restarts an app |
+| `dukoi ps` | All apps, with status, CPU, memory, uptime and URLs |
+| `dukoi start [app]` | Starts a stopped app |
+| `dukoi stop [app]` | Stops an app. It stays stopped after a reboot. |
+| `dukoi restart [app]` | Restarts an app |
 
 ```
-$ droidhost ps
+$ dukoi ps
   APP        STATUS    CPU   MEM     UPTIME   URL
   my-api     running   2%    48 MB   3d 4h    https://shy-river-42.trycloudflare.com
   my-bot     running   0%    31 MB   3d 4h    (worker)
@@ -141,12 +141,12 @@ $ droidhost ps
 
 ## Settings
 
-### `droidhost env`
+### `dukoi env`
 
 ```bash
-droidhost env set KEY=value [KEY2=value2 ...]
-droidhost env list             # names only
-droidhost env unset KEY
+dukoi env set KEY=value [KEY2=value2 ...]
+dukoi env list             # names only
+dukoi env unset KEY
 ```
 
 Settings are saved on the phone and passed to the app as environment variables. The phone never sends their values back. Changing them restarts the app. They act on the app in this folder; `--app <name>` picks another.
@@ -155,7 +155,7 @@ Settings are saved on the phone and passed to the app as environment variables. 
 
 ## Public URLs
 
-### `droidhost expose [app]`
+### `dukoi expose [app]`
 
 Gives an app a public HTTPS URL through a Cloudflare quick tunnel. Quick tunnel URLs can change, so use a custom domain for anything real.
 
@@ -172,10 +172,10 @@ See [networking.md](networking.md).
 
 | Command | What it does |
 | --- | --- |
-| `droidhost logs [app]` | Streams live logs. Use `--lines 200` for history and `--no-follow` to print and exit. |
-| `droidhost status` | Phone health: memory, storage, load, agent version and uptime |
-| `droidhost dashboard` | Opens the web dashboard on `127.0.0.1:7071` (or the next free port). Only this computer can reach it. `--no-open` skips the browser. |
-| `droidhost alerts` | Sets up crash, kill, overheat and power-cut alerts by email or Telegram |
+| `dukoi logs [app]` | Streams live logs. Use `--lines 200` for history and `--no-follow` to print and exit. |
+| `dukoi status` | Phone health: memory, storage, load, agent version and uptime |
+| `dukoi dashboard` | Opens the web dashboard on `127.0.0.1:7071` (or the next free port). Only this computer can reach it. `--no-open` skips the browser. |
+| `dukoi alerts` | Sets up crash, kill, overheat and power-cut alerts by email or Telegram |
 
 ---
 
@@ -183,14 +183,14 @@ See [networking.md](networking.md).
 
 | Command | What it does |
 | --- | --- |
-| `droidhost help <topic>` | Short guides, for example `native-modules`, `setup` or `tunnels` |
-| `droidhost doctor` | Checks pairing, setup, tunnel and clock, and says how to fix each problem |
+| `dukoi help <topic>` | Short guides, for example `native-modules`, `setup` or `tunnels` |
+| `dukoi doctor` | Checks pairing, setup, tunnel and clock, and says how to fix each problem |
 
 ---
 
 ## Optional config file
 
-You don't need one. Add `droidhost.json` only to override a guess:
+You don't need one. Add `dukoi.json` only to override a guess:
 
 ```json
 {

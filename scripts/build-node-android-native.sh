@@ -23,22 +23,22 @@ step() { printf '\n\033[1m→ %s\033[0m\n' "$1"; }
 # ── On a Mac: hand over to an arm64 Linux container ─────────────────────────
 if [ "$(uname -s)" = "Darwin" ]; then
   docker info >/dev/null 2>&1 || { echo "✗ Docker isn't running. Start OrbStack." >&2; exit 1; }
-  docker rm -f droidhost-node-native >/dev/null 2>&1 || true
+  docker rm -f dukoi-node-native >/dev/null 2>&1 || true
   # Reuse an image with the tools already installed, if a past run saved one.
   image=ubuntu:24.04
-  docker image inspect droidhost-native-tools:llvm21 >/dev/null 2>&1 && image=droidhost-native-tools:llvm21
-  # The droidhost-node-native volume keeps the NDK, Node source and build tree,
+  docker image inspect dukoi-native-tools:llvm21 >/dev/null 2>&1 && image=dukoi-native-tools:llvm21
+  # The dukoi-node-native volume keeps the NDK, Node source and build tree,
   # so upgrading to a new Node version only recompiles what changed.
-  docker run -d --name droidhost-node-native --platform linux/arm64 \
-    -v droidhost-node-native:/cache \
+  docker run -d --name dukoi-node-native --platform linux/arm64 \
+    -v dukoi-node-native:/cache \
     -v "$repo_dir/build:/work/build" \
     -v "$repo_dir/scripts:/work/scripts:ro" \
     -e IN_CONTAINER=1 \
     "$image" \
     bash /work/scripts/build-node-android-native.sh "$NODE_VERSION" >/dev/null
   echo "Started. Following the log (Ctrl-C stops watching, not the build)."
-  docker logs -f droidhost-node-native || true
-  exit "$(docker wait droidhost-node-native)"
+  docker logs -f dukoi-node-native || true
+  exit "$(docker wait dukoi-node-native)"
 fi
 
 [ "${IN_CONTAINER:-}" = "1" ] || { echo "✗ Run this on a Mac (it starts its own container)." >&2; exit 1; }
@@ -122,10 +122,10 @@ fi
 # android-patches/trap-handler.h.patch turns it off; that patch no longer
 # applies cleanly, so do the same thing directly. Android already has it off.
 th=deps/v8/src/trap-handler/trap-handler.h
-if ! grep -q "DroidHost: trap handler off" "$th"; then
+if ! grep -q "Dukoi: trap handler off" "$th"; then
   step "Patching V8 to turn off the trap handler (as Node's Android patch does)"
-  sed -i 's|^#if V8_OS_ANDROID && V8_TRAP_HANDLER_SUPPORTED|// DroidHost: trap handler off (see android-patches/trap-handler.h.patch)\n#undef V8_TRAP_HANDLER_SUPPORTED\n#define V8_TRAP_HANDLER_SUPPORTED false\n\n&|' "$th"
-  grep -q "DroidHost: trap handler off" "$th" || { echo "✗ Couldn't patch $th" >&2; exit 1; }
+  sed -i 's|^#if V8_OS_ANDROID && V8_TRAP_HANDLER_SUPPORTED|// Dukoi: trap handler off (see android-patches/trap-handler.h.patch)\n#undef V8_TRAP_HANDLER_SUPPORTED\n#define V8_TRAP_HANDLER_SUPPORTED false\n\n&|' "$th"
+  grep -q "Dukoi: trap handler off" "$th" || { echo "✗ Couldn't patch $th" >&2; exit 1; }
 fi
 
 if [ ! -f config.gypi ]; then

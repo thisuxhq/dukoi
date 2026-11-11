@@ -10,7 +10,7 @@ const brands: [string, string[]][] = [
     'Samsung',
     [
       'Battery: Unrestricted.',
-      'Take DroidHost out of Sleeping apps and Deep sleeping apps, and add it to Never sleeping apps.',
+      'Take Dukoi out of Sleeping apps and Deep sleeping apps, and add it to Never sleeping apps.',
       'Turn off Put unused apps to sleep.',
     ],
   ],
@@ -19,7 +19,7 @@ const brands: [string, string[]][] = [
     [
       'Autostart: on.',
       'Battery saver: No restrictions.',
-      'Lock DroidHost in recent apps.',
+      'Lock Dukoi in recent apps.',
       'If apps still stop, turn off MIUI optimization in Developer options.',
     ],
   ],
@@ -27,11 +27,11 @@ const brands: [string, string[]][] = [
     'Oppo, Realme, OnePlus',
     [
       'Allow auto launch and Allow background activity: on.',
-      'Battery: turn off battery optimization for DroidHost.',
-      'Lock DroidHost in recent apps.',
+      'Battery: turn off battery optimization for Dukoi.',
+      'Lock Dukoi in recent apps.',
     ],
   ],
-  ['Nothing', ['Battery: Unrestricted.', 'Lock DroidHost in recent apps.']],
+  ['Nothing', ['Battery: Unrestricted.', 'Lock Dukoi in recent apps.']],
 ]
 </script>
 
@@ -42,26 +42,26 @@ const brands: [string, string[]][] = [
 
 <Section id="checklist" title="The four steps">
   <ol class="list">
-    <li><strong>Keep DroidHost running.</strong> Starts DroidHost as a foreground service, with a notification that stays while it runs.</li>
-    <li><strong>Turn off battery optimization.</strong> Stops Doze and App Standby from pausing DroidHost.</li>
+    <li><strong>Keep Dukoi running.</strong> Starts Dukoi as a foreground service, with a notification that stays while it runs.</li>
+    <li><strong>Turn off battery optimization.</strong> Stops Doze and App Standby from pausing Dukoi.</li>
     <li><strong>Allow child processes.</strong> Stops Android 12 and newer from killing your apps for using too much CPU.</li>
-    <li><strong>Steps for your phone’s brand.</strong> Some makers add their own app killer. DroidHost spots the brand and shows only its steps.</li>
+    <li><strong>Steps for your phone’s brand.</strong> Some makers add their own app killer. Dukoi spots the brand and shows only its steps.</li>
   </ol>
   <p>The checklist stays on screen until all four are green. If one slips later, the phone, the CLI and the dashboard all show a warning.</p>
 </Section>
 
 <Section id="child-processes" title="Allow child processes">
-  <p>Your apps run as child processes of DroidHost, and from Android 12 the system can kill those. The fix depends on the Android version:</p>
+  <p>Your apps run as child processes of Dukoi, and from Android 12 the system can kill those. The fix depends on the Android version:</p>
   <ul class="list">
     <li><strong>Android 10 and 11:</strong> nothing to do.</li>
-    <li><strong>Android 14 and newer:</strong> in Developer options, turn on <strong>Disable child process restrictions</strong>. DroidHost links straight to it.</li>
-    <li><strong>Android 12 and 13:</strong> run this once from a computer with the phone plugged in and USB debugging on. DroidHost shows it with a copy button.</li>
+    <li><strong>Android 14 and newer:</strong> in Developer options, turn on <strong>Disable child process restrictions</strong>. Dukoi links straight to it.</li>
+    <li><strong>Android 12 and 13:</strong> run this once from a computer with the phone plugged in and USB debugging on. Dukoi shows it with a copy button.</li>
   </ul>
   <Terminal command="adb shell device_config set_sync_disabled_for_tests persistent && adb shell device_config put activity_manager max_phantom_processes 2147483647" />
 </Section>
 
 <Section id="brands" title="Steps by brand">
-  <p>Menu names change between versions, so DroidHost shows the right ones for your phone. In short:</p>
+  <p>Menu names change between versions, so Dukoi shows the right ones for your phone. In short:</p>
   <dl class="flex flex-col gap-px bg-divider">
     {#each brands as [brand, steps] (brand)}
       <div class="flex flex-col gap-1.5 bg-card px-4 py-4 sm:flex-row sm:gap-6 lg:px-5">

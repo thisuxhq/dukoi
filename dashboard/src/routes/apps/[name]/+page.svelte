@@ -96,7 +96,7 @@ const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 							{#if app.publicUrl}
 								<a href={app.publicUrl} target="_blank" rel="noreferrer" class="truncate font-mono text-[13px] text-violet">{bare(app.publicUrl)}</a>
 							{:else}
-								<span class="text-[13px] text-muted">Off. Run <code class="font-mono">droidhost expose {app.name}</code></span>
+								<span class="text-[13px] text-muted">Off. Run <code class="font-mono">dukoi expose {app.name}</code></span>
 							{/if}
 						</div>
 						{#if app.publicUrl}<CopyButton text={app.publicUrl} label="URL" class="text-muted" />{/if}

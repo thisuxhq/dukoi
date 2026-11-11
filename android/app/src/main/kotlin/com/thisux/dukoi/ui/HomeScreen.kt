@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,18 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.AppInfo
-import com.thisux.droidhost.AppState
-import com.thisux.droidhost.TemplateInfo
-import com.thisux.droidhost.Vitals
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Dashed
-import com.thisux.droidhost.ui.theme.DeepRed
-import com.thisux.droidhost.ui.theme.Ink
-import com.thisux.droidhost.ui.theme.SoftRed
-import com.thisux.droidhost.ui.theme.Styles
-import com.thisux.droidhost.ui.theme.Violet
+import com.thisux.dukoi.AppInfo
+import com.thisux.dukoi.AppState
+import com.thisux.dukoi.TemplateInfo
+import com.thisux.dukoi.Vitals
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Dashed
+import com.thisux.dukoi.ui.theme.DeepRed
+import com.thisux.dukoi.ui.theme.Ink
+import com.thisux.dukoi.ui.theme.SoftRed
+import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Violet
 
 /** Why the apps can't run, when that's the case. */
 data class Problem(val message: String, val action: String)
@@ -117,7 +117,7 @@ private fun EmptyBox() {
   ) {
     Text("Deploy from your computer", style = Styles.CardTitle.copy(lineHeight = 26.sp))
     Spacer(Modifier.height(24.dp))
-    CommandBox("npx droidhost deploy", compact = true)
+    CommandBox("npx dukoi deploy", compact = true)
   }
 }
 

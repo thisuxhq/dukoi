@@ -28,7 +28,7 @@ Phase 2 features start only after these gates are met.
 - One APK with Node and `cloudflared` bundled. See [tech-stack.md](tech-stack.md).
 - Guided setup that beats the app killers. See [device-setup.md](device-setup.md).
 - QR or code pairing. See [security.md](security.md).
-- `droidhost deploy` for Node and static apps. See [deploy-and-releases.md](deploy-and-releases.md).
+- `dukoi deploy` for Node and static apps. See [deploy-and-releases.md](deploy-and-releases.md).
 - Start, stop, restart, auto-restart and start on boot. See [process-management.md](process-management.md).
 - Logs and health everywhere. See [observability.md](observability.md).
 - Quick tunnels and custom domains. See [networking.md](networking.md).
@@ -59,7 +59,7 @@ Phase 2 features start only after these gates are met.
 - An S3-compatible file storage API backed by phone storage
 - A Postgres add-on with low connection limits
 - A remote builder for native npm modules
-- A DroidHost MCP server, so AI agents can deploy, restart and read logs
+- A Dukoi MCP server, so AI agents can deploy, restart and read logs
 - Local models through bundled llama.cpp with an OpenAI-compatible endpoint
 
 ## Phase 3: phone superpowers and fleets
@@ -67,9 +67,9 @@ Phase 2 features start only after these gates are met.
 - A local API for SMS, calls, camera, GPS, sensors, Bluetooth, NFC, notifications and speakers
 - A permission gate, so the owner approves each app's hardware access
 - A fleet dashboard for many phones
-- `droidhost scale`, with load balancing and failover across phones
+- `dukoi scale`, with load balancing and failover across phones
 - Leader election for cron jobs and replicated databases
-- A hosted DroidHost relay with free subdomains and no upload limit
+- A hosted Dukoi relay with free subdomains and no upload limit
 
 ## Phase 4: the wild ideas
 

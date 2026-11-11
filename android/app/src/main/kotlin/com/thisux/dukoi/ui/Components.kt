@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -42,19 +42,19 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.thisux.droidhost.AppState
-import com.thisux.droidhost.ui.theme.Border
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Crashed
-import com.thisux.droidhost.ui.theme.Divider
-import com.thisux.droidhost.ui.theme.Faint
-import com.thisux.droidhost.ui.theme.Ink
-import com.thisux.droidhost.ui.theme.Muted
-import com.thisux.droidhost.ui.theme.Night
-import com.thisux.droidhost.ui.theme.Restarting
-import com.thisux.droidhost.ui.theme.Running
-import com.thisux.droidhost.ui.theme.Styles
-import com.thisux.droidhost.ui.theme.Violet
+import com.thisux.dukoi.AppState
+import com.thisux.dukoi.ui.theme.Border
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Crashed
+import com.thisux.dukoi.ui.theme.Divider
+import com.thisux.dukoi.ui.theme.Faint
+import com.thisux.dukoi.ui.theme.Ink
+import com.thisux.dukoi.ui.theme.Muted
+import com.thisux.dukoi.ui.theme.Night
+import com.thisux.dukoi.ui.theme.Restarting
+import com.thisux.dukoi.ui.theme.Running
+import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Violet
 import kotlinx.coroutines.delay
 
 val Gutter = 28.dp

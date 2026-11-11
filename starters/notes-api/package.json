@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "A small JSON API with SQLite. Deploys to a DroidHost phone with no edits.",
+  "description": "A small JSON API with SQLite. Deploys to a Dukoi phone with no edits.",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"

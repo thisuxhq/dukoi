@@ -1,5 +1,5 @@
 // Terminal output: ticks and colours for people, JSON for scripts.
-import type { ApiError } from '@droidhost/shared'
+import type { ApiError } from '@dukoi/shared'
 
 const tty = process.stdout.isTTY && !process.env.NO_COLOR
 const paint = (code: number) => (s: string) => (tty ? `\x1b[${code}m${s}\x1b[0m` : s)
@@ -48,10 +48,10 @@ export function printError(err: unknown, json: boolean): void {
   }
   console.error(`${c.red('✗')} ${e.message}`)
   if (e.hint) console.error(`\n  ${e.hint}`)
-  if (process.env.DROIDHOST_DEBUG && err instanceof Error) console.error(c.dim(err.stack ?? ''))
+  if (process.env.DUKOI_DEBUG && err instanceof Error) console.error(c.dim(err.stack ?? ''))
 }
 
-/** Lines up columns for tables like `droidhost ps`. */
+/** Lines up columns for tables like `dukoi ps`. */
 export function table(rows: string[][]): string {
   // biome-ignore lint/suspicious/noControlCharactersInRegex: strips ANSI colours to measure width
   const width = (s: string) => s.replace(/\x1b\[[0-9;]*m/g, '').length

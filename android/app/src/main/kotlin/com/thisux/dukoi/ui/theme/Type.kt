@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui.theme
+package com.thisux.dukoi.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.R
+import com.thisux.dukoi.R
 
 // Outfit for headlines, Inter for everything else, Geist Mono for code and logs.
 

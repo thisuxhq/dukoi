@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
@@ -50,28 +50,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.AppInfo
-import com.thisux.droidhost.AppState
-import com.thisux.droidhost.LogKind
-import com.thisux.droidhost.LogLine
-import com.thisux.droidhost.crashReason
-import com.thisux.droidhost.formatUptime
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Crashed
-import com.thisux.droidhost.ui.theme.DeepRed
-import com.thisux.droidhost.ui.theme.LogError
-import com.thisux.droidhost.ui.theme.LogLive
-import com.thisux.droidhost.ui.theme.LogNote
-import com.thisux.droidhost.ui.theme.LogText
-import com.thisux.droidhost.ui.theme.LogTime
-import com.thisux.droidhost.ui.theme.Muted
-import com.thisux.droidhost.ui.theme.Night
-import com.thisux.droidhost.ui.theme.NightGrip
-import com.thisux.droidhost.ui.theme.NightRaised
-import com.thisux.droidhost.ui.theme.SoftRed
-import com.thisux.droidhost.ui.theme.Styles
-import com.thisux.droidhost.ui.theme.Violet
+import com.thisux.dukoi.AppInfo
+import com.thisux.dukoi.AppState
+import com.thisux.dukoi.LogKind
+import com.thisux.dukoi.LogLine
+import com.thisux.dukoi.crashReason
+import com.thisux.dukoi.formatUptime
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Crashed
+import com.thisux.dukoi.ui.theme.DeepRed
+import com.thisux.dukoi.ui.theme.LogError
+import com.thisux.dukoi.ui.theme.LogLive
+import com.thisux.dukoi.ui.theme.LogNote
+import com.thisux.dukoi.ui.theme.LogText
+import com.thisux.dukoi.ui.theme.LogTime
+import com.thisux.dukoi.ui.theme.Muted
+import com.thisux.dukoi.ui.theme.Night
+import com.thisux.dukoi.ui.theme.NightGrip
+import com.thisux.dukoi.ui.theme.NightRaised
+import com.thisux.dukoi.ui.theme.SoftRed
+import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Violet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -180,7 +180,7 @@ private fun Details(app: AppInfo, onAction: (String) -> Unit) {
         )
       }
     }
-    LinkRow("Wi-Fi", app.localUrl.removePrefix("http://"), com.thisux.droidhost.ui.theme.Ink, onOpen = { openInTab(context, app.localUrl) }) {
+    LinkRow("Wi-Fi", app.localUrl.removePrefix("http://"), com.thisux.dukoi.ui.theme.Ink, onOpen = { openInTab(context, app.localUrl) }) {
       clipboard.setText(AnnotatedString(app.localUrl)); toast.show("URL copied")
     }
   }
@@ -250,7 +250,7 @@ private fun CrashBanner(reason: String, onRollBack: () -> Unit, onRetry: () -> U
         Text("Roll back", style = Styles.Button.copy(fontSize = 14.sp), color = Card)
       }
       Box(Modifier.weight(1f).height(44.dp).background(Card).press(onRetry), contentAlignment = Alignment.Center) {
-        Text("Try again", style = Styles.Button.copy(fontSize = 14.sp), color = com.thisux.droidhost.ui.theme.Ink)
+        Text("Try again", style = Styles.Button.copy(fontSize = 14.sp), color = com.thisux.dukoi.ui.theme.Ink)
       }
     }
   }
@@ -317,7 +317,7 @@ private fun LogRow(line: LogLine) {
   }
 }
 
-/** Opens a link in an in-app browser tab, in DroidHost's colours. */
+/** Opens a link in an in-app browser tab, in Dukoi's colours. */
 internal fun openInTab(context: Context, url: String) {
   val colors = CustomTabColorSchemeParams.Builder().setToolbarColor(Canvas.toArgb()).build()
   val tab = CustomTabsIntent.Builder().setDefaultColorSchemeParams(colors).setShowTitle(true).build()

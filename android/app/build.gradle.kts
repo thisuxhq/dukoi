@@ -4,10 +4,10 @@ plugins {
 }
 
 android {
-  namespace = "com.thisux.droidhost"
+  namespace = "com.thisux.dukoi"
   compileSdk = 37
   defaultConfig {
-    applicationId = "com.thisux.droidhost"
+    applicationId = "com.thisux.dukoi"
     minSdk = 29
     targetSdk = 37
     versionCode = 1

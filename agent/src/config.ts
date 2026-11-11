@@ -1,6 +1,6 @@
 // Settings the Kotlin app passes in when it starts the agent.
 import { join } from 'node:path'
-import { ADMIN_PORT } from '@droidhost/shared'
+import { ADMIN_PORT } from '@dukoi/shared'
 
 export const AGENT_VERSION = '0.1.0'
 
@@ -20,18 +20,18 @@ export interface Config {
 }
 
 export function loadConfig(env = process.env): Config {
-  const home = env.DROIDHOST_HOME ?? join(process.cwd(), '.droidhost-home')
+  const home = env.DUKOI_HOME ?? join(process.cwd(), '.dukoi-home')
   return {
     home,
-    adminPort: Number(env.DROIDHOST_ADMIN_PORT ?? ADMIN_PORT),
+    adminPort: Number(env.DUKOI_ADMIN_PORT ?? ADMIN_PORT),
     nodePath: process.execPath,
-    cloudflaredPath: env.DROIDHOST_CLOUDFLARED ?? null,
-    cloudflareApi: env.DROIDHOST_CLOUDFLARE_API ?? 'https://api.cloudflare.com/client/v4',
-    templatesDir: env.DROIDHOST_TEMPLATES ?? join(home, 'templates'),
+    cloudflaredPath: env.DUKOI_CLOUDFLARED ?? null,
+    cloudflareApi: env.DUKOI_CLOUDFLARE_API ?? 'https://api.cloudflare.com/client/v4',
+    templatesDir: env.DUKOI_TEMPLATES ?? join(home, 'templates'),
     phone: {
-      name: env.DROIDHOST_PHONE_NAME ?? 'phone',
-      model: env.DROIDHOST_PHONE_MODEL ?? 'unknown',
-      android: env.DROIDHOST_ANDROID ?? 'unknown',
+      name: env.DUKOI_PHONE_NAME ?? 'phone',
+      model: env.DUKOI_PHONE_MODEL ?? 'unknown',
+      android: env.DUKOI_ANDROID ?? 'unknown',
     },
   }
 }

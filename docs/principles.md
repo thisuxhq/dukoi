@@ -2,7 +2,7 @@
 
 **The goal is a frictionless experience.** Each screen, command and message should feel effortless, like the product already knew what you wanted.
 
-These principles apply to everyone who touches DroidHost: the phone app, the CLI, the dashboard, the docs and the error messages.
+These principles apply to everyone who touches Dukoi: the phone app, the CLI, the dashboard, the docs and the error messages.
 
 ---
 
@@ -24,7 +24,7 @@ Before anything goes on a screen, in a command's output or in a doc, ask: **is i
 
 There is one right way to do each thing, and it's the first thing you see.
 
-- Deploying is `droidhost deploy`. There's no "advanced deploy" and no choice between three methods.
+- Deploying is `dukoi deploy`. There's no "advanced deploy" and no choice between three methods.
 - Setup is a checklist with one next step at a time. Users never see a settings page full of switches.
 - When we're tempted to add an option, we pick a good default instead.
 
@@ -77,7 +77,7 @@ It's a real device with a real battery, so we treat it with care.
 
 - A thermal guard pauses low-priority apps when the phone gets hot.
 - Battery protection stops charging at 80% where the phone allows it.
-- We tell users to keep the phone in open air, and we warn them if they're running DroidHost on their daily phone.
+- We tell users to keep the phone in open air, and we warn them if they're running Dukoi on their daily phone.
 
 ## 8. Undo is always one step away
 

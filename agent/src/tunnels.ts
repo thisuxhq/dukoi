@@ -4,7 +4,7 @@
 // cloudflared is supervised like an app; if it restarts, the quick tunnel URL
 // changes, and the new one is picked up from its output.
 import { join } from 'node:path'
-import type { ExposeResult } from '@droidhost/shared'
+import type { ExposeResult } from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { AppProcess } from './app-process.ts'
 import { HttpError } from './http.ts'
@@ -31,7 +31,7 @@ export class Tunnels {
         404,
         'NO_SUCH_APP',
         `There's no app called "${name}" on this phone.`,
-        'Run `droidhost ps`.',
+        'Run `dukoi ps`.',
       )
     }
     if (saved.port === this.agent.config.adminPort) {
@@ -44,8 +44,8 @@ export class Tunnels {
       throw new HttpError(
         501,
         'NO_CLOUDFLARED',
-        'This build of DroidHost has no cloudflared.',
-        'Update the DroidHost app.',
+        'This build of Dukoi has no cloudflared.',
+        'Update the Dukoi app.',
       )
     }
 
@@ -93,7 +93,7 @@ export class Tunnels {
           504,
           'TUNNEL_TIMEOUT',
           'Cloudflare didn’t give a public URL within 30 seconds.',
-          'Check the phone has internet, then run `droidhost expose` again.',
+          'Check the phone has internet, then run `dukoi expose` again.',
         )
       }
     }

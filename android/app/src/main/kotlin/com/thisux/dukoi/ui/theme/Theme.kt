@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui.theme
+package com.thisux.dukoi.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
@@ -16,6 +16,6 @@ private val Scheme = lightColorScheme(
 
 /** One light theme, as designed. */
 @Composable
-fun DroidHostTheme(content: @Composable () -> Unit) {
+fun DukoiTheme(content: @Composable () -> Unit) {
   MaterialTheme(colorScheme = Scheme, typography = Typography, content = content)
 }

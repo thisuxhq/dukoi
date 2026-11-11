@@ -1,7 +1,7 @@
-// droidhost logs and droidhost status.
+// dukoi logs and dukoi status.
 import { statfsSync } from 'node:fs'
 import { availableParallelism, freemem, loadavg, totalmem, uptime } from 'node:os'
-import type { PhoneStatus } from '@droidhost/shared'
+import type { PhoneStatus } from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { formatLine } from './log-file.ts'
 

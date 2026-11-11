@@ -5,7 +5,7 @@
 // from a paired computer.
 
 export const ADMIN_PORT = 7070
-export const MDNS_SERVICE = '_droidhost._tcp.local'
+export const MDNS_SERVICE = '_dukoi._tcp.local'
 /** First port handed to apps. Each app keeps its port across deploys. */
 export const FIRST_APP_PORT = 3000
 
@@ -30,7 +30,7 @@ export interface PhoneInfo {
   protocol: number
 }
 
-/** `droidhost status` */
+/** `dukoi status` */
 export interface PhoneStatus {
   name: string
   model: string
@@ -135,7 +135,7 @@ export interface LogQuery {
 // ── Releases ─────────────────────────────────────────────────────────────
 
 /** Where the CLI writes the manifest inside an upload */
-export const MANIFEST_PATH = '.droidhost/manifest.json'
+export const MANIFEST_PATH = '.dukoi/manifest.json'
 
 /** Written by the CLI into every upload. Tells the phone how to run it. */
 export interface ReleaseManifest {
@@ -144,7 +144,7 @@ export interface ReleaseManifest {
   start: string[]
   /** Path to GET for the health check, or null for workers that open no port */
   healthCheck: string | null
-  /** Shown in `droidhost releases` */
+  /** Shown in `dukoi releases` */
   source: { files: number; bytes: number; cli: string }
 }
 
@@ -152,7 +152,7 @@ export const APP_NAME_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/
 
 // ── Templates ─────────────────────────────────────────────────────────────
 
-/** An app people can start from: `droidhost init <id>`, or Try a template on the phone. */
+/** An app people can start from: `dukoi init <id>`, or Try a template on the phone. */
 export interface TemplateInfo {
   id: string
   name: string

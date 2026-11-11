@@ -1,5 +1,5 @@
 // Numbers as the phone app and CLI show them.
-import type { PhoneStatus } from '@droidhost/shared'
+import type { PhoneStatus } from '@dukoi/shared'
 
 /** 45 → "45s", 3700 → "1h", 90000 → "1d" */
 export function duration(seconds: number): string {

@@ -1,6 +1,6 @@
 # Writing style
 
-This doc explains how DroidHost sounds, in the app, CLI, dashboard, errors, alerts and docs.
+This doc explains how Dukoi sounds, in the app, CLI, dashboard, errors, alerts and docs.
 
 **One line:** write like a calm, helpful friend who knows Android well and never makes you feel slow.
 
@@ -31,7 +31,7 @@ Every error answers three questions:
 | --- | --- |
 | `Error: EADDRINUSE` | "Port 3000 is already in use by `portfolio`. We'll pick another port. Make sure your app reads `process.env.PORT`." |
 | `Health check failed` | "Your app started but didn't answer within 10 seconds. Check that it listens on `process.env.PORT`." |
-| `Unauthorized` | "This computer isn't paired with pixel-10a any more. Run `droidhost pair` to pair again." |
+| `Unauthorized` | "This computer isn't paired with pixel-10a any more. Run `dukoi pair` to pair again." |
 | `Process killed (9)` | "Android stopped my-api to save battery. We restarted it. Fix this for good →" |
 
 A stack trace is never the whole message. Show it only with `--verbose`.
@@ -65,7 +65,7 @@ Alerts can arrive at 3 a.m., so make them complete on their own:
 - Say what happened, in one line.
 - Give the next step.
 
-> ⚠ **pixel-10a**: my-api crashed 5 times in 2 minutes. Last error: `Cannot find module 'hono'`. Run `droidhost logs my-api`.
+> ⚠ **pixel-10a**: my-api crashed 5 times in 2 minutes. Last error: `Cannot find module 'hono'`. Run `dukoi logs my-api`.
 
 ---
 

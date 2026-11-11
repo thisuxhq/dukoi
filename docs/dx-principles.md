@@ -4,21 +4,21 @@ Developer experience should feel **like walking on butter cake**: soft, smooth a
 
 These principles cover two groups:
 
-- **Developers who use DroidHost**, through the CLI, starters, deploys and logs.
-- **Developers who build DroidHost**, through this repo, its code and docs.
+- **Developers who use Dukoi**, through the CLI, starters, deploys and logs.
+- **Developers who build Dukoi**, through this repo, its code and docs.
 
 The rule for both is the same: **simple, beautiful solutions that don't need a PhD to understand.**
 
 ---
 
-## Part 1: Using DroidHost
+## Part 1: Using Dukoi
 
 ### Your app should just work
 
-If an app runs on your laptop with `npm start`, it should run on DroidHost with `droidhost deploy`. There's no Dockerfile, YAML or platform-specific code to write.
+If an app runs on your laptop with `npm start`, it should run on Dukoi with `dukoi deploy`. There's no Dockerfile, YAML or platform-specific code to write.
 
 ```bash
-droidhost deploy
+dukoi deploy
 ```
 
 ```
@@ -30,7 +30,7 @@ droidhost deploy
   Local   http://192.168.1.24:3000
   Public  https://shy-river-42.trycloudflare.com
 
-  Logs    droidhost logs my-api
+  Logs    dukoi logs my-api
 ```
 
 ### Detect, don't ask
@@ -52,14 +52,14 @@ A config file is **optional**. Use one only to override a guess.
 The commands should be easy to guess, even if you've never read the docs.
 
 ```bash
-droidhost pair            # link this computer to a phone
-droidhost deploy          # ship the current folder
-droidhost ps              # what's running
-droidhost logs my-api     # live logs
-droidhost restart my-api
-droidhost rollback my-api
-droidhost expose my-api   # get a public URL
-droidhost env set my-api KEY=value
+dukoi pair            # link this computer to a phone
+dukoi deploy          # ship the current folder
+dukoi ps              # what's running
+dukoi logs my-api     # live logs
+dukoi restart my-api
+dukoi rollback my-api
+dukoi expose my-api   # get a public URL
+dukoi env set my-api KEY=value
 ```
 
 - Verbs are what you'd say out loud.
@@ -87,7 +87,7 @@ A good error answers three questions: **What happened? Why? What do I do now?**
     jimp        pure JS image processing
     @napi-rs/*  prebuilt for arm64 (some work)
 
-  More: droidhost help native-modules
+  More: dukoi help native-modules
 ```
 
 A stack trace is never the whole message. Add `--verbose` if you want one.
@@ -104,7 +104,7 @@ Each starter (Hono API, Telegram bot, static site, file storage API and MCP serv
 
 ---
 
-## Part 2: Building DroidHost
+## Part 2: Building Dukoi
 
 ### Boring code wins
 

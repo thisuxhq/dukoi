@@ -21,7 +21,7 @@ const change = `if (text === '/start') {
       <li>Pick a name. BotFather gives you a token like <code>123456:ABC-def…</code>.</li>
     </ol>
     <p><code>init</code> asks for it and saves it on the phone as a setting, never in the folder. To change it later:</p>
-    <Terminal command="npx droidhost env set TELEGRAM_BOT_TOKEN=123456:ABC..." />
+    <Terminal command="npx dukoi env set TELEGRAM_BOT_TOKEN=123456:ABC..." />
   </Section>
 
   <Section id="what-you-get" title="What you get">
@@ -39,7 +39,7 @@ const change = `if (text === '/start') {
     <FileList
       files={[
         { name: 'bot.js', about: 'The replies. Edit this one.', edit: true },
-        { name: 'droidhost.json', about: 'Tells DroidHost it opens no port' },
+        { name: 'dukoi.json', about: 'Tells Dukoi it opens no port' },
         { name: 'package.json', about: 'Its name. No packages needed.' },
         { name: 'README.md', about: 'How to run it, in five minutes' },
       ]}
@@ -47,9 +47,9 @@ const change = `if (text === '/start') {
     <p>Change the <code>/start</code> reply in <code>bot.js</code>:</p>
     <Code code={change} />
     <p>Then deploy again. The bot keeps its token.</p>
-    <Terminal command="npx droidhost deploy" />
+    <Terminal command="npx dukoi deploy" />
     <Note title="No health check">
-      A bot opens no port, so <code>droidhost.json</code> turns the check off. DroidHost counts it as healthy if it’s still running after 3 seconds.
+      A bot opens no port, so <code>dukoi.json</code> turns the check off. Dukoi counts it as healthy if it’s still running after 3 seconds.
     </Note>
   </Section>
 </TemplatePage>

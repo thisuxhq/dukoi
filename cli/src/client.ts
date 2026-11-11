@@ -1,7 +1,7 @@
 // Talks to a phone's admin API. Signs every request with this computer's key
 // and checks every response is signed by the phone we paired with.
 import { randomBytes } from 'node:crypto'
-import { type ApiError, HEADER, signRequest, verifyResponse } from '@droidhost/shared'
+import { type ApiError, HEADER, signRequest, verifyResponse } from '@dukoi/shared'
 import { computerKey, loadPhones, markUsed, type SavedPhone } from './config.ts'
 import { CliError } from './output.ts'
 
@@ -56,7 +56,7 @@ export function parseVerified<T>(target: Target, res: Response, text: string, no
     throw new CliError(
       'BAD_PHONE_SIGNATURE',
       `The answer from ${target.host} wasn't signed by your paired phone.`,
-      'Something else may be using its address. Check the phone is on, then run `droidhost pair` again.',
+      'Something else may be using its address. Check the phone is on, then run `dukoi pair` again.',
     )
   }
   let value: unknown
@@ -77,7 +77,7 @@ export function unreachable(target: Target, err: unknown): CliError {
   return new CliError(
     'PHONE_UNREACHABLE',
     `The phone at ${target.host}:${target.port} is ${reason}.`,
-    'Check the phone is on the same Wi-Fi and DroidHost is running, then try again.',
+    'Check the phone is on the same Wi-Fi and Dukoi is running, then try again.',
   )
 }
 
@@ -88,7 +88,7 @@ export function pickPhone(name?: string): SavedPhone {
     throw new CliError(
       'NOT_PAIRED',
       'This computer isn’t paired with a phone yet.',
-      'Run `droidhost pair`.',
+      'Run `dukoi pair`.',
     )
   }
   const phone = name

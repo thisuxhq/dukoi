@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util'
-import { PROTOCOL_VERSION } from '@droidhost/shared'
+import { PROTOCOL_VERSION } from '@dukoi/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
 import { dashboard } from './commands/dashboard.ts'
 import { deploy } from './commands/deploy.ts'
@@ -13,10 +13,10 @@ import { CliError, c, printError } from './output.ts'
 
 const VERSION = '0.1.0'
 
-const HELP = `${c.bold('droidhost')} — deploy real apps to old Android phones
+const HELP = `${c.bold('dukoi')} — deploy real apps to old Android phones
 
 ${c.bold('Usage')}
-  droidhost <command> [options]
+  dukoi <command> [options]
 
 ${c.bold('Pairing')}
   pair                 Find a phone on this Wi-Fi and link it to this computer
@@ -51,12 +51,12 @@ ${c.bold('Options')}
   -v, --version        Show the version
 
 ${c.bold('Examples')}
-  droidhost init
-  droidhost pair
-  droidhost deploy
-  droidhost expose
-  droidhost expose --domain api.example.com
-  droidhost rollback my-api
+  dukoi init
+  dukoi pair
+  dukoi deploy
+  dukoi expose
+  dukoi expose --domain api.example.com
+  dukoi rollback my-api
 `
 
 async function main(argv: string[]): Promise<void> {
@@ -85,7 +85,7 @@ async function main(argv: string[]): Promise<void> {
   const json = values.json ?? false
   const [command, arg] = positionals
 
-  if (values.version) return void console.log(`droidhost ${VERSION} (protocol ${PROTOCOL_VERSION})`)
+  if (values.version) return void console.log(`dukoi ${VERSION} (protocol ${PROTOCOL_VERSION})`)
   if (values.help || !command || command === 'help') return void console.log(HELP)
 
   switch (command) {
@@ -144,7 +144,7 @@ async function main(argv: string[]): Promise<void> {
       throw new CliError(
         'UNKNOWN_COMMAND',
         `There's no "${command}" command.`,
-        'Run `droidhost --help` to see them all.',
+        'Run `dukoi --help` to see them all.',
       )
   }
 }
@@ -152,7 +152,7 @@ async function main(argv: string[]): Promise<void> {
 main(process.argv.slice(2)).catch((err) => {
   const json = process.argv.includes('--json')
   if (err instanceof TypeError && 'code' in err && String(err.code).startsWith('ERR_PARSE_ARGS')) {
-    printError(new CliError('BAD_ARGS', err.message, 'Run `droidhost --help`.'), json)
+    printError(new CliError('BAD_ARGS', err.message, 'Run `dukoi --help`.'), json)
     process.exit(2)
   }
   printError(err, json)

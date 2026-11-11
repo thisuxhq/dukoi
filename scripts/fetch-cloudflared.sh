@@ -5,11 +5,11 @@
 #
 # Usage: scripts/fetch-cloudflared.sh [version]
 # Output: build/cloudflared-android/<version>/cloudflared
-# Needs:  gh (GitHub CLI), signed in with access to thisuxhq/droidhost
+# Needs:  gh (GitHub CLI), signed in with access to thisuxhq/dukoi
 set -euo pipefail
 
 CF_VERSION="${1:-2026.10.7}"
-REPO=thisuxhq/droidhost
+REPO=thisuxhq/dukoi
 TAG="cloudflared-$CF_VERSION-android-arm64"
 ASSET="$TAG.xz"
 

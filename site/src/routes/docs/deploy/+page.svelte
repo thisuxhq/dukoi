@@ -14,12 +14,12 @@ const config = `{
 
 <Header
   title="Deploy an app"
-  lead="Run deploy in your app’s folder. DroidHost works out what the app is and how to start it, so most apps need no config at all."
+  lead="Run deploy in your app’s folder. Dukoi works out what the app is and how to start it, so most apps need no config at all."
 />
 
 <Section id="deploy" title="Deploy">
   <Terminal
-    command="npx droidhost deploy"
+    command="npx dukoi deploy"
     output={`
 ✓ Built on this computer
 ✓ Installed dependencies
@@ -29,24 +29,24 @@ const config = `{
 
   Local    http://192.168.0.112:3000
 
-  Logs     droidhost logs hono-api
-  Public   droidhost expose hono-api
+  Logs     dukoi logs hono-api
+  Public   dukoi expose hono-api
 
   Done in 9.8s`}
   />
-  <p>Pass a folder to deploy from somewhere else: <code>droidhost deploy starters/hono-api</code>.</p>
+  <p>Pass a folder to deploy from somewhere else: <code>dukoi deploy starters/hono-api</code>.</p>
 </Section>
 
 <Section id="what-runs" title="What runs">
   <ul class="list">
-    <li><strong>Node apps.</strong> A folder with <code>package.json</code>. DroidHost runs <code>scripts.start</code>, or else <code>main</code>, <code>index.js</code>, <code>server.js</code> or <code>src/index.js</code>.</li>
-    <li><strong>Static sites.</strong> A folder with <code>index.html</code> and no <code>package.json</code>. DroidHost serves it.</li>
+    <li><strong>Node apps.</strong> A folder with <code>package.json</code>. Dukoi runs <code>scripts.start</code>, or else <code>main</code>, <code>index.js</code>, <code>server.js</code> or <code>src/index.js</code>.</li>
+    <li><strong>Static sites.</strong> A folder with <code>index.html</code> and no <code>package.json</code>. Dukoi serves it.</li>
   </ul>
   <p>The phone runs Node 24 directly, so <code>scripts.start</code> must be <code>node &lt;file&gt;.js</code>. Build TypeScript first: if there’s a <code>build</code> script, deploy runs it on your computer before uploading.</p>
 </Section>
 
 <Section id="your-app" title="What your app needs">
-  <p>Listen on the port in <code>PORT</code>. DroidHost checks that the app answers there within 10 seconds before it switches traffic over.</p>
+  <p>Listen on the port in <code>PORT</code>. Dukoi checks that the app answers there within 10 seconds before it switches traffic over.</p>
   <ul class="list">
     <li><code>PORT</code> and <code>HOST</code>: where to listen.</li>
     <li><code>DATA_DIR</code>: a folder that survives deploys and rollbacks. Keep databases and uploads here.</li>
@@ -63,7 +63,7 @@ const config = `{
 </Section>
 
 <Section id="config" title="Change a guess">
-  <p>You don’t need a config file. Add <code>droidhost.json</code> only to change what DroidHost worked out. Every field is optional, and <code>"healthCheck": false</code> turns the check off.</p>
+  <p>You don’t need a config file. Add <code>dukoi.json</code> only to change what Dukoi worked out. Every field is optional, and <code>"healthCheck": false</code> turns the check off.</p>
   <pre class="overflow-x-auto bg-card px-5 py-4 font-mono text-sm leading-6">{config}</pre>
-  <p>The name comes from <code>--name</code>, then <code>droidhost.json</code>, then <code>package.json</code>, then the folder name.</p>
+  <p>The name comes from <code>--name</code>, then <code>dukoi.json</code>, then <code>package.json</code>, then the folder name.</p>
 </Section>

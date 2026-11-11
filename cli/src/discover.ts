@@ -1,6 +1,6 @@
-// Finds DroidHost phones on the Wi-Fi with mDNS (_droidhost._tcp).
+// Finds Dukoi phones on the Wi-Fi with mDNS (_dukoi._tcp).
 
-import { MDNS_SERVICE } from '@droidhost/shared'
+import { MDNS_SERVICE } from '@dukoi/shared'
 import mdns from 'multicast-dns'
 
 export interface Found {

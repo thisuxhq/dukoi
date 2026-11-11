@@ -1,10 +1,10 @@
-// droidhost init: start from a template. Makes the folder, then deploys it
+// dukoi init: start from a template. Makes the folder, then deploys it
 // when this computer is paired, so there's a live URL straight away.
 import { cpSync, existsSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
-import { TEMPLATES, type TemplateInfo } from '@droidhost/shared'
+import { TEMPLATES, type TemplateInfo } from '@dukoi/shared'
 import { loadPhones } from '../config.ts'
 import { CliError, c, info, ok } from '../output.ts'
 import { deploy } from './deploy.ts'
@@ -32,10 +32,10 @@ export async function init(opts: InitOptions): Promise<void> {
   })
   ok(`Created ${folder}/`)
 
-  const makeItYours = `Make it yours: edit ${folder}/${template.edit}, then run ${c.cyan('droidhost deploy')}`
+  const makeItYours = `Make it yours: edit ${folder}/${template.edit}, then run ${c.cyan('dukoi deploy')}`
   if (loadPhones().phones.length === 0) {
     info(
-      `\n  Next: ${c.cyan('npx droidhost pair')}, then ${c.cyan(`cd ${folder} && npx droidhost deploy`)}`,
+      `\n  Next: ${c.cyan('npx dukoi pair')}, then ${c.cyan(`cd ${folder} && npx dukoi deploy`)}`,
     )
     return
   }
@@ -67,7 +67,7 @@ async function pick(): Promise<TemplateInfo> {
     throw new CliError(
       'WHICH_TEMPLATE',
       'Which template?',
-      `Name one: droidhost init ${TEMPLATES[1]?.id}. Templates: ${TEMPLATES.map((t) => t.id).join(', ')}`,
+      `Name one: dukoi init ${TEMPLATES[1]?.id}. Templates: ${TEMPLATES.map((t) => t.id).join(', ')}`,
     )
   info('Pick a template:')
   TEMPLATES.forEach((t, i) => {
@@ -88,7 +88,7 @@ async function pick(): Promise<TemplateInfo> {
 /** A template's setting, like the bot token. Kept on the phone, never in the folder. */
 async function ask(name: string): Promise<string | null> {
   if (!process.stdin.isTTY) {
-    info(c.dim(`  Set ${name} later: droidhost env set ${name}=<value>`))
+    info(c.dim(`  Set ${name} later: dukoi env set ${name}=<value>`))
     return null
   }
   const where =
@@ -113,7 +113,7 @@ function source(id: string): string {
     throw new CliError(
       'NO_TEMPLATES',
       `This copy of the CLI is missing the ${id} template.`,
-      'Reinstall it: npm i -g droidhost',
+      'Reinstall it: npm i -g dukoi',
     )
   return found
 }

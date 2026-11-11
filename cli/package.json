@@ -1,17 +1,17 @@
 {
-  "name": "droidhost",
+  "name": "dukoi",
   "private": true,
   "type": "module",
   "description": "Deploy real apps to old Android phones. One command. No root. No cloud bill.",
   "bin": {
-    "droidhost": "./src/main.ts"
+    "dukoi": "./src/main.ts"
   },
   "scripts": {
-    "build": "bun run --cwd ../dashboard build && bun build src/main.ts --target=node --format=esm --outfile=dist/droidhost.mjs && rm -rf dist/dashboard && cp -R ../dashboard/build dist/dashboard && rm -rf dist/starters && cp -R ../starters dist/starters && rm -rf dist/starters/*/node_modules",
+    "build": "bun run --cwd ../dashboard build && bun build src/main.ts --target=node --format=esm --outfile=dist/dukoi.mjs && rm -rf dist/dashboard && cp -R ../dashboard/build dist/dashboard && rm -rf dist/starters && cp -R ../starters dist/starters && rm -rf dist/starters/*/node_modules",
     "typecheck": "tsc -p ."
   },
   "dependencies": {
-    "@droidhost/shared": "workspace:*",
+    "@dukoi/shared": "workspace:*",
     "multicast-dns": "7.2.5"
   },
   "devDependencies": {

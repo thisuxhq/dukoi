@@ -1,6 +1,6 @@
 // rollback, releases, start, stop, restart, remove
 import { createInterface } from 'node:readline/promises'
-import type { AppInfo, DeployResult, ReleaseInfo } from '@droidhost/shared'
+import type { AppInfo, DeployResult, ReleaseInfo } from '@dukoi/shared'
 import { readAppFolder } from '../app-folder.ts'
 import { call, pickPhone } from '../client.ts'
 import { CliError, c, info, ok, table } from '../output.ts'
@@ -14,7 +14,7 @@ export function appName(arg: string | undefined): string {
     throw new CliError(
       'NO_APP',
       'Which app?',
-      'Name it (droidhost logs my-api), or run this in the app’s folder.',
+      'Name it (dukoi logs my-api), or run this in the app’s folder.',
     )
   }
 }

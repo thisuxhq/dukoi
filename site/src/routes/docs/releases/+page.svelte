@@ -16,7 +16,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="list" title="See releases">
   <Terminal
-    command="npx droidhost releases"
+    command="npx dukoi releases"
     output={`
    RELEASE  CREATED              SIZE
 ●  0004     2026-11-11 09:41:07  2412 KB
@@ -29,7 +29,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="rollback" title="Roll back">
   <Terminal
-    command="npx droidhost rollback"
+    command="npx dukoi rollback"
     output={`
 ✓ hono-api is back on release 0003 (1.1s)`}
   />
@@ -41,9 +41,9 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="control" title="Start, stop and remove">
   <ul class="list">
-    <li><code>droidhost restart</code> restarts the app.</li>
-    <li><code>droidhost stop</code> stops it, and it stays stopped after a reboot. <code>droidhost start</code> brings it back.</li>
-    <li><code>droidhost remove</code> deletes the app with its releases, data and logs. It asks first, and <code>--yes</code> skips the question.</li>
+    <li><code>dukoi restart</code> restarts the app.</li>
+    <li><code>dukoi stop</code> stops it, and it stays stopped after a reboot. <code>dukoi start</code> brings it back.</li>
+    <li><code>dukoi remove</code> deletes the app with its releases, data and logs. It asks first, and <code>--yes</code> skips the question.</li>
   </ul>
-  <p>Each one acts on the app in the current folder, or name one: <code>droidhost restart hono-api</code>.</p>
+  <p>Each one acts on the app in the current folder, or name one: <code>dukoi restart hono-api</code>.</p>
 </Section>

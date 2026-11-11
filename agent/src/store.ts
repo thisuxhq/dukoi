@@ -2,7 +2,7 @@
 // One JSON file, written atomically, so a kill mid-write can't corrupt it.
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { generateKeyPair, type KeyPair, type PairedComputer } from '@droidhost/shared'
+import { generateKeyPair, type KeyPair, type PairedComputer } from '@dukoi/shared'
 
 export interface SavedApp {
   name: string

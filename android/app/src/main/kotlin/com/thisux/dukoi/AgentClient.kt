@@ -1,4 +1,4 @@
-package com.thisux.droidhost
+package com.thisux.dukoi
 
 import org.json.JSONArray
 import org.json.JSONObject

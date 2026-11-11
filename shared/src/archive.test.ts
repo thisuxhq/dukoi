@@ -7,7 +7,7 @@ import { pack, unpack } from './archive.ts'
 
 const dirs: string[] = []
 const temp = () => {
-  const d = mkdtempSync(join(tmpdir(), 'droidhost-archive-'))
+  const d = mkdtempSync(join(tmpdir(), 'dukoi-archive-'))
   dirs.push(d)
   return d
 }

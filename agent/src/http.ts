@@ -1,6 +1,6 @@
 // A small router for the admin API, with signed requests and responses.
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
-import { type ApiError, HEADER, NonceCache, signResponse, verifyRequest } from '@droidhost/shared'
+import { type ApiError, HEADER, NonceCache, signResponse, verifyRequest } from '@dukoi/shared'
 
 export class HttpError extends Error {
   constructor(
@@ -116,14 +116,14 @@ export class Router {
           401,
           check.code,
           check.message,
-          'Run `droidhost pair` to pair this computer again.',
+          'Run `dukoi pair` to pair this computer again.',
         )
       if (!this.isPaired(check.publicKey)) {
         throw new HttpError(
           401,
           'NOT_PAIRED',
           'This computer isn’t paired with this phone.',
-          'Run `droidhost pair`.',
+          'Run `dukoi pair`.',
         )
       }
       computer = check.publicKey

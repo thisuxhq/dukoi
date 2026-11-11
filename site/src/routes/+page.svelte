@@ -16,12 +16,12 @@ const steps = [
   {
     title: 'Pair your computer',
     body: 'On the same Wi-Fi. Tap Approve on the phone. No passwords.',
-    command: 'npx droidhost pair',
+    command: 'npx dukoi pair',
   },
   {
     title: 'Deploy',
     body: 'From your app’s folder. You get a URL, and a public one when you want it.',
-    command: 'npx droidhost deploy',
+    command: 'npx dukoi deploy',
   },
 ]
 
@@ -56,7 +56,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
     </p>
     <div class="flex flex-col gap-4 pt-1 lg:flex-row lg:items-center lg:gap-5 lg:pt-2">
       <AgentPrompt />
-      <CopyCommand command="npx droidhost pair" class="lg:w-fit" />
+      <CopyCommand command="npx dukoi pair" class="lg:w-fit" />
     </div>
     <a href={APK} class="flex w-fit items-center gap-2 text-base font-semibold text-violet hover:underline">
       <Icon name="download-04" class="size-5" />Get the APK
@@ -94,7 +94,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <span class={chip}><Icon name="refresh" class="size-6 text-violet" /></span>
         <h3 class="font-display text-[23px] leading-7 font-medium tracking-[-0.02em] lg:text-[30px] lg:leading-9">Apps that stay up</h3>
         <p class="text-[15px] leading-[23px] text-body lg:text-base lg:leading-6">
-          Android kills background apps to save battery. DroidHost runs as a foreground service, restarts anything that stops within seconds, and starts it all again after a reboot.
+          Android kills background apps to save battery. Dukoi runs as a foreground service, restarts anything that stops within seconds, and starts it all again after a reboot.
         </p>
       </div>
       <div aria-hidden="true" class="flex flex-col gap-2 bg-night px-4 py-3.5 font-mono text-[13px] leading-5 lg:px-5 lg:py-[18px]">
@@ -138,7 +138,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>Live logs, anywhere</h3>
         <p class={tileBody}>On the phone, in your terminal and in the web dashboard. New lines in under a second.</p>
       </div>
-      <p aria-hidden="true" class="flex h-11 items-center bg-white px-4 font-mono text-[13px]"><span class="text-muted">$</span>&nbsp;npx droidhost logs</p>
+      <p aria-hidden="true" class="flex h-11 items-center bg-white px-4 font-mono text-[13px]"><span class="text-muted">$</span>&nbsp;npx dukoi logs</p>
     </div>
 
     <div class="{tile} bg-rose lg:min-h-[340px]">
@@ -177,7 +177,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip}><Icon name="battery-charging-01" class="size-6 text-amber" /></span>
         <h3 class={tileTitle}>Battery care</h3>
-        <p class={tileBody}>A phone on charge all day wears out its battery. DroidHost watches it and helps you cap it at 80%.</p>
+        <p class={tileBody}>A phone on charge all day wears out its battery. Dukoi watches it and helps you cap it at 80%.</p>
       </div>
       <p aria-hidden="true" class="flex items-center justify-between bg-white px-4 py-3.5 text-sm">
         <span class="font-semibold">Stop charging at 80%</span>
@@ -250,7 +250,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       </p>
     </div>
     <div class="flex flex-col gap-3 lg:w-[380px] lg:shrink-0 lg:gap-3.5">
-      <CopyCommand command="npx droidhost pair" size="md" tone="raised" />
+      <CopyCommand command="npx dukoi pair" size="md" tone="raised" />
       <ApkButton />
     </div>
   </div>

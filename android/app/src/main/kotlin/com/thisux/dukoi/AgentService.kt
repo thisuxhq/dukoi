@@ -1,4 +1,4 @@
-package com.thisux.droidhost
+package com.thisux.dukoi
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -20,8 +20,8 @@ import androidx.core.content.ContextCompat
 
 /**
  * The foreground service Android protects. The agent runs as its child.
- * It also announces the phone on the Wi-Fi (_droidhost._tcp) so
- * `droidhost pair` can find it.
+ * It also announces the phone on the Wi-Fi (_dukoi._tcp) so
+ * `dukoi pair` can find it.
  */
 class AgentService : Service() {
   private var wakeLock: PowerManager.WakeLock? = null
@@ -63,11 +63,11 @@ class AgentService : Service() {
 
   private fun acquireLocks() {
     wakeLock = getSystemService(PowerManager::class.java)
-      .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DroidHost:agent")
+      .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Dukoi:agent")
       .apply { setReferenceCounted(false); acquire() }
     @Suppress("DEPRECATION")
     wifiLock = applicationContext.getSystemService(WifiManager::class.java)
-      .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "DroidHost:agent")
+      .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "Dukoi:agent")
       .apply { setReferenceCounted(false); acquire() }
   }
 
@@ -97,8 +97,8 @@ class AgentService : Service() {
   /** mDNS: lets the CLI find this phone on the same Wi-Fi. */
   private fun announce() {
     val info = NsdServiceInfo().apply {
-      serviceName = "droidhost-${Build.MODEL}".replace(" ", "-")
-      serviceType = "_droidhost._tcp"
+      serviceName = "dukoi-${Build.MODEL}".replace(" ", "-")
+      serviceType = "_dukoi._tcp"
       port = AgentSupervisor.ADMIN_PORT
     }
     val listener = object : NsdManager.RegistrationListener {
@@ -113,8 +113,8 @@ class AgentService : Service() {
   }
 
   private fun createChannel() {
-    val channel = NotificationChannel(CHANNEL_ID, "DroidHost", NotificationManager.IMPORTANCE_LOW)
-      .apply { description = "Shows while DroidHost is running your apps" }
+    val channel = NotificationChannel(CHANNEL_ID, "Dukoi", NotificationManager.IMPORTANCE_LOW)
+      .apply { description = "Shows while Dukoi is running your apps" }
     getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
   }
 
@@ -122,7 +122,7 @@ class AgentService : Service() {
     val open = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
     return NotificationCompat.Builder(this, CHANNEL_ID)
       .setSmallIcon(R.drawable.ic_server)
-      .setContentTitle("DroidHost is running")
+      .setContentTitle("Dukoi is running")
       .setContentText("Your apps stay up while this shows.")
       .setContentIntent(open)
       .setOngoing(true)
@@ -133,7 +133,7 @@ class AgentService : Service() {
   companion object {
     private const val CHANNEL_ID = "agent"
     private const val NOTIFICATION_ID = 1
-    private const val PREFS = "droidhost"
+    private const val PREFS = "dukoi"
     private const val KEY_WANTED = "running"
 
     fun start(context: Context) {
@@ -146,7 +146,7 @@ class AgentService : Service() {
       context.stopService(Intent(context, AgentService::class.java))
     }
 
-    /** DroidHost runs unless someone turned it off. */
+    /** Dukoi runs unless someone turned it off. */
     fun isWanted(context: Context) =
       context.getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean(KEY_WANTED, true)
   }

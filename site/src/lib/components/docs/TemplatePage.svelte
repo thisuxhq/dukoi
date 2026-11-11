@@ -15,7 +15,7 @@ const t = $derived(template(id))
 <Header title={t.name} {lead} />
 
 <Section id="get-it" title="Get it">
-  <Terminal command="npx droidhost init {t.id}" />
+  <Terminal command="npx dukoi init {t.id}" />
   <p>
     It makes a <code>{t.id}</code> folder and deploys it. On the phone instead: <strong>Try a template → {t.name} → Deploy</strong>.
   </p>

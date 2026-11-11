@@ -17,7 +17,7 @@ async function answer({ id, method, params = {} }) {
         ? params.protocolVersion
         : VERSIONS[0],
       capabilities: { tools: {} },
-      serverInfo: { name: 'droidhost-mcp', version: '1.0.0' },
+      serverInfo: { name: 'dukoi-mcp', version: '1.0.0' },
     })
   }
   if (method === 'ping') return result(id, {})
@@ -51,7 +51,7 @@ app.get('/', (c) => {
   return c.json({
     name: 'mcp-server',
     mcp: url,
-    connect: `claude mcp add --transport http droidhost ${url}`,
+    connect: `claude mcp add --transport http dukoi ${url}`,
     tools: tools.map((t) => t.name),
   })
 })

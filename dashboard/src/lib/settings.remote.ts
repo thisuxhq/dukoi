@@ -1,8 +1,8 @@
 // The Settings page: the phone, paired computers and Cloudflare, plus the
 // actions a paired computer may take. Removing other computers happens on the
 // phone, so it isn't here.
-import type { AppInfo, DomainStatus, PairedComputer, PhoneStatus } from '@droidhost/shared'
-import { computerKey, removePhone } from 'droidhost/config'
+import type { AppInfo, DomainStatus, PairedComputer, PhoneStatus } from '@dukoi/shared'
+import { computerKey, removePhone } from 'dukoi/config'
 import type { Problem } from '#lib/problem.js'
 import { fail, phone, problem, signed } from '#lib/server/phone.js'
 import { command, query } from '$app/server'
@@ -63,7 +63,7 @@ export const stopAll = command(async () => {
 
 /**
  * Forgets the phone on this computer and asks the phone to forget this
- * computer, like `droidhost unpair`. The dashboard stops working after this.
+ * computer, like `dukoi unpair`. The dashboard stops working after this.
  */
 export const unpair = command(async () => {
   const p = phone()

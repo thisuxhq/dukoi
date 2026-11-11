@@ -1,4 +1,4 @@
-package com.thisux.droidhost
+package com.thisux.dukoi
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -44,24 +44,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.thisux.droidhost.ui.AppScreen
-import com.thisux.droidhost.ui.BatteryCareScreen
-import com.thisux.droidhost.ui.DisconnectCloudflareSheet
-import com.thisux.droidhost.ui.Durations
-import com.thisux.droidhost.ui.EaseOut
-import com.thisux.droidhost.ui.LocalToast
-import com.thisux.droidhost.ui.Toast
-import com.thisux.droidhost.ui.ToastHost
-import com.thisux.droidhost.ui.HomeScreen
-import com.thisux.droidhost.ui.OnboardingStep
-import com.thisux.droidhost.ui.PairScreen
-import com.thisux.droidhost.ui.PairingRequestScreen
-import com.thisux.droidhost.ui.PermissionScreen
-import com.thisux.droidhost.ui.Problem
-import com.thisux.droidhost.ui.SettingsScreen
-import com.thisux.droidhost.ui.WelcomeScreen
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.DroidHostTheme
+import com.thisux.dukoi.ui.AppScreen
+import com.thisux.dukoi.ui.BatteryCareScreen
+import com.thisux.dukoi.ui.DisconnectCloudflareSheet
+import com.thisux.dukoi.ui.Durations
+import com.thisux.dukoi.ui.EaseOut
+import com.thisux.dukoi.ui.LocalToast
+import com.thisux.dukoi.ui.Toast
+import com.thisux.dukoi.ui.ToastHost
+import com.thisux.dukoi.ui.HomeScreen
+import com.thisux.dukoi.ui.OnboardingStep
+import com.thisux.dukoi.ui.PairScreen
+import com.thisux.dukoi.ui.PairingRequestScreen
+import com.thisux.dukoi.ui.PermissionScreen
+import com.thisux.dukoi.ui.Problem
+import com.thisux.dukoi.ui.SettingsScreen
+import com.thisux.dukoi.ui.WelcomeScreen
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.DukoiTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
     )
     if (AgentService.isWanted(this)) AgentService.start(this)
     setContent {
-      DroidHostTheme {
+      DukoiTheme {
         val toast = remember { Toast() }
         CompositionLocalProvider(LocalToast provides toast) {
           Box(Modifier.fillMaxSize().background(Canvas)) {
@@ -98,7 +98,7 @@ private sealed interface Screen {
   data object BatteryCare : Screen
 }
 
-private const val PREFS = "droidhost"
+private const val PREFS = "dukoi"
 private const val KEY_ONBOARDED = "onboarded"
 
 @Composable
@@ -333,9 +333,9 @@ private fun OnboardingStep.done(context: Context) = when (this) {
 /** The home screen says plainly when apps can't run, and offers the fix. */
 private fun problem(context: Context, supervisor: AgentSupervisor.Status): Problem? = when {
   supervisor.state == AgentSupervisor.State.FAILED ->
-    Problem(supervisor.problem ?: "DroidHost stopped", "Try again")
+    Problem(supervisor.problem ?: "Dukoi stopped", "Try again")
   supervisor.restarts >= 2 && !Setup.batteryLimitsOff(context) ->
-    Problem("Android keeps stopping DroidHost", "Fix battery settings")
+    Problem("Android keeps stopping Dukoi", "Fix battery settings")
   else -> null
 }
 

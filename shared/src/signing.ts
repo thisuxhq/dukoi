@@ -8,10 +8,10 @@ import { randomBytes } from 'node:crypto'
 import { sha256Hex, signText, verifyText } from './keys.ts'
 
 export const HEADER = {
-  key: 'x-droidhost-key',
-  time: 'x-droidhost-time',
-  nonce: 'x-droidhost-nonce',
-  signature: 'x-droidhost-signature',
+  key: 'x-dukoi-key',
+  time: 'x-dukoi-time',
+  nonce: 'x-dukoi-nonce',
+  signature: 'x-dukoi-signature',
 } as const
 
 /** How far apart the computer's and phone's clocks may be. */
@@ -27,7 +27,7 @@ export interface RequestToSign {
 function requestText(req: RequestToSign, time: string, nonce: string): string {
   const body = req.body ?? ''
   return [
-    'droidhost-request-v1',
+    'dukoi-request-v1',
     req.method.toUpperCase(),
     req.path,
     time,
@@ -37,7 +37,7 @@ function requestText(req: RequestToSign, time: string, nonce: string): string {
 }
 
 function responseText(status: number, nonce: string, body: Uint8Array | string): string {
-  return ['droidhost-response-v1', String(status), nonce, sha256Hex(body)].join('\n')
+  return ['dukoi-response-v1', String(status), nonce, sha256Hex(body)].join('\n')
 }
 
 /** Headers the CLI adds to a request. */

@@ -1,6 +1,6 @@
 # Architecture
 
-This doc explains how DroidHost's parts fit together in phase 1, with one phone and one or more paired computers.
+This doc explains how Dukoi's parts fit together in phase 1, with one phone and one or more paired computers.
 
 **The one rule:** visitors only ever reach app ports. Everything that controls the phone stays private.
 
@@ -9,10 +9,10 @@ This doc explains how DroidHost's parts fit together in phase 1, with one phone 
 ## The big picture
 
 ```
- Your computer                 Android phone (DroidHost APK)                          Internet
+ Your computer                 Android phone (Dukoi APK)                          Internet
 ┌───────────────┐  signed     ┌───────────────────────────────────────────────────┐
 │ CLI           │  requests   │ Phone app (Kotlin): setup, pairing approval, NSD  │
-│ droidhost ... │──(LAN)─────▶│ ┌───────────────────────────────────────────────┐ │
+│ dukoi ... │──(LAN)─────▶│ ┌───────────────────────────────────────────────┐ │
 └───────────────┘   :7070     │ │ Foreground service (specialUse)               │ │
                               │ │  keeps one process alive ↓                    │ │
                               │ └───────────────────────┬───────────────────────┘ │
@@ -49,17 +49,17 @@ The agent is a TypeScript program on the bundled Node, kept alive by the Kotlin 
 ### 1. Setup (on the phone)
 
 1. Install the APK and open it.
-2. DroidHost scores the device using chip, RAM, storage and battery health, then gives a plain verdict.
+2. Dukoi scores the device using chip, RAM, storage and battery health, then gives a plain verdict.
 3. The checklist walks through each item: foreground service, battery optimization, child processes (the phantom process killer), and the steps for the detected brand.
 4. Each item ticks green only after Android confirms it.
-5. With no apps yet, Home offers **Try a template**. One tap deploys a template bundled in the APK (`assets/templates/<id>.tgz`, copied to the app's files and passed to the agent as `DROIDHOST_TEMPLATES`). The Telegram bot asks for its token first. The app's page then shows **Make it yours** with `npx droidhost init <template>` for the computer.
+5. With no apps yet, Home offers **Try a template**. One tap deploys a template bundled in the APK (`assets/templates/<id>.tgz`, copied to the app's files and passed to the agent as `DUKOI_TEMPLATES`). The Telegram bot asks for its token first. The app's page then shows **Make it yours** with `npx dukoi init <template>` for the computer.
 
 ### 2. Pairing
 
 ```
 CLI                                   Phone
- │  droidhost pair                      │
- │── mDNS: find "_droidhost._tcp" ────▶│  (< 3 s)
+ │  dukoi pair                      │
+ │── mDNS: find "_dukoi._tcp" ────▶│  (< 3 s)
  │── hello + public key ───────────────▶│
  │                                      │  shows code "482 913"
  │  shows code "482 913"                │  user taps Approve
@@ -74,7 +74,7 @@ CLI                                   Phone
 ### 3. Deploy
 
 ```
-droidhost deploy ./my-api
+dukoi deploy ./my-api
 ```
 
 1. **Pack.** The CLI tars the folder (skipping `node_modules`, `.git` and anything in `.gitignore`) and signs the request.
@@ -120,10 +120,10 @@ The tunnel only ever maps to app ports. A security test from outside should find
 
 ## Data on the phone
 
-All of this lives in DroidHost's private app storage:
+All of this lives in Dukoi's private app storage:
 
 ```
-droidhost/
+dukoi/
 ├── state.db                 # apps, releases, paired keys, audit log, settings
 ├── apps/
 │   └── my-api/
@@ -145,10 +145,10 @@ droidhost/
 ## Repo layout
 
 ```
-droidhost/
+dukoi/
 ├── android/          # Phone app and foreground service (Kotlin)
 ├── agent/            # Admin API, process manager, deploys, tunnels (TypeScript on Node)
-├── cli/              # droidhost CLI (TypeScript)
+├── cli/              # dukoi CLI (TypeScript)
 ├── dashboard/        # Web dashboard (SvelteKit 3 server with remote functions)
 ├── shared/           # Admin API types and protocol, shared by agent, cli and dashboard
 ├── starters/         # the five templates: static-site, notes-api, file-drop, mcp-server, telegram-bot

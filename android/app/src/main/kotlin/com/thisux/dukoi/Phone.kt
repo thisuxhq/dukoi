@@ -1,4 +1,4 @@
-package com.thisux.droidhost
+package com.thisux.dukoi
 
 import android.Manifest
 import android.app.ActivityManager
@@ -81,7 +81,7 @@ object Phone {
 
   /** Runs start, stop, restart or rollback. Null on success, otherwise the agent's message. */
   fun control(name: String, action: String): String? {
-    val reply = AgentClient.post("/local/apps/${enc(name)}/$action", timeoutMs = 30_000) ?: return "Couldn’t reach DroidHost on this phone."
+    val reply = AgentClient.post("/local/apps/${enc(name)}/$action", timeoutMs = 30_000) ?: return "Couldn’t reach Dukoi on this phone."
     return if (reply.has("name")) null else reply.optString("message", "Something went wrong.")
   }
 
@@ -143,7 +143,7 @@ object Phone {
       }.orEmpty(),
     )
 
-  private const val UNREACHABLE = "Couldn’t reach DroidHost on this phone."
+  private const val UNREACHABLE = "Couldn’t reach Dukoi on this phone."
 
   fun vitals(context: Context): Vitals {
     val status = AgentClient.get("/local/phone")

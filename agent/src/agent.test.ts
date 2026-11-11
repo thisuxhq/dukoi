@@ -2,16 +2,10 @@ import { afterAll, beforeAll, expect, test } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import {
-  generateKeyPair,
-  HEADER,
-  type PhoneInfo,
-  signRequest,
-  verifyResponse,
-} from '@droidhost/shared'
+import { generateKeyPair, HEADER, type PhoneInfo, signRequest, verifyResponse } from '@dukoi/shared'
 import { Agent } from './agent.ts'
 
-const home = mkdtempSync(join(tmpdir(), 'droidhost-agent-'))
+const home = mkdtempSync(join(tmpdir(), 'dukoi-agent-'))
 const port = 17070 + Math.floor(Math.random() * 1000)
 const agent = new Agent({
   home,

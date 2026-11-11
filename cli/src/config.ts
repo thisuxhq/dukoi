@@ -1,9 +1,9 @@
 // What the CLI remembers: this computer's key and the phones it's paired with.
-// Stored in ~/.config/droidhost (or $DROIDHOST_CONFIG), readable only by you.
-import { chmodSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+// Stored in ~/.config/dukoi (or $DUKOI_CONFIG), readable only by you.
+import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { homedir, hostname, userInfo } from 'node:os'
 import { join } from 'node:path'
-import { generateKeyPair, type KeyPair } from '@droidhost/shared'
+import { generateKeyPair, type KeyPair } from '@dukoi/shared'
 
 export interface SavedPhone {
   name: string
@@ -21,8 +21,13 @@ interface Phones {
 }
 
 export function configDir(): string {
+  if (process.env.DUKOI_CONFIG) return process.env.DUKOI_CONFIG
   const base = process.env.XDG_CONFIG_HOME ?? join(homedir(), '.config')
-  return process.env.DROIDHOST_CONFIG ?? join(base, 'droidhost')
+  const dir = join(base, 'dukoi')
+  // Dukoi used to be called DroidHost. Keep the key and paired phones from then.
+  const old = join(base, 'droidhost')
+  if (!existsSync(dir) && existsSync(old)) renameSync(old, dir)
+  return dir
 }
 
 function readJson<T>(file: string): T | null {

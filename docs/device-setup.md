@@ -1,8 +1,8 @@
 # Device setup
 
-This doc explains the phone setup checklist: what each step fixes, how DroidHost checks it, and the extra steps for each phone brand.
+This doc explains the phone setup checklist: what each step fixes, how Dukoi checks it, and the extra steps for each phone brand.
 
-Android works hard to stop long-running background work, and DroidHost's setup is how we win that fight. **A step only ticks green when Android confirms it.** Tapping a button isn't enough.
+Android works hard to stop long-running background work, and Dukoi's setup is how we win that fight. **A step only ticks green when Android confirms it.** Tapping a button isn't enough.
 
 ---
 
@@ -10,8 +10,8 @@ Android works hard to stop long-running background work, and DroidHost's setup i
 
 | # | Step | What it fixes | How we confirm it |
 | --- | --- | --- | --- |
-| 1 | **Keep DroidHost running** | Starts the foreground service with a persistent notification | The service is running and its notification is showing |
-| 2 | **Turn off battery optimization** | Doze and App Standby pausing DroidHost | `PowerManager.isIgnoringBatteryOptimizations()` is true |
+| 1 | **Keep Dukoi running** | Starts the foreground service with a persistent notification | The service is running and its notification is showing |
+| 2 | **Turn off battery optimization** | Doze and App Standby pausing Dukoi | `PowerManager.isIgnoringBatteryOptimizations()` is true |
 | 3 | **Allow child processes** | The phantom process killer (Android 12+) stopping Node apps | Developer setting read back, or a test child survives |
 | 4 | **Brand-specific steps** | Vendor killers like MIUI, ColorOS and One UI | Each item has its own check where the brand allows it |
 
@@ -32,8 +32,8 @@ From Android 12, the system kills child processes that it thinks use too much CP
 | Android version | Fix |
 | --- | --- |
 | 10 and 11 | Nothing needed. |
-| 12 and 13 | Run one `adb` command from a computer. DroidHost shows it with a copy button. |
-| 14 and newer | Developer options, then **Disable child process restrictions**. DroidHost links straight to it. |
+| 12 and 13 | Run one `adb` command from a computer. Dukoi shows it with a copy button. |
+| 14 and newer | Developer options, then **Disable child process restrictions**. Dukoi links straight to it. |
 
 The adb command for Android 12 and 13:
 
@@ -41,18 +41,18 @@ The adb command for Android 12 and 13:
 adb shell device_config set_sync_disabled_for_tests persistent && adb shell device_config put activity_manager max_phantom_processes 2147483647
 ```
 
-`droidhost doctor` can run this for you if the phone is connected over USB with USB debugging on.
+`dukoi doctor` can run this for you if the phone is connected over USB with USB debugging on.
 
 ---
 
 ## Brand-specific steps
 
-DroidHost detects the maker and shows only that brand's steps, with screenshots. The exact menu names change between OS versions, so each guide is checked on the device lab phones. See [device-lab.md](device-lab.md).
+Dukoi detects the maker and shows only that brand's steps, with screenshots. The exact menu names change between OS versions, so each guide is checked on the device lab phones. See [device-lab.md](device-lab.md).
 
 ### Nothing (Nothing OS)
 
-- Battery: **Unrestricted** for DroidHost.
-- Lock DroidHost in recent apps.
+- Battery: **Unrestricted** for Dukoi.
+- Lock Dukoi in recent apps.
 
 ### Google Pixel
 
@@ -65,33 +65,33 @@ The strictest brand. Every step matters:
 
 - **Autostart**: on.
 - Battery saver: **No restrictions**.
-- Lock DroidHost in recent apps (pull down on its card and tap the lock).
+- Lock Dukoi in recent apps (pull down on its card and tap the lock).
 - Turn off **MIUI optimization** in Developer options if apps still get killed.
 
 ### Oppo, Realme (ColorOS / Realme UI)
 
 - **Allow auto launch**: on.
 - **Allow background activity**: on.
-- Battery: turn off **Optimize battery use** for DroidHost.
-- Lock DroidHost in recent apps.
+- Battery: turn off **Optimize battery use** for Dukoi.
+- Lock Dukoi in recent apps.
 
 ### Samsung (One UI)
 
 - Battery: **Unrestricted**.
-- Remove DroidHost from **Sleeping apps** and **Deep sleeping apps**, and add it to **Never sleeping apps**.
+- Remove Dukoi from **Sleeping apps** and **Deep sleeping apps**, and add it to **Never sleeping apps**.
 - Turn off **Put unused apps to sleep**.
 
 ### OnePlus (OxygenOS)
 
 - Battery: **Don't optimize**.
 - **Allow auto launch** and **Allow background activity**: on.
-- Lock DroidHost in recent apps.
+- Lock Dukoi in recent apps.
 
 ---
 
 ## Device health score
 
-On first launch, DroidHost scores the phone so users know what to expect.
+On first launch, Dukoi scores the phone so users know what to expect.
 
 | Input | Source |
 | --- | --- |
@@ -126,7 +126,7 @@ A server phone stays plugged in all day. Sitting at 100% wears the battery out a
 **Settings → Battery care** in the app shows:
 
 - Charge, temperature and battery health right now.
-- Whether a charge limit is on. Android has no public API for this, so DroidHost watches: plugged in and resting at 90% or below means **on**, plugged in at 95% or above means **off**. Unplugged, it looks at the last day of samples, or says **Not sure**.
+- Whether a charge limit is on. Android has no public API for this, so Dukoi watches: plugged in and resting at 90% or below means **on**, plugged in at 95% or above means **off**. Unplugged, it looks at the last day of samples, or says **Not sure**.
 - **Turn on**, which opens the phone's battery settings. Apps can't change the limit themselves.
 - The last 7 days: hours a day at 100% and the hottest temperature. The service samples the battery every 10 minutes into `battery.csv` in the app's files. Nothing leaves the phone.
 
@@ -135,6 +135,6 @@ A server phone stays plugged in all day. Sitting at 100% wears the battery out a
 ## When an app still gets killed
 
 1. The watchdog brings it back within 5 seconds.
-2. DroidHost records **why**, if Android says: the phantom process killer, low memory, a vendor killer or a crash.
-3. The phone, CLI (`droidhost ps`) and dashboard show the reason with a link to the fix.
-4. More than one unexpected kill a day on a device means setup needs another look, and `droidhost doctor` says what to check.
+2. Dukoi records **why**, if Android says: the phantom process killer, low memory, a vendor killer or a crash.
+3. The phone, CLI (`dukoi ps`) and dashboard show the reason with a link to the fix.
+4. More than one unexpected kill a day on a device means setup needs another look, and `dukoi doctor` says what to check.

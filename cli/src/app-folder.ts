@@ -1,7 +1,7 @@
 // Works out what's in an app folder: its name, kind and how to start it.
 import { existsSync, readFileSync } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
-import { APP_NAME_PATTERN } from '@droidhost/shared'
+import { APP_NAME_PATTERN } from '@dukoi/shared'
 import { CliError } from './output.ts'
 
 export interface AppFolder {
@@ -23,7 +23,7 @@ interface PackageJson {
   dependencies?: Record<string, string>
 }
 
-/** Optional droidhost.json, only to override a guess */
+/** Optional dukoi.json, only to override a guess */
 interface Overrides {
   name?: string
   start?: string
@@ -55,14 +55,18 @@ export function readAppFolder(
   const dir = resolve(folder)
   if (!existsSync(dir)) throw new CliError('NO_FOLDER', `There's no folder at ${dir}.`)
   const pkg = readJson<PackageJson>(join(dir, 'package.json'))
-  const overrides = readJson<Overrides>(join(dir, 'droidhost.json')) ?? {}
+  // droidhost.json is the name from before Dukoi was renamed
+  const overrides =
+    readJson<Overrides>(join(dir, 'dukoi.json')) ??
+    readJson<Overrides>(join(dir, 'droidhost.json')) ??
+    {}
 
   const name = toAppName(opts.name ?? overrides.name ?? pkg?.name ?? basename(dir))
   if (!APP_NAME_PATTERN.test(name)) {
     throw new CliError(
       'BAD_NAME',
       `Couldn't make a valid app name from "${basename(dir)}".`,
-      'Pass one: droidhost deploy --name my-api',
+      'Pass one: dukoi deploy --name my-api',
     )
   }
 
@@ -86,7 +90,7 @@ export function readAppFolder(
     throw new CliError(
       'NOT_AN_APP',
       `${dir} has no package.json or index.html.`,
-      'Run this in your app folder, or start from a template: droidhost init',
+      'Run this in your app folder, or start from a template: dukoi init',
     )
   }
 
@@ -111,7 +115,7 @@ function startArgs(dir: string, pkg: PackageJson, override?: string): string[] {
     throw new CliError(
       'NO_START',
       `Your start script runs "${parts[0]}", but the phone can only run Node directly.`,
-      'Make scripts.start "node <file>.js" (build TypeScript first), or set "start" in droidhost.json.',
+      'Make scripts.start "node <file>.js" (build TypeScript first), or set "start" in dukoi.json.',
     )
   }
   for (const file of [pkg.main, 'index.js', 'server.js', 'src/index.js']) {

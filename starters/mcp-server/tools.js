@@ -4,7 +4,7 @@
 import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 
-// DroidHost sets DATA_DIR to a folder that survives deploys and rollbacks.
+// Dukoi sets DATA_DIR to a folder that survives deploys and rollbacks.
 const db = new DatabaseSync(join(process.env.DATA_DIR ?? '.', 'notes.db'))
 db.exec(`CREATE TABLE IF NOT EXISTS notes (
   id INTEGER PRIMARY KEY,

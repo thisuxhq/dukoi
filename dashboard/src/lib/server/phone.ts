@@ -1,10 +1,10 @@
 // The phone this dashboard controls, and signed calls to it. It uses the same
 // key and paired phones as the CLI, so there's no second pairing, and the key
 // never reaches the browser.
-import { signRequest } from '@droidhost/shared'
+import { signRequest } from '@dukoi/shared'
 import { error } from '@sveltejs/kit'
-import { type CallOptions, call, pickPhone, unreachable } from 'droidhost/client'
-import { computerKey, type SavedPhone } from 'droidhost/config'
+import { type CallOptions, call, pickPhone, unreachable } from 'dukoi/client'
+import { computerKey, type SavedPhone } from 'dukoi/config'
 
 import type { Problem } from '#lib/problem.js'
 
@@ -12,9 +12,9 @@ export type { Problem }
 
 let chosen: SavedPhone | null = null
 
-/** `droidhost dashboard --device x` passes its choice in DROIDHOST_DEVICE. */
+/** `dukoi dashboard --device x` passes its choice in DUKOI_DEVICE. */
 export function phone(): SavedPhone {
-  chosen ??= pickPhone(process.env.DROIDHOST_DEVICE || undefined)
+  chosen ??= pickPhone(process.env.DUKOI_DEVICE || undefined)
   return chosen
 }
 

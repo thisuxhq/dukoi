@@ -1,6 +1,6 @@
 # Process management
 
-This doc explains how DroidHost starts apps, keeps them alive and protects the phone while it does.
+This doc explains how Dukoi starts apps, keeps them alive and protects the phone while it does.
 
 The process manager is Kotlin code inside the foreground service. Android protects that service, so the thing that restarts apps is the hardest thing for Android to kill. See [tech-stack.md](tech-stack.md#agent-and-process-manager-kotlin-in-the-same-service).
 
@@ -61,13 +61,13 @@ Android sometimes kills an app without a crash, for example through the phantom 
 | "Android stopped it to save battery" | Phantom process killer or Doze | Setup step 3 |
 | "The phone ran low on memory" | Too many apps, or a leak | Lower the memory limit or app count |
 | "The phone maker's battery saver stopped it" | MIUI, ColorOS and similar | The brand steps in [device-setup.md](device-setup.md) |
-| "Your app crashed" | A bug in the app | `droidhost logs` |
+| "Your app crashed" | A bug in the app | `dukoi logs` |
 
 Target: **fewer than 1 unexpected kill per device per day.**
 
 ## Start on boot
 
-- DroidHost listens for `BOOT_COMPLETED` and starts the foreground service.
+- Dukoi listens for `BOOT_COMPLETED` and starts the foreground service.
 - Each app that was `running` before the reboot starts again. Apps that were `stopped` stay stopped.
 - Apps start in priority order: Critical, then Normal, then Low.
 
@@ -101,7 +101,7 @@ Target: **fewer than 1 unexpected kill per device per day.**
 ### Protect battery
 
 - Charging stops at **80%** where the phone allows it, through the maker's battery protection setting or a supported API.
-- Where the phone doesn't allow it, DroidHost says so and suggests a smart plug.
+- Where the phone doesn't allow it, Dukoi says so and suggests a smart plug.
 
 ### Power cut mode
 

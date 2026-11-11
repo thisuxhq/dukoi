@@ -34,18 +34,18 @@ if [ "$(uname -s)" = "Darwin" ]; then
   # filesystem (the NDK has files whose names differ only by case) that is
   # also much faster to compile on than a folder shared with macOS.
   # Run detached, so the build keeps going if this terminal closes.
-  # Watch it with: docker logs -f droidhost-node-build
-  docker rm -f droidhost-node-build >/dev/null 2>&1 || true
-  docker run -d --name droidhost-node-build --platform linux/amd64 \
-    -v droidhost-node-build:/cache \
+  # Watch it with: docker logs -f dukoi-node-build
+  docker rm -f dukoi-node-build >/dev/null 2>&1 || true
+  docker run -d --name dukoi-node-build --platform linux/amd64 \
+    -v dukoi-node-build:/cache \
     -v "$repo_dir/build:/work/build" \
     -v "$repo_dir/scripts:/work/scripts:ro" \
     -e IN_CONTAINER=1 \
     ubuntu:24.04 \
     bash /work/scripts/build-node-android.sh "$NODE_VERSION" >/dev/null
   echo "Started. Following the log (Ctrl-C stops watching, not the build)."
-  docker logs -f droidhost-node-build || true
-  exit "$(docker wait droidhost-node-build)"
+  docker logs -f dukoi-node-build || true
+  exit "$(docker wait dukoi-node-build)"
 fi
 
 # ── On Linux: build ─────────────────────────────────────────────────────────

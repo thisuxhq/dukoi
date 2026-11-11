@@ -15,8 +15,8 @@ This doc covers how to set up the repo, make a change and get it merged. It's ai
 ## Set up
 
 ```bash
-git clone https://github.com/thisuxhq/droidhost.git
-cd droidhost
+git clone https://github.com/thisuxhq/dukoi.git
+cd dukoi
 bun install
 scripts/prepare-android.sh   # fetches Node and bundles the agent into the APK
 ```
@@ -52,10 +52,10 @@ bun run cli deploy starters/notes-api
 
 ```
 android/     Control app, foreground service, agent, process manager (Kotlin)
-cli/         droidhost CLI (TypeScript)
+cli/         dukoi CLI (TypeScript)
 dashboard/   Web dashboard (SvelteKit 3 server with remote functions)
 shared/      Admin API types, shared by agent, cli and dashboard
-starters/    The five templates (droidhost init)
+starters/    The five templates (dukoi init)
 scripts/     Binary fetch and pack scripts
 docs/        These docs
 ```
@@ -76,7 +76,7 @@ More detail is in [architecture.md](architecture.md).
 
 - Biome formats and lints JS and TS. ktlint handles Kotlin. Don't argue with the formatter.
 - Name things for what they are. No abbreviations.
-- Write boring code. See [dx-principles.md](dx-principles.md#part-2-building-droidhost).
+- Write boring code. See [dx-principles.md](dx-principles.md#part-2-building-dukoi).
 - User-facing text follows [writing-style.md](writing-style.md).
 - Icons: Hugeicons stroke-rounded SVGs, copied into the repo. No other icon set.
 

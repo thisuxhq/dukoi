@@ -1,6 +1,6 @@
 # Android CLI
 
-This doc explains how we use Google's Android CLI (`android`) to build, run and test the DroidHost phone app.
+This doc explains how we use Google's Android CLI (`android`) to build, run and test the Dukoi phone app.
 
 **The rule:** use `android` for every Android task it supports. Use `adb` only where `android` has no command, and say why when you do.
 
@@ -23,7 +23,7 @@ Installers for Linux and Windows are listed in the CLI's own skill file at `~/.a
 
 | Task | Command |
 | --- | --- |
-| Create a new project | `android create empty-activity --name="DroidHost" --output=./android` |
+| Create a new project | `android create empty-activity --name="Dukoi" --output=./android` |
 | See templates | `android create --list` |
 | Build the APK | `./gradlew assembleDebug` (the CLI has no build command yet) |
 | Install and launch | `android run --apks=app/build/outputs/apk/debug/app-debug.apk` |

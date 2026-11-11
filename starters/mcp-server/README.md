@@ -7,17 +7,17 @@ An [MCP](https://modelcontextprotocol.io) server your AI assistant can call, run
 Open the app’s URL: it shows the exact command. For Claude Code:
 
 ```bash
-claude mcp add --transport http droidhost http://<phone>:<port>/mcp
+claude mcp add --transport http dukoi http://<phone>:<port>/mcp
 ```
 
-For an assistant outside your Wi-Fi, run `npx droidhost expose` and use the public URL with `/mcp` on the end.
+For an assistant outside your Wi-Fi, run `npx dukoi expose` and use the public URL with `/mcp` on the end.
 
 ## Make it yours
 
 Add a tool to the list in `tools.js`, then run:
 
 ```bash
-npx droidhost deploy
+npx dukoi deploy
 ```
 
 You don’t need to touch `server.js`.

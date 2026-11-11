@@ -3,7 +3,7 @@
 // them the same way a deploy does (scripts/pack-templates.ts).
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { type DeployResult, TEMPLATES, type TemplateInfo } from '@droidhost/shared'
+import { type DeployResult, TEMPLATES, type TemplateInfo } from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { HttpError } from './http.ts'
 

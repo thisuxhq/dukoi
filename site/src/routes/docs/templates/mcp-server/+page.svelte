@@ -10,7 +10,7 @@ const response = `{
   "name": "mcp-server",
   "mcp": "http://192.168.0.112:3002/mcp",
   "tools": ["save_note", "list_notes"],
-  "connect": "claude mcp add --transport http droidhost http://192.168.0.112:3002/mcp"
+  "connect": "claude mcp add --transport http dukoi http://192.168.0.112:3002/mcp"
 }`
 
 const change = `{
@@ -31,7 +31,7 @@ const change = `{
       <pre class="overflow-x-auto px-[22px] py-5 font-mono text-sm leading-6">{response}</pre>
     </Browser>
     <p>Connect Claude Code to it:</p>
-    <Terminal command="claude mcp add --transport http droidhost http://192.168.0.112:3002/mcp" />
+    <Terminal command="claude mcp add --transport http dukoi http://192.168.0.112:3002/mcp" />
     <p>For an assistant outside your Wi-Fi, give the app a <a href="/docs/public-urls">public URL</a> and use that, plus <code>/mcp</code>.</p>
   </Section>
 
@@ -48,6 +48,6 @@ const change = `{
     <p>Add a tool to the list in <code>tools.js</code>:</p>
     <Code code={change} />
     <p>Then deploy again. Your assistant sees the new tool the next time it connects.</p>
-    <Terminal command="npx droidhost deploy" />
+    <Terminal command="npx dukoi deploy" />
   </Section>
 </TemplatePage>

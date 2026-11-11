@@ -1,4 +1,4 @@
-package com.thisux.droidhost
+package com.thisux.dukoi
 
 import android.content.Context
 import android.os.Build
@@ -41,7 +41,7 @@ object AgentSupervisor {
   @Volatile private var process: Process? = null
   private var thread: Thread? = null
 
-  fun home(context: Context) = File(context.filesDir, "droidhost")
+  fun home(context: Context) = File(context.filesDir, "dukoi")
   fun logFile(context: Context) = File(home(context), "agent.log")
 
   @Synchronized
@@ -81,13 +81,13 @@ object AgentSupervisor {
         .redirectErrorStream(true)
         .redirectOutput(ProcessBuilder.Redirect.appendTo(log))
       builder.environment().apply {
-        put("DROIDHOST_HOME", home.absolutePath)
+        put("DUKOI_HOME", home.absolutePath)
         File(context.applicationInfo.nativeLibraryDir, "libcloudflared.so").takeIf { it.exists() }
-          ?.let { put("DROIDHOST_CLOUDFLARED", it.absolutePath) }
-        put("DROIDHOST_PHONE_NAME", phoneName())
-        put("DROIDHOST_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
-        put("DROIDHOST_ANDROID", Build.VERSION.RELEASE)
-        templates?.let { put("DROIDHOST_TEMPLATES", it.absolutePath) }
+          ?.let { put("DUKOI_CLOUDFLARED", it.absolutePath) }
+        put("DUKOI_PHONE_NAME", phoneName())
+        put("DUKOI_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
+        put("DUKOI_ANDROID", Build.VERSION.RELEASE)
+        templates?.let { put("DUKOI_TEMPLATES", it.absolutePath) }
         put("HOME", home.absolutePath)
         put("TMPDIR", context.cacheDir.absolutePath)
       }

@@ -14,9 +14,9 @@ const description =
 </script>
 
 <svelte:head>
-  <title>DroidHost: turn an old phone into a server</title>
+  <title>Dukoi: turn an old phone into a server</title>
   <meta name="description" content={description} />
-  <meta property="og:title" content="DroidHost: turn an old phone into a server" />
+  <meta property="og:title" content="Dukoi: turn an old phone into a server" />
   <meta property="og:description" content={description} />
   <meta name="theme-color" content="#f1f0f4" />
   <link rel="alternate" type="text/markdown" href={markdown} />
@@ -25,10 +25,10 @@ const description =
 <!-- Content stays within 1440px and centred; the border lines run edge to edge. -->
 <div class={inDocs ? 'border-b border-line' : ''}>
   <header class="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 lg:h-20 lg:px-16">
-    <a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em] lg:text-2xl">DroidHost</a>
+    <a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em] lg:text-2xl">Dukoi</a>
     <nav class="flex items-center gap-5 text-[15px] font-medium lg:gap-8">
       <a href={DOCS} class="hover:text-violet {inDocs ? 'text-violet' : ''}">Docs</a>
-      <a href={REPO} class="flex items-center gap-2 hover:text-violet" aria-label="DroidHost on GitHub">
+      <a href={REPO} class="flex items-center gap-2 hover:text-violet" aria-label="Dukoi on GitHub">
         <Icon name="github" class="size-[22px] lg:size-5" />
         <span class="hidden lg:inline">GitHub</span>
       </a>
@@ -40,7 +40,7 @@ const description =
 
 <div class="border-t border-line">
   <footer class="mx-auto flex max-w-[1440px] flex-col gap-3.5 px-5 pt-6 pb-8 lg:flex-row lg:items-center lg:justify-between lg:px-16 lg:py-7">
-    <p class="text-sm text-muted">DroidHost is free and open source.</p>
+    <p class="text-sm text-muted">Dukoi is free and open source.</p>
     <div class="flex gap-6 text-sm font-medium lg:gap-7">
       <a href={DOCS} class="hover:text-violet">Docs</a>
       <a href={REPO} class="hover:text-violet">GitHub</a>

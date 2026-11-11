@@ -10,10 +10,10 @@ This doc describes the five templates (the folders in `starters/`), how people s
 
 | From | How | What happens |
 | --- | --- | --- |
-| A computer | `npx droidhost init` (a numbered list) or `npx droidhost init notes-api` | Copies the template into a new folder and, if the computer is paired, deploys it and prints the file to edit |
+| A computer | `npx dukoi init` (a numbered list) or `npx dukoi init notes-api` | Copies the template into a new folder and, if the computer is paired, deploys it and prints the file to edit |
 | The phone | **Try a template** on the empty Home screen | Deploys the template's archive from the APK, with no computer. The app page then shows the `init` command to get the code |
 
-The CLI ships the template folders next to its bundle (`dist/starters`). The APK ships them packed, as `assets/templates/<id>.tgz`, built by `scripts/pack-templates.ts` the same way `droidhost deploy` packs an app (see `scripts/prepare-android.sh`). The list itself is `TEMPLATES` in `shared/src/api.ts`.
+The CLI ships the template folders next to its bundle (`dist/starters`). The APK ships them packed, as `assets/templates/<id>.tgz`, built by `scripts/pack-templates.ts` the same way `dukoi deploy` packs an app (see `scripts/prepare-android.sh`). The list itself is `TEMPLATES` in `shared/src/api.ts`.
 
 A template app deployed from the phone remembers it (`AppInfo.template`); the next deploy from a computer clears it.
 
@@ -31,10 +31,10 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 
 ### Notes
 
-- **`telegram-bot`** needs `TELEGRAM_BOT_TOKEN`. `init` asks for it, and the phone's sheet has a field for it. Either way it's saved on the phone as a setting (`droidhost env set TELEGRAM_BOT_TOKEN=...`), never in the folder. It uses long polling, so it needs no public URL, and its `droidhost.json` turns the health check off. Without a token it stays up and logs what to do; with a bad one, the deploy fails with Telegram's reason.
+- **`telegram-bot`** needs `TELEGRAM_BOT_TOKEN`. `init` asks for it, and the phone's sheet has a field for it. Either way it's saved on the phone as a setting (`dukoi env set TELEGRAM_BOT_TOKEN=...`), never in the folder. It uses long polling, so it needs no public URL, and its `dukoi.json` turns the health check off. Without a token it stays up and logs what to do; with a bad one, the deploy fails with Telegram's reason.
 - **`file-drop`** keeps files in `DATA_DIR/files` and sends them with `Content-Security-Policy: sandbox`, so uploaded HTML can't run scripts. Cloudflare's free plan stops public uploads at 100 MB. Anyone who can reach the page can upload; the README says to add a check before making it public.
 - **`mcp-server`** is hand-written, about 60 lines, with no MCP SDK: JSON-RPC over HTTP at `/mcp`, with the `initialize` handshake (protocol 2025-11-25 and earlier), which today's assistants use.
-- **`static-site`** has no `package.json`, so DroidHost serves the folder as it is.
+- **`static-site`** has no `package.json`, so Dukoi serves the folder as it is.
 
 ---
 
@@ -44,7 +44,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 2. **Hono with `@hono/node-server`** for anything that opens a port.
 3. **`node:sqlite`** (built into Node 24) for data. No ORM.
 4. **Listen on `process.env.PORT`.**
-5. **Store data in `DATA_DIR`**, which DroidHost points at the app's `data/` folder so it survives deploys.
+5. **Store data in `DATA_DIR`**, which Dukoi points at the app's `data/` folder so it survives deploys.
 6. **Read secrets from settings** (environment variables) and say clearly what's missing.
 7. **Readable in five minutes.** A few files at the top level, one of them the file to edit, and a short README.
 8. **A `GET /` or `/health` that returns 200**, so the health check passes.
@@ -53,11 +53,11 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 | `PORT` | The app's assigned port |
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
-| `DROIDHOST_APP` | The app's name |
+| `DUKOI_APP` | The app's name |
 
 ---
 
-Environment variables DroidHost sets for every app, on top of its own settings:
+Environment variables Dukoi sets for every app, on top of its own settings:
 
 | Variable | Value |
 | --- | --- |
@@ -65,7 +65,7 @@ Environment variables DroidHost sets for every app, on top of its own settings:
 | `HOST` | `127.0.0.1` |
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
-| `DROIDHOST_APP` | The app's name |
+| `DUKOI_APP` | The app's name |
 
 ---
 

@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui.theme
+package com.thisux.dukoi.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

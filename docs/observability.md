@@ -1,6 +1,6 @@
 # Observability
 
-This doc explains how you see what's happening: logs, metrics, alerts and the opt-in telemetry that helps us improve DroidHost.
+This doc explains how you see what's happening: logs, metrics, alerts and the opt-in telemetry that helps us improve Dukoi.
 
 **The rule:** never a silent failure. If something goes wrong, it shows up wherever you're already looking: the phone, the CLI or the dashboard.
 
@@ -9,12 +9,12 @@ This doc explains how you see what's happening: logs, metrics, alerts and the op
 ## Logs
 
 ```bash
-droidhost logs my-api
+dukoi logs my-api
 ```
 
 - Live on the phone, CLI and dashboard. **New lines appear within 1 second.**
 - Each line has a timestamp and a stream (`out` or `err`).
-- DroidHost writes its own events into the same stream, so you see them next to your app's output:
+- Dukoi writes its own events into the same stream, so you see them next to your app's output:
 
 ```
 12:04:11 out  Server listening on 3000
@@ -29,7 +29,7 @@ droidhost logs my-api
 
 | Metric | Shown where |
 | --- | --- |
-| CPU (whole phone) | Phone, `droidhost status`, dashboard |
+| CPU (whole phone) | Phone, `dukoi status`, dashboard |
 | Memory used and free | Same |
 | Battery temperature | Same |
 | Battery level and charging state | Same |
@@ -40,7 +40,7 @@ droidhost logs my-api
 
 ## Per-app metrics
 
-- CPU and memory for each app, shown in `droidhost ps` and the dashboard.
+- CPU and memory for each app, shown in `dukoi ps` and the dashboard.
 - Plus uptime, restart count and the last kill reason.
 
 ---
@@ -48,7 +48,7 @@ droidhost logs my-api
 ## Alerts
 
 ```bash
-droidhost alerts
+dukoi alerts
 ```
 
 | Alert | Fires when |
@@ -66,7 +66,7 @@ droidhost alerts
 
 Alerts are short and say what to do:
 
-> ⚠ **pixel-10a**: my-api crashed 5 times in 2 minutes. Last error: `Cannot find module 'hono'`. Run `droidhost logs my-api`.
+> ⚠ **pixel-10a**: my-api crashed 5 times in 2 minutes. Last error: `Cannot find module 'hono'`. Run `dukoi logs my-api`.
 
 The phone also shows alerts as Android notifications.
 

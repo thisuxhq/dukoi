@@ -1,11 +1,6 @@
 // Everything the dashboard reads from and does to the phone. These run on the
 // local server, which signs each call with this computer's key.
-import {
-  APP_NAME_PATTERN,
-  type AppInfo,
-  type PhoneStatus,
-  type ReleaseInfo,
-} from '@droidhost/shared'
+import { APP_NAME_PATTERN, type AppInfo, type PhoneStatus, type ReleaseInfo } from '@dukoi/shared'
 import * as v from 'valibot'
 import { fail, followLog, type Problem, phone, problem, signed } from '#lib/server/phone.js'
 import { command, getRequestEvent, query } from '$app/server'

@@ -1,4 +1,4 @@
-package com.thisux.droidhost.ui
+package com.thisux.dukoi.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,14 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.thisux.droidhost.BatteryCare
-import com.thisux.droidhost.ChargeLimit
-import com.thisux.droidhost.ui.theme.Canvas
-import com.thisux.droidhost.ui.theme.Card
-import com.thisux.droidhost.ui.theme.Muted
-import com.thisux.droidhost.ui.theme.Restarting
-import com.thisux.droidhost.ui.theme.Running
-import com.thisux.droidhost.ui.theme.Styles
+import com.thisux.dukoi.BatteryCare
+import com.thisux.dukoi.ChargeLimit
+import com.thisux.dukoi.ui.theme.Canvas
+import com.thisux.dukoi.ui.theme.Card
+import com.thisux.dukoi.ui.theme.Muted
+import com.thisux.dukoi.ui.theme.Restarting
+import com.thisux.dukoi.ui.theme.Running
+import com.thisux.dukoi.ui.theme.Styles
 
 /** A phone that's plugged in all day wears out its battery. This screen says so and links to the fix. */
 @Composable
@@ -58,7 +58,7 @@ fun BatteryCareScreen(care: BatteryCare, onBack: () -> Unit, onTurnOn: () -> Uni
             when (care.limit) {
               ChargeLimit.ON -> "Charging stops at 80%, so the battery stays healthy while the phone is plugged in."
               ChargeLimit.OFF -> "This phone is plugged in all day. Stopping at 80% keeps the battery from wearing out."
-              ChargeLimit.UNKNOWN -> "Plug the phone in and DroidHost can tell whether charging stops at 80%."
+              ChargeLimit.UNKNOWN -> "Plug the phone in and Dukoi can tell whether charging stops at 80%."
             },
             style = Styles.Small.copy(fontSize = 14.sp, lineHeight = 20.sp),
           )

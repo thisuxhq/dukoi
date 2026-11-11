@@ -1,6 +1,6 @@
 // Admin API routes for apps. Computers need to be paired; the phone app
 // itself reads and controls apps through the same handlers under /local.
-import type { EnvChange, TemplateDeployRequest } from '@droidhost/shared'
+import type { EnvChange, TemplateDeployRequest } from '@dukoi/shared'
 import type { Agent } from './agent.ts'
 import { HttpError } from './http.ts'
 

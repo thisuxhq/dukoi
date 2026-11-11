@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Upload a file, get a link to share. Deploys to a DroidHost phone with no edits.",
+  "description": "Upload a file, get a link to share. Deploys to a Dukoi phone with no edits.",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"

@@ -10,10 +10,10 @@ import {
   pack,
   type ReleaseManifest,
   type TemplateInfo,
-} from '@droidhost/shared'
+} from '@dukoi/shared'
 import { Agent } from './agent.ts'
 
-const home = mkdtempSync(join(tmpdir(), 'droidhost-templates-'))
+const home = mkdtempSync(join(tmpdir(), 'dukoi-templates-'))
 const templatesDir = join(home, 'bundled')
 const port = 18070 + Math.floor(Math.random() * 1000)
 const agent = new Agent({
@@ -38,7 +38,7 @@ function bundle(
     mkdirSync(join(dir, name, '..'), { recursive: true })
     writeFileSync(join(dir, name), text)
   }
-  mkdirSync(join(dir, '.droidhost'), { recursive: true })
+  mkdirSync(join(dir, '.dukoi'), { recursive: true })
   const full: ReleaseManifest = { ...manifest, source: { files: 1, bytes: 0, cli: 'test' } }
   writeFileSync(join(dir, MANIFEST_PATH), JSON.stringify(full))
   writeFileSync(join(templatesDir, `${id}.tgz`), pack(dir).data)

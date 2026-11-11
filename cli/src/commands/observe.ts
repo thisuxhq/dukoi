@@ -1,5 +1,5 @@
-// droidhost ps, logs and status
-import { type AppInfo, type PhoneStatus, signRequest } from '@droidhost/shared'
+// dukoi ps, logs and status
+import { type AppInfo, type PhoneStatus, signRequest } from '@dukoi/shared'
 import { call, pickPhone, unreachable } from '../client.ts'
 import { computerKey } from '../config.ts'
 import { CliError, c, info, table } from '../output.ts'
@@ -16,7 +16,7 @@ const STATE_COLOUR: Record<AppInfo['state'], (s: string) => string> = {
 export async function ps(device: string | undefined, json: boolean): Promise<void> {
   const apps = await call<AppInfo[]>(pickPhone(device), '/apps')
   if (json) return void console.log(JSON.stringify({ ok: true, apps }))
-  if (apps.length === 0) return void info('No apps yet. Run `droidhost deploy` in an app folder.')
+  if (apps.length === 0) return void info('No apps yet. Run `dukoi deploy` in an app folder.')
   const rows = [['APP', 'STATUS', 'CPU', 'MEM', 'UPTIME', 'RESTARTS', 'URL'].map((h) => c.dim(h))]
   for (const a of apps) {
     rows.push([
@@ -32,7 +32,7 @@ export async function ps(device: string | undefined, json: boolean): Promise<voi
   info(table(rows))
   const troubled = apps.filter((a) => a.lastExit && a.state !== 'running')
   for (const a of troubled)
-    info(c.yellow(`\n⚠ ${a.name}: ${a.lastExit}. See \`droidhost logs ${a.name}\`.`))
+    info(c.yellow(`\n⚠ ${a.name}: ${a.lastExit}. See \`dukoi logs ${a.name}\`.`))
 }
 
 export interface LogOptions {

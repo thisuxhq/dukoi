@@ -44,6 +44,6 @@ app.get('/notes/count', (c) =>
     <p>Add a route to <code>server.js</code>:</p>
     <Code code={change} />
     <p>Then deploy again. It’s live in seconds, and your notes are still there.</p>
-    <Terminal command="npx droidhost deploy" />
+    <Terminal command="npx dukoi deploy" />
   </Section>
 </TemplatePage>

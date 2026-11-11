@@ -64,8 +64,8 @@ const cloudflareImpact = $derived(
   hostnames.length === 0
     ? 'No apps use it right now. You can connect again when you add a domain.'
     : hostnames.length === 1
-      ? `${hostnames[0]} will stop working. DroidHost removes only the DNS records it made.`
-      : `${hostnames.length} public links will stop working. DroidHost removes only the DNS records it made.`,
+      ? `${hostnames[0]} will stop working. Dukoi removes only the DNS records it made.`
+      : `${hostnames.length} public links will stop working. Dukoi removes only the DNS records it made.`,
 )
 </script>
 
@@ -79,10 +79,10 @@ const cloudflareImpact = $derived(
     <div class="flex max-w-[720px] flex-col gap-4 pt-2">
       <p class="text-[15px] leading-[22px]">
         This computer is no longer paired with {unpaired.phone}.
-        {#if !unpaired.phoneForgot}The phone wasn’t reachable, so remove this computer in the DroidHost app too.{/if}
+        {#if !unpaired.phoneForgot}The phone wasn’t reachable, so remove this computer in the Dukoi app too.{/if}
       </p>
       <p class="text-[15px] leading-[22px] text-muted">To pair again, run this, then start the dashboard again.</p>
-      <div class="w-fit"><CommandBox command="npx droidhost pair" /></div>
+      <div class="w-fit"><CommandBox command="npx dukoi pair" /></div>
     </div>
   {:else}
     {#if data?.problem}<div class="max-w-[720px]"><ProblemNote problem={data.problem} /></div>{/if}
@@ -93,7 +93,7 @@ const cloudflareImpact = $derived(
         <section class="flex flex-col gap-3">
           <h2 class="font-display text-[22px] leading-7 font-medium">This phone</h2>
           <div class="flex flex-col gap-px">
-            {#each [['Name', s.name, true], ['Model', `${s.model}, Android ${s.android}`, false], ['Address', data.address, true], ['Storage', s.storage ? `${gb(s.storage.freeMb)} free of ${gb(s.storage.totalMb)}` : '–', false], ['DroidHost', `${s.agentVersion} on Node ${s.nodeVersion.replace(/^v/, '')}`, false]] as [label, value, mono] (label)}
+            {#each [['Name', s.name, true], ['Model', `${s.model}, Android ${s.android}`, false], ['Address', data.address, true], ['Storage', s.storage ? `${gb(s.storage.freeMb)} free of ${gb(s.storage.totalMb)}` : '–', false], ['Dukoi', `${s.agentVersion} on Node ${s.nodeVersion.replace(/^v/, '')}`, false]] as [label, value, mono] (label)}
               <div class="flex items-center justify-between gap-4 bg-card px-4 py-3.5 md:px-5">
                 <span class="text-sm text-muted">{label}</span>
                 <span class="truncate text-right {mono ? 'font-mono text-[13px]' : 'text-sm font-medium'}">{value}</span>
@@ -115,7 +115,7 @@ const cloudflareImpact = $derived(
               </div>
             {/each}
           </div>
-          <p class="text-[13px] text-muted">Remove a computer from the DroidHost app on the phone.</p>
+          <p class="text-[13px] text-muted">Remove a computer from the Dukoi app on the phone.</p>
         </section>
       {/if}
 

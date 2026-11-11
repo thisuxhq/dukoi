@@ -18,7 +18,7 @@ import { getMimeType } from 'hono/utils/mime'
 // Cloudflare's free plan stops public uploads at 100 MB.
 const MAX_MB = 50
 
-// DroidHost sets DATA_DIR to a folder that survives deploys and rollbacks.
+// Dukoi sets DATA_DIR to a folder that survives deploys and rollbacks.
 const FILES = join(process.env.DATA_DIR ?? '.', 'files')
 mkdirSync(FILES, { recursive: true })
 

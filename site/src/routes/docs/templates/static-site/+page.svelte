@@ -14,7 +14,7 @@ const change = `<h1>Hi, I'm Priya</h1>`
   lead="A clean one-page site with your name on it. Plain HTML and CSS, no build step. Use it for a portfolio, a link page or a landing page."
 >
   <Section id="what-you-get" title="What you get">
-    <p>A page that says who you are, with a short intro and your links. There’s no <code>package.json</code>: DroidHost serves the folder as it is.</p>
+    <p>A page that says who you are, with a short intro and your links. There’s no <code>package.json</code>: Dukoi serves the folder as it is.</p>
     <Browser url="192.168.0.112:3001">
       <div class="flex flex-col gap-3 px-6 py-8 lg:px-10 lg:py-12">
         <p class="font-display text-[32px] leading-9 font-medium tracking-[-0.03em] text-ink lg:text-[40px] lg:leading-[44px]">Hi, I’m Your Name</p>
@@ -36,6 +36,6 @@ const change = `<h1>Hi, I'm Priya</h1>`
     <p>Put your own name in <code>index.html</code>, in place of “Your Name”:</p>
     <Code code={change} />
     <p>Then deploy again. The new page is live in a few seconds.</p>
-    <Terminal command="npx droidhost deploy" />
+    <Terminal command="npx dukoi deploy" />
   </Section>
 </TemplatePage>

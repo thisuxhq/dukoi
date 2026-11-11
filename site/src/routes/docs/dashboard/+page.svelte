@@ -12,7 +12,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="open" title="Open it">
   <Terminal
-    command="npx droidhost dashboard"
+    command="npx dukoi dashboard"
     output={`
 Dashboard for a024: http://127.0.0.1:7071
 Only this computer can open it. Press Ctrl+C to stop.`}
@@ -32,6 +32,6 @@ Only this computer can open it. Press Ctrl+C to stop.`}
 <Section id="safety" title="Why it’s safe">
   <p>The dashboard listens on <code>127.0.0.1</code>, so other devices on your network can’t reach it. It talks to the phone with this computer’s pairing key, like the CLI does, and the key never reaches the browser.</p>
   <Note title="More than one phone?">
-    The dashboard shows the last phone you used. Pick another with <code>droidhost dashboard --device pixel-6</code>.
+    The dashboard shows the last phone you used. Pick another with <code>dukoi dashboard --device pixel-6</code>.
   </Note>
 </Section>

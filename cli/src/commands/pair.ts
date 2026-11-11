@@ -1,4 +1,4 @@
-import { ADMIN_PORT, formatPairingCode, type PairStatus, type PhoneInfo } from '@droidhost/shared'
+import { ADMIN_PORT, formatPairingCode, type PairStatus, type PhoneInfo } from '@dukoi/shared'
 import { call, pickPhone, type Target } from '../client.ts'
 import { computerKey, computerName, loadPhones, removePhone, savePhone } from '../config.ts'
 import { discover } from '../discover.ts'
@@ -50,13 +50,13 @@ export async function pair(opts: PairOptions): Promise<void> {
   }
 
   if (status.state === 'denied') {
-    throw new CliError('PAIRING_DENIED', 'The phone said no.', 'Run `droidhost pair` to try again.')
+    throw new CliError('PAIRING_DENIED', 'The phone said no.', 'Run `dukoi pair` to try again.')
   }
   if (status.state !== 'approved') {
     throw new CliError(
       'PAIRING_EXPIRED',
       'Nobody tapped Approve on the phone within 2 minutes.',
-      'Run `droidhost pair` again and approve on the phone.',
+      'Run `dukoi pair` again and approve on the phone.',
     )
   }
 
@@ -75,7 +75,7 @@ export async function pair(opts: PairOptions): Promise<void> {
     )
   } else {
     ok(`Paired with ${c.bold(name)}`)
-    info(`\n  Next: ${c.cyan('droidhost deploy')} in your app's folder`)
+    info(`\n  Next: ${c.cyan('dukoi deploy')} in your app's folder`)
   }
 }
 
@@ -89,8 +89,8 @@ async function findPhone(host: string | undefined, say: (s: string) => void): Pr
   if (found.length === 0) {
     throw new CliError(
       'NO_PHONE_FOUND',
-      'No DroidHost phone found on this Wi-Fi.',
-      'Open DroidHost on the phone and check it’s on the same Wi-Fi. Or pass its address: droidhost pair --host 192.168.1.24',
+      'No Dukoi phone found on this Wi-Fi.',
+      'Open Dukoi on the phone and check it’s on the same Wi-Fi. Or pass its address: dukoi pair --host 192.168.1.24',
     )
   }
   if (found.length > 1) {
@@ -98,7 +98,7 @@ async function findPhone(host: string | undefined, say: (s: string) => void): Pr
     throw new CliError(
       'MANY_PHONES',
       `Found ${found.length} phones. Pick one with --host:`,
-      `${list}\n\n  droidhost pair --host ${found[0]?.host}`,
+      `${list}\n\n  dukoi pair --host ${found[0]?.host}`,
     )
   }
   const f = found[0] as (typeof found)[number]
@@ -112,7 +112,7 @@ export async function devices(json: boolean): Promise<void> {
     return
   }
   if (phones.length === 0) {
-    info('No phones paired yet. Run `droidhost pair`.')
+    info('No phones paired yet. Run `dukoi pair`.')
     return
   }
   const rows = [['', 'NAME', 'MODEL', 'ADDRESS', 'PAIRED'].map((h) => c.dim(h))]
@@ -144,5 +144,5 @@ export async function unpair(name: string | undefined, json: boolean): Promise<v
   }
   ok(`Unpaired ${phone.name}`)
   if (!phoneForgot)
-    info(c.dim('  The phone wasn’t reachable. Remove this computer in the DroidHost app too.'))
+    info(c.dim('  The phone wasn’t reachable. Remove this computer in the Dukoi app too.'))
 }

@@ -1,6 +1,6 @@
 # Device lab
 
-This doc explains how we test DroidHost on real phones, what "done" means for a requirement, and how we benchmark.
+This doc explains how we test Dukoi on real phones, what "done" means for a requirement, and how we benchmark.
 
 **The rule:** a requirement is done only when its acceptance check passes on **all four** lab phones.
 
