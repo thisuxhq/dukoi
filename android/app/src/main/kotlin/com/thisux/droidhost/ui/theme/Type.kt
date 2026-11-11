@@ -8,6 +8,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.thisux.droidhost.R
@@ -29,10 +30,10 @@ val Inter = FontFamily(
 val GeistMono = FontFamily(variable(R.font.geist_mono, 400), variable(R.font.geist_mono, 500))
 
 object Styles {
-  /** Onboarding headlines */
-  val Hero = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 52.sp, lineHeight = 54.sp, letterSpacing = (-0.03).em, color = Ink)
+  /** Onboarding headlines. Balanced breaks, so no word sits alone on the last line. */
+  val Hero = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 52.sp, lineHeight = 54.sp, letterSpacing = (-0.03).em, color = Ink, lineBreak = LineBreak.Heading)
   /** Screen titles: "Apps", "hono-api", "Settings" */
-  val Title = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-0.03).em, color = Ink)
+  val Title = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-0.03).em, color = Ink, lineBreak = LineBreak.Heading)
   val Section = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 22.sp, lineHeight = 28.sp, color = Ink)
   val CardTitle = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 20.sp, lineHeight = 24.sp, color = Ink)
   val Number = TextStyle(fontFamily = Outfit, fontWeight = FontWeight.Medium, fontSize = 22.sp, lineHeight = 28.sp, color = Ink)
