@@ -14,6 +14,17 @@ export const sections: { title: string; pages: DocPage[] }[] = [
     ],
   },
   {
+    title: 'Templates',
+    pages: [
+      { slug: 'templates', title: 'All templates' },
+      { slug: 'templates/static-site', title: 'Static site' },
+      { slug: 'templates/notes-api', title: 'Notes API' },
+      { slug: 'templates/file-drop', title: 'File drop' },
+      { slug: 'templates/mcp-server', title: 'MCP server' },
+      { slug: 'templates/telegram-bot', title: 'Telegram bot' },
+    ],
+  },
+  {
     title: 'Deploy',
     pages: [
       { slug: 'deploy', title: 'Deploy an app' },

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thisux.droidhost.AppInfo
 import com.thisux.droidhost.AppState
+import com.thisux.droidhost.TemplateInfo
 import com.thisux.droidhost.Vitals
 import com.thisux.droidhost.ui.theme.Canvas
 import com.thisux.droidhost.ui.theme.Card
@@ -42,7 +43,9 @@ fun HomeScreen(
   apps: List<AppInfo>?,
   vitals: Vitals,
   problem: Problem?,
+  templates: List<TemplateInfo>,
   onFix: () -> Unit,
+  onDeployed: (AppInfo) -> Unit,
   onOpenApp: (String) -> Unit,
   onSettings: () -> Unit,
 ) {
@@ -59,6 +62,8 @@ fun HomeScreen(
       when {
         problem != null -> ProblemBox(problem, onFix)
         apps == null -> {}
+        // With templates bundled, a new phone can be live in a minute without a computer.
+        apps.isEmpty() && templates.isNotEmpty() -> TemplatesSection(templates, onDeployed)
         apps.isEmpty() -> EmptyBox()
         else -> {
           StatsCard(

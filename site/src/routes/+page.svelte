@@ -4,6 +4,7 @@ import ApkButton from '#lib/components/ApkButton.svelte'
 import CopyCommand from '#lib/components/CopyCommand.svelte'
 import Icon from '#lib/components/Icon.svelte'
 import { APK } from '#lib/links.js'
+import { templates } from '#lib/templates.js'
 import welcome from '#lib/welcome.svg'
 
 const steps = [
@@ -22,14 +23,6 @@ const steps = [
     body: 'From your app’s folder. You get a URL, and a public one when you want it.',
     command: 'npx droidhost deploy',
   },
-]
-
-const starters = [
-  { icon: 'api', name: 'Hono API', body: 'JSON API with SQLite' },
-  { icon: 'telegram', name: 'Telegram bot', body: 'Always-on bot, no webhook host' },
-  { icon: 'browser', name: 'Static site', body: 'Portfolio, docs or a landing page' },
-  { icon: 'folder-01', name: 'File storage', body: 'Uploads on the phone’s storage' },
-  { icon: 'mcp-server', name: 'MCP server', body: 'Tools for your AI agents' },
 ]
 
 const compare = [
@@ -197,17 +190,19 @@ const chip = 'grid size-12 place-items-center bg-white/70'
 <!-- Starters -->
 <section class="flex flex-col gap-5 px-5 pb-14 lg:gap-8 lg:px-16 lg:pb-24">
   <div class="flex flex-col gap-3">
-    <h2 class={sectionTitle}>Starters that deploy with zero edits</h2>
-    <p class="hidden text-[17px] leading-[26px] text-muted lg:block">Node apps and static sites. Pick one, run deploy, and it’s live.</p>
+    <h2 class={sectionTitle}>Templates that deploy with zero edits</h2>
+    <p class="hidden text-[17px] leading-[26px] text-muted lg:block">Pick one, and it’s live on your phone in under a minute.</p>
   </div>
   <ul class="flex flex-col gap-px bg-divider md:grid md:grid-cols-2 md:gap-3 md:bg-transparent lg:grid-cols-5 lg:gap-4">
-    {#each starters as s (s.name)}
-      <li class="flex items-center gap-3.5 bg-card px-[18px] py-4 lg:flex-col lg:items-start lg:p-6">
-        <Icon name={s.icon} class="size-6 lg:size-7" />
-        <div class="flex flex-col gap-0.5 lg:gap-1">
-          <h3 class="font-display text-lg leading-6 font-medium lg:text-xl lg:leading-[26px]">{s.name}</h3>
-          <p class="text-sm leading-5 text-muted">{s.body}</p>
-        </div>
+    {#each templates as t (t.id)}
+      <li class="flex">
+        <a href="/docs/templates/{t.id}" class="group flex flex-1 items-center gap-3.5 bg-card px-[18px] py-4 lg:flex-col lg:items-start lg:p-6">
+          <Icon name={t.icon} class="size-6 lg:size-7" />
+          <div class="flex flex-col gap-0.5 lg:gap-1">
+            <h3 class="font-display text-lg leading-6 font-medium group-hover:text-violet lg:text-xl lg:leading-[26px]">{t.name}</h3>
+            <p class="text-sm leading-5 text-muted">{t.description}</p>
+          </div>
+        </a>
       </li>
     {/each}
   </ul>

@@ -1,0 +1,10 @@
+{
+  "name": "telegram-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Telegram bot that replies, always on. Deploys to a DroidHost phone with no edits.",
+  "scripts": {
+    "start": "node bot.js"
+  }
+}

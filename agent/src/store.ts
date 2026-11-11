@@ -16,6 +16,10 @@ export interface SavedApp {
   exposed?: boolean
   /** Custom domain, e.g. api.example.com, served by the phone's named tunnel */
   domain?: string
+  /** Settings passed to the app as environment variables, like TELEGRAM_BOT_TOKEN */
+  env?: Record<string, string>
+  /** The template it was deployed from on the phone */
+  template?: string
   createdAt: string
 }
 

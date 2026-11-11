@@ -14,6 +14,8 @@ export interface Config {
   cloudflaredPath: string | null
   /** Cloudflare's API, for DNS records of custom domains (overridden in tests) */
   cloudflareApi: string
+  /** Template archives (<id>.tgz) the phone app copies out of the APK */
+  templatesDir: string
   phone: { name: string; model: string; android: string }
 }
 
@@ -25,6 +27,7 @@ export function loadConfig(env = process.env): Config {
     nodePath: process.execPath,
     cloudflaredPath: env.DROIDHOST_CLOUDFLARED ?? null,
     cloudflareApi: env.DROIDHOST_CLOUDFLARE_API ?? 'https://api.cloudflare.com/client/v4',
+    templatesDir: env.DROIDHOST_TEMPLATES ?? join(home, 'templates'),
     phone: {
       name: env.DROIDHOST_PHONE_NAME ?? 'phone',
       model: env.DROIDHOST_PHONE_MODEL ?? 'unknown',

@@ -18,6 +18,9 @@ import {
   APP_NAME_PATTERN,
   type AppInfo,
   type DeployResult,
+  ENV_NAME_PATTERN,
+  type EnvChange,
+  type EnvNames,
   FIRST_APP_PORT,
   MANIFEST_PATH,
   type ReleaseInfo,
@@ -161,7 +164,40 @@ export class Apps {
 
   // ── Deploy ──────────────────────────────────────────────────────────────
 
+  /** A deploy from a computer: the archive arrives in the request body. */
   async deploy(name: string, body: IncomingMessage, sha256: string): Promise<DeployResult> {
+    return this.deployRelease(name, async (rt, release) => {
+      const upload = join(rt.dir, 'run', `${release}.upload`)
+      try {
+        await this.receive(body, upload, sha256)
+        return await readFile(upload)
+      } finally {
+        rmSync(upload, { force: true })
+      }
+    }).then((result) => {
+      // Their own code now, so the phone stops offering Make it yours.
+      this.clearTemplate(name)
+      return { ...result, app: { ...result.app, template: null } }
+    })
+  }
+
+  private clearTemplate(name: string): void {
+    const saved = this.agent.store.app(name)
+    if (saved?.template) {
+      delete saved.template
+      this.agent.store.save()
+    }
+  }
+
+  /** A deploy from an archive already on the phone, like a template. */
+  deployArchive(name: string, archive: Buffer): Promise<DeployResult> {
+    return this.deployRelease(name, async () => archive)
+  }
+
+  private async deployRelease(
+    name: string,
+    archive: (rt: AppRuntime, release: string) => Promise<Buffer>,
+  ): Promise<DeployResult> {
     if (!APP_NAME_PATTERN.test(name)) {
       throw new HttpError(
         400,
@@ -175,15 +211,11 @@ export class Apps {
     return rt.serial(async () => {
       const release = this.nextReleaseId(name)
       const dir = join(this.releasesDir(name), release)
-      const upload = join(rt.dir, 'run', `${release}.upload`)
       try {
-        await this.receive(body, upload, sha256)
-        await unpack(await readFile(upload), dir)
+        await unpack(await archive(rt, release), dir)
       } catch (err) {
         rmSync(dir, { recursive: true, force: true })
         throw err
-      } finally {
-        rmSync(upload, { force: true })
       }
       rt.log.note(`Deploying release ${release}.`)
       try {
@@ -299,6 +331,7 @@ export class Apps {
 
   private spec(rt: AppRuntime, dir: string, manifest: ReleaseManifest, port: number): ProcessSpec {
     const env: Record<string, string> = {
+      ...rt.saved.env,
       PORT: String(port),
       HOST: '127.0.0.1',
       NODE_ENV: 'production',
@@ -364,6 +397,46 @@ export class Apps {
       .filter((id) => id !== rt.live?.release)
     for (const id of old)
       rmSync(join(this.releasesDir(rt.saved.name), id), { recursive: true, force: true })
+  }
+
+  // ── Settings ────────────────────────────────────────────────────────────
+
+  /** Setting names only. Values never leave the phone. */
+  async envNames(name: string): Promise<EnvNames> {
+    const rt = await this.runtime(name)
+    return { names: Object.keys(rt.saved.env ?? {}).sort() }
+  }
+
+  /** Changes settings, then restarts the app so it picks them up. */
+  async setEnv(name: string, change: EnvChange, create = false): Promise<EnvNames> {
+    for (const key of [...Object.keys(change.set ?? {}), ...(change.unset ?? [])]) {
+      if (!ENV_NAME_PATTERN.test(key))
+        throw new HttpError(
+          400,
+          'BAD_SETTING',
+          `"${key}" isn't a valid setting name.`,
+          'Use letters, numbers and underscores, like TELEGRAM_BOT_TOKEN.',
+        )
+    }
+    const rt = await this.runtime(name, create)
+    const env = { ...rt.saved.env, ...change.set }
+    for (const key of change.unset ?? []) delete env[key]
+    rt.saved.env = env
+    this.agent.store.save()
+    // A fresh launch, because a restart would reuse the old environment.
+    const live = rt.live
+    if (live) {
+      rt.log.note('Settings changed. Restarting.')
+      await rt.serial(() => this.launch(rt, live.release, { waitHealthy: false }))
+    }
+    return { names: Object.keys(env).sort() }
+  }
+
+  /** Remembers which template an app came from, for the phone's Make it yours card. */
+  async setTemplate(name: string, template: string): Promise<void> {
+    const rt = await this.runtime(name)
+    rt.saved.template = template
+    this.agent.store.save()
   }
 
   // ── Control ─────────────────────────────────────────────────────────────
@@ -497,6 +570,7 @@ export class Apps {
       localUrl: `http://${wifiAddress()}:${rt.saved.port}`,
       publicUrl: rt.publicUrl,
       domain: rt.saved.domain ?? null,
+      template: rt.saved.template ?? null,
     }
   }
 

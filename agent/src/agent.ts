@@ -9,6 +9,7 @@ import { Router } from './http.ts'
 import { observeRoutes } from './observe-routes.ts'
 import { pairingRoutes } from './pairing.ts'
 import { Store } from './store.ts'
+import { Templates } from './templates.ts'
 import { Tunnels } from './tunnels.ts'
 
 export class Agent {
@@ -17,6 +18,7 @@ export class Agent {
   readonly apps: Apps
   readonly tunnels: Tunnels
   readonly domains: Domains
+  readonly templates: Templates
   readonly paths: ReturnType<typeof paths>
   readonly startedAt = new Date()
   private server: Server | null = null
@@ -30,6 +32,7 @@ export class Agent {
     this.apps = new Apps(this)
     this.tunnels = new Tunnels(this)
     this.domains = new Domains(this)
+    this.templates = new Templates(this)
     this.routes()
   }
 

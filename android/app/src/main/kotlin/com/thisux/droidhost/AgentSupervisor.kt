@@ -66,6 +66,8 @@ object AgentSupervisor {
     val script = runCatching { installAgent(context) }.getOrElse {
       return fail("Couldn't unpack the agent: ${it.message}")
     }
+    // Templates are optional: without them the phone just doesn't offer Try a template.
+    val templates = runCatching { installTemplates(context) }.getOrNull()
     val home = home(context).apply { mkdirs() }
     val log = logFile(context)
     var crashes = 0
@@ -85,6 +87,7 @@ object AgentSupervisor {
         put("DROIDHOST_PHONE_NAME", phoneName())
         put("DROIDHOST_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
         put("DROIDHOST_ANDROID", Build.VERSION.RELEASE)
+        templates?.let { put("DROIDHOST_TEMPLATES", it.absolutePath) }
         put("HOME", home.absolutePath)
         put("TMPDIR", context.cacheDir.absolutePath)
       }
@@ -124,6 +127,24 @@ object AgentSupervisor {
       tmp.renameTo(target)
     }
     return target
+  }
+
+  /** Copies the template archives (assets/templates/<id>.tgz) out of the APK when they differ. */
+  private fun installTemplates(context: Context): File? {
+    val names = context.assets.list("templates")?.filter { it.endsWith(".tgz") }.orEmpty()
+    if (names.isEmpty()) return null
+    val dir = File(context.filesDir, "templates").apply { mkdirs() }
+    for (name in names) {
+      val bytes = context.assets.open("templates/$name").use { it.readBytes() }
+      val target = File(dir, name)
+      if (target.exists() && target.readBytes().contentEquals(bytes)) continue
+      val tmp = File(dir, "$name.tmp")
+      tmp.writeBytes(bytes)
+      tmp.renameTo(target)
+    }
+    // A template dropped from this build shouldn't be offered any more.
+    dir.listFiles()?.filter { it.name !in names }?.forEach { it.delete() }
+    return dir
   }
 
   fun agentHash(context: Context): String = runCatching {

@@ -86,7 +86,7 @@ export function readAppFolder(
     throw new CliError(
       'NOT_AN_APP',
       `${dir} has no package.json or index.html.`,
-      'Run this in your app folder, or start from a starter: droidhost deploy starters/hono-api',
+      'Run this in your app folder, or start from a template: droidhost init',
     )
   }
 

@@ -92,6 +92,8 @@ export interface AppInfo {
   publicUrl: string | null
   /** Custom domain when the public URL is on one (stable), else null */
   domain: string | null
+  /** The template it started from (deployed on the phone), else null */
+  template: string | null
 }
 
 /** The phone's link to Cloudflare for custom domains. */
@@ -147,3 +149,74 @@ export interface ReleaseManifest {
 }
 
 export const APP_NAME_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/
+
+// ── Templates ─────────────────────────────────────────────────────────────
+
+/** An app people can start from: `droidhost init <id>`, or Try a template on the phone. */
+export interface TemplateInfo {
+  id: string
+  name: string
+  description: string
+  /** The setting it needs before it can run, like TELEGRAM_BOT_TOKEN, else null */
+  secret: string | null
+  /** The one file to change to make it yours */
+  edit: string
+}
+
+/** Every template, in the order people see them. The folders live in starters/. */
+export const TEMPLATES: TemplateInfo[] = [
+  {
+    id: 'static-site',
+    name: 'Static site',
+    description: 'A one-page site with your name on it',
+    secret: null,
+    edit: 'index.html',
+  },
+  {
+    id: 'notes-api',
+    name: 'Notes API',
+    description: 'A small JSON API with a database',
+    secret: null,
+    edit: 'server.js',
+  },
+  {
+    id: 'file-drop',
+    name: 'File drop',
+    description: 'Upload a file, get a link to share',
+    secret: null,
+    edit: 'server.js',
+  },
+  {
+    id: 'mcp-server',
+    name: 'MCP server',
+    description: 'A tool your AI assistant can call',
+    secret: null,
+    edit: 'tools.js',
+  },
+  {
+    id: 'telegram-bot',
+    name: 'Telegram bot',
+    description: 'A bot that replies, always on',
+    secret: 'TELEGRAM_BOT_TOKEN',
+    edit: 'bot.js',
+  },
+]
+
+/** Body of POST /local/templates/:id/deploy */
+export interface TemplateDeployRequest {
+  env?: Record<string, string>
+}
+
+/** Body of PUT /apps/:name/env. Values are never sent back, only names. */
+export interface EnvChange {
+  set?: Record<string, string>
+  unset?: string[]
+}
+
+/** Answer to GET and PUT /apps/:name/env */
+export interface EnvNames {
+  names: string[]
+}
+
+/** Setting names apps can use: letters, numbers and underscores */
+export const ENV_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]{0,63}$/

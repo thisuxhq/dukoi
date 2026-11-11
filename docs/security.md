@@ -58,7 +58,8 @@ This doc explains how DroidHost keeps the phone and its apps safe, and what it d
 ## Apps and uploads
 
 - Each app has its own folder, `data/` directory, environment and port.
-- File-serving starters send downloads with `Content-Disposition: attachment`, so uploaded HTML can't run scripts on your domain.
+- The file-drop template sends uploads with `Content-Security-Policy: sandbox`, so uploaded HTML or SVG opens but its scripts never run on your domain.
+- App settings (`droidhost env`) are passed to the app as environment variables. The API returns their names, never their values.
 
 ## Audit log
 

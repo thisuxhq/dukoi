@@ -87,15 +87,24 @@ $ droidhost deploy
 | `--memory <size>` | Memory limit, for example `256mb`. Defaults to a share of the phone's RAM. |
 | `--no-health-check` | Skip the HTTP check. Use this for workers that open no port. |
 
-### `droidhost init [starter]`
+### `droidhost init [template]`
 
-Creates a new app from a starter in a new folder. Run it without a name to choose from a list.
+Copies a template into a new folder and, if this computer is paired, deploys it straight away. Run it without a name to pick from a numbered list.
 
-```bash
-droidhost init hono-api
+```
+$ droidhost init notes-api
+✓ Created notes-api/
+✓ Installed dependencies
+✓ Packed notes-api (346 KB)
+✓ Uploaded to a024
+✓ Started and healthy (release 0001)
+
+  Local   http://192.168.0.112:3000
+
+  Make it yours: edit notes-api/server.js, then run droidhost deploy
 ```
 
-Starters: `hono-api`, `telegram-bot`, `static-site`, `file-storage`, `mcp-server`. See [starters.md](starters.md).
+Templates: `static-site`, `notes-api`, `file-drop`, `mcp-server`, `telegram-bot`. A template that needs a setting, like the bot's token, asks for it and saves it on the phone. If the computer isn't paired yet, it only makes the folder and says to pair. See [starters.md](starters.md).
 
 ### `droidhost releases [app]`
 
@@ -130,18 +139,17 @@ $ droidhost ps
 
 ---
 
-## Secrets
+## Settings
 
 ### `droidhost env`
 
 ```bash
 droidhost env set KEY=value [KEY2=value2 ...]
-droidhost env list           # names only, values are masked
+droidhost env list             # names only
 droidhost env unset KEY
-droidhost env import .env
 ```
 
-Values are encrypted on the phone and never printed. Changing them restarts the app.
+Settings are saved on the phone and passed to the app as environment variables. The phone never sends their values back. Changing them restarts the app. They act on the app in this folder; `--app <name>` picks another.
 
 ---
 

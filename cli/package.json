@@ -7,7 +7,7 @@
     "droidhost": "./src/main.ts"
   },
   "scripts": {
-    "build": "bun run --cwd ../dashboard build && bun build src/main.ts --target=node --format=esm --outfile=dist/droidhost.mjs && rm -rf dist/dashboard && cp -R ../dashboard/build dist/dashboard",
+    "build": "bun run --cwd ../dashboard build && bun build src/main.ts --target=node --format=esm --outfile=dist/droidhost.mjs && rm -rf dist/dashboard && cp -R ../dashboard/build dist/dashboard && rm -rf dist/starters && cp -R ../starters dist/starters && rm -rf dist/starters/*/node_modules",
     "typecheck": "tsc -p ."
   },
   "dependencies": {

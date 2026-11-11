@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>File drop</title>
+    <style>
+      body { margin: 0; background: #f1f0f4; color: #16161a; font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 560px; margin: 0 auto; padding: 80px 24px; }
+      h1 { margin: 0 0 8px; font-size: 40px; letter-spacing: -0.03em; }
+      p { margin: 0; color: #6e6d78; }
+      label { display: grid; place-items: center; gap: 6px; margin-top: 32px; padding: 56px 24px; border: 2px dashed #c9c8d1; background: #fff; text-align: center; cursor: pointer; }
+      label.over { border-color: #7b3ff2; background: #ede7fb; }
+      label strong { font-size: 18px; }
+      input { display: none; }
+      #result { margin-top: 20px; padding: 16px; background: #fff; word-break: break-all; }
+      #result[hidden] { display: none; }
+      a { color: #7b3ff2; font-weight: 600; }
+      button { margin-left: 8px; padding: 6px 12px; border: 1px solid #dad9e0; border-radius: 4px; background: #fff; font: inherit; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>File drop</h1>
+      <p>Drop a file to get a link anyone can open. Up to {{MAX_MB}} MB.</p>
+      <label id="drop">
+        <strong>Drop a file here</strong>
+        <span>or tap to choose one</span>
+        <input id="file" type="file" />
+      </label>
+      <div id="result" hidden></div>
+    </main>
+    <script>
+      const drop = document.getElementById('drop')
+      const input = document.getElementById('file')
+      const result = document.getElementById('result')
+
+      async function upload(file) {
+        result.hidden = false
+        result.textContent = `Uploading ${file.name}…`
+        const body = new FormData()
+        body.append('file', file)
+        const res = await fetch('/upload', { method: 'POST', body })
+        const data = await res.json().catch(() => ({ error: 'The upload failed. Try again.' }))
+        if (!res.ok) {
+          result.textContent = data.error
+          return
+        }
+        const url = new URL(data.url, location.href).href
+        result.innerHTML = ''
+        const link = Object.assign(document.createElement('a'), { href: url, textContent: url })
+        const copy = Object.assign(document.createElement('button'), { textContent: 'Copy link' })
+        copy.onclick = () => navigator.clipboard.writeText(url).then(() => (copy.textContent = 'Copied'))
+        result.append(link, copy)
+      }
+
+      input.onchange = () => input.files[0] && upload(input.files[0])
+      drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over') }
+      drop.ondragleave = () => drop.classList.remove('over')
+      drop.ondrop = (e) => {
+        e.preventDefault()
+        drop.classList.remove('over')
+        if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0])
+      }
+    </script>
+  </body>
+</html>

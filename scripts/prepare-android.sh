@@ -3,6 +3,7 @@
 #   jniLibs/arm64-v8a/libnode.so          prebuilt Node for Android (fetch-node.sh)
 #   jniLibs/arm64-v8a/libcloudflared.so   prebuilt cloudflared for Android (fetch-cloudflared.sh)
 #   assets/agent/agent.mjs         the phone agent, bundled for Node with bun build
+#   assets/templates/<id>.tgz      the templates for Try a template (pack-templates.ts)
 #
 # Usage: scripts/prepare-android.sh
 # Run it before ./gradlew assembleDebug. It's quick after the first run.
@@ -30,3 +31,9 @@ echo "✓ cloudflared $CF_VERSION → jniLibs/arm64-v8a/libcloudflared.so"
 mkdir -p "$main/assets/agent"
 cp "$repo_dir/agent/dist/agent.mjs" "$main/assets/agent/agent.mjs"
 echo "✓ Agent → assets/agent/agent.mjs"
+
+bun "$repo_dir/scripts/pack-templates.ts" >/dev/null
+rm -rf "$main/assets/templates"
+mkdir -p "$main/assets/templates"
+cp "$repo_dir"/build/templates/*.tgz "$main/assets/templates/"
+echo "✓ Templates → assets/templates/"

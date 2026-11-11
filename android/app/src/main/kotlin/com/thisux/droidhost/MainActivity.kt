@@ -113,6 +113,7 @@ private fun App() {
     mutableStateOf<Screen>(if (prefs.getBoolean(KEY_ONBOARDED, false)) Screen.Home else Screen.Onboarding(OnboardingStep.WELCOME))
   }
   var apps by remember { mutableStateOf<List<AppInfo>?>(null) }
+  var templates by remember { mutableStateOf(emptyList<TemplateInfo>()) }
   var vitals by remember { mutableStateOf(Vitals(null, null, null)) }
   var care by remember { mutableStateOf(Battery.care(context)) }
   var pending by remember { mutableStateOf(emptyList<PairingRequest>()) }
@@ -128,6 +129,8 @@ private fun App() {
     while (true) {
       withContext(Dispatchers.IO) {
         apps = Phone.apps() ?: apps
+        // Only a phone with no apps offers templates; read them once.
+        if (apps?.isEmpty() == true && templates.isEmpty()) templates = Phone.templates()
         vitals = Phone.vitals(context)
         care = Battery.care(context)
         Pairing.load()?.let { (p, c) -> pending = p; computers = c }
@@ -223,6 +226,7 @@ private fun App() {
       apps = apps,
       vitals = vitals,
       problem = problem(context, supervisor),
+      templates = templates,
       onFix = {
         if (supervisor.state == AgentSupervisor.State.FAILED) {
           AgentService.stop(context); AgentService.start(context)
@@ -232,6 +236,13 @@ private fun App() {
       },
       onOpenApp = { screen = Screen.App(it) },
       onSettings = { screen = Screen.Settings },
+      // Show the new app straight away; the next read fills in the rest.
+      onDeployed = { app ->
+        apps = apps.orEmpty().filter { it.name != app.name } + app
+        toast.show("${app.name} is live")
+        screen = Screen.App(app.name)
+        refresh++
+      },
     )
 
     is Screen.App -> {

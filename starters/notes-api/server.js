@@ -15,13 +15,15 @@ db.exec(`CREATE TABLE IF NOT EXISTS notes (
 
 const app = new Hono()
 
+// The home page says what the API can do.
 app.get('/', (c) =>
   c.json({
-    ok: true,
-    app: 'hono-api',
-    node: process.version,
-    platform: `${process.platform}/${process.arch}`,
-    notes: db.prepare('SELECT COUNT(*) AS n FROM notes').get().n,
+    name: 'notes-api',
+    routes: {
+      'GET /notes': 'List notes',
+      'POST /notes': 'Add a note',
+      'DELETE /notes/:id': 'Remove a note',
+    },
   }),
 )
 
@@ -43,5 +45,5 @@ app.delete('/notes/:id', (c) => {
 
 const port = Number(process.env.PORT ?? 3000)
 serve({ fetch: app.fetch, port, hostname: process.env.HOST ?? '0.0.0.0' }, () => {
-  console.log(`hono-api listening on ${port}`)
+  console.log(`notes-api listening on ${port}`)
 })
