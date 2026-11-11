@@ -57,16 +57,17 @@ Each deploy becomes a numbered release:
 apps/my-api/releases/0006/
 ```
 
-### 6. Install
+### 6. Install (on your computer)
 
-- Runs `npm ci` if there's a lockfile, otherwise `npm install --omit=dev`, using the bundled Node.
-- **It's skipped** if `package.json` and the lockfile haven't changed since the last release. The previous `node_modules` is copied instead, which makes redeploys fast.
+- The CLI copies the app to a temporary folder and runs `npm install --omit=dev --ignore-scripts` there, **on your computer**. The upload includes `node_modules`, so the phone never runs npm (D-108).
+- Native modules are caught here, before anything is uploaded. See [Native modules](#native-modules).
+- The CLI also writes `.droidhost/manifest.json` with how to start the app and which path to health-check.
 - Static sites skip this step.
-- Native modules are caught here. See [Native modules](#native-modules).
 
 ### 7. Start
 
-- The process manager picks a free port and passes it as `PORT`.
+- The process manager starts the new release on a free internal port and passes it as `PORT` (with `HOST=127.0.0.1`).
+- Each app also has a **stable port** (3000, 3001 and so on) that never changes. A small proxy in the agent forwards it to whichever release is live, including WebSockets.
 - Secrets are decrypted and passed as environment variables.
 - `NODE_ENV=production` is set.
 - Static sites are served by a small built-in static server.
@@ -80,7 +81,7 @@ apps/my-api/releases/0006/
 
 ### 9. Switch
 
-- The new release passes, so local and tunnel traffic now point to its port.
+- The new release passes, so the stable port now forwards to it.
 - The old release gets `SIGTERM`, then `SIGKILL` after 5 seconds.
 - **This gives zero-downtime redeploys.** The old one stops only after the new one is healthy.
 

@@ -21,7 +21,9 @@ const agent = new Agent({
 })
 const base = `http://127.0.0.1:${port}`
 
-beforeAll(() => agent.start())
+beforeAll(async () => {
+  await agent.start()
+})
 afterAll(async () => {
   await agent.stop()
   rmSync(home, { recursive: true, force: true })
