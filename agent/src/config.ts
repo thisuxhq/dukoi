@@ -10,6 +10,8 @@ export interface Config {
   adminPort: number
   /** Node binary used to start apps (the same one running the agent) */
   nodePath: string
+  /** cloudflared binary for public URLs, if bundled */
+  cloudflaredPath: string | null
   phone: { name: string; model: string; android: string }
 }
 
@@ -19,6 +21,7 @@ export function loadConfig(env = process.env): Config {
     home,
     adminPort: Number(env.DROIDHOST_ADMIN_PORT ?? ADMIN_PORT),
     nodePath: process.execPath,
+    cloudflaredPath: env.DROIDHOST_CLOUDFLARED ?? null,
     phone: {
       name: env.DROIDHOST_PHONE_NAME ?? 'phone',
       model: env.DROIDHOST_PHONE_MODEL ?? 'unknown',

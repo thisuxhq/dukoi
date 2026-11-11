@@ -8,11 +8,13 @@ import { Router } from './http.ts'
 import { observeRoutes } from './observe-routes.ts'
 import { pairingRoutes } from './pairing.ts'
 import { Store } from './store.ts'
+import { Tunnels } from './tunnels.ts'
 
 export class Agent {
   readonly store: Store
   readonly router: Router
   readonly apps: Apps
+  readonly tunnels: Tunnels
   readonly paths: ReturnType<typeof paths>
   readonly startedAt = new Date()
   private server: Server | null = null
@@ -24,6 +26,7 @@ export class Agent {
       this.store.isPaired(key),
     )
     this.apps = new Apps(this)
+    this.tunnels = new Tunnels(this)
     this.routes()
   }
 
@@ -59,12 +62,14 @@ export class Agent {
   async start(): Promise<void> {
     this.server = this.router.listen(this.config.adminPort)
     await this.apps.restore()
+    await this.tunnels.restore()
     console.log(
       `DroidHost agent ${AGENT_VERSION} on port ${this.config.adminPort} (Node ${process.version}, key ${this.store.state.identity.publicKey.slice(0, 8)}…)`,
     )
   }
 
   async stop(): Promise<void> {
+    await this.tunnels.stopAll()
     await this.apps.stopAll()
     await new Promise<void>((resolve) =>
       this.server ? this.server.close(() => resolve()) : resolve(),

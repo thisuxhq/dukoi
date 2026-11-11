@@ -80,6 +80,8 @@ object AgentSupervisor {
         .redirectOutput(ProcessBuilder.Redirect.appendTo(log))
       builder.environment().apply {
         put("DROIDHOST_HOME", home.absolutePath)
+        File(context.applicationInfo.nativeLibraryDir, "libcloudflared.so").takeIf { it.exists() }
+          ?.let { put("DROIDHOST_CLOUDFLARED", it.absolutePath) }
         put("DROIDHOST_PHONE_NAME", phoneName())
         put("DROIDHOST_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
         put("DROIDHOST_ANDROID", Build.VERSION.RELEASE)

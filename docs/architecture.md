@@ -9,39 +9,38 @@ This doc explains how DroidHost's parts fit together in phase 1, with one phone 
 ## The big picture
 
 ```
- Your computer                    Android phone (DroidHost APK)                  Internet
-┌────────────────┐   paired     ┌──────────────────────────────────────────┐
-│ CLI            │──channel────▶│ Control app (UI, setup, health)          │
-│ droidhost ...  │  (LAN only)  │ ┌──────────────────────────────────────┐ │
-│                │              │ │ Foreground service (specialUse)      │ │
-│ Web dashboard  │──────────────▶ │  Agent: admin API                    │ │
-│ (localhost)    │              │ │  Process manager: spawn, watch,      │ │
-└────────────────┘              │ │    restart, limits, logs             │ │
-                                │ └───────┬──────────────────┬───────────┘ │
-                                │         │ spawns           │ spawns      │
-                                │   ┌─────▼─────┐      ┌─────▼──────┐      │
-                                │   │ Node 24   │      │ cloudflared│◀─────┼──── Cloudflare ◀── Visitors
-                                │   │  my-api   │◀─────│  (outbound)│      │      edge        (HTTPS)
-                                │   │  my-bot   │      └────────────┘      │
-                                │   │  site     │                          │
-                                │   └───────────┘                          │
-                                │   Storage: apps, releases, logs, state   │
-                                └──────────────────────────────────────────┘
+ Your computer                 Android phone (DroidHost APK)                          Internet
+┌───────────────┐  signed     ┌───────────────────────────────────────────────────┐
+│ CLI           │  requests   │ Phone app (Kotlin): setup, pairing approval, NSD  │
+│ droidhost ... │──(LAN)─────▶│ ┌───────────────────────────────────────────────┐ │
+└───────────────┘   :7070     │ │ Foreground service (specialUse)               │ │
+                              │ │  keeps one process alive ↓                    │ │
+                              │ └───────────────────────┬───────────────────────┘ │
+                              │ ┌───────────────────────▼───────────────────────┐ │
+                              │ │ Agent (TypeScript on bundled Node 24)         │ │
+                              │ │  admin API :7070 · process manager · proxies  │ │
+                              │ └───────┬─────────────────────────┬─────────────┘ │
+                              │  spawns │                  spawns │               │
+                              │ ┌───────▼───────┐        ┌────────▼─────┐         │
+       Wi-Fi visitors ───────▶│ │ :3000 → my-api │◀──────│ cloudflared  │◀────────┼── Cloudflare ◀── Visitors
+                              │ │ :3001 → site   │        │ (outbound)   │         │     edge       (HTTPS)
+                              │ └───────────────┘        └──────────────┘         │
+                              │ Storage: state.json, apps/<name>/releases, data   │
+                              └───────────────────────────────────────────────────┘
 ```
-
 | Part | One-line job |
 | --- | --- |
 | **CLI** | Packs your folder and sends signed commands to the phone. |
-| **Web dashboard** | Shows apps, logs and health in a browser, served locally by the CLI. |
-| **Control app** | The phone UI: setup checklist, health score, pairing approval and app list. |
-| **Foreground service** | Keeps everything alive. Android protects it, and everything else is its child. |
-| **Agent** | The admin API. It checks signatures, accepts commands and streams logs and metrics. |
-| **Process manager** | Starts, stops, watches and restarts apps. Enforces limits and writes logs. |
+| **Phone app** | Kotlin. Setup checklist, pairing approval, Wi-Fi discovery (NSD) and the notification. |
+| **Foreground service** | Keeps one process alive, the agent. Android protects it. A killed agent is back in about a second. |
+| **Agent** | TypeScript on the bundled Node (`agent/`). The admin API: checks signatures, signs answers, runs deploys, streams logs. |
+| **Process manager** | Part of the agent. Starts, watches and restarts apps (at once after a kill, with backoff after crashes) and writes logs. |
+| **Stable ports** | Part of the agent. Each app keeps one port (3000, 3001…) that forwards to the live release, so deploys and rollbacks don't change URLs. |
 | **Node 24** | Runs your apps. Bundled in the APK. |
 | **cloudflared** | Opens an outbound tunnel so apps get a public HTTPS URL. |
 | **Storage** | App folders, releases, logs, encrypted secrets and the agent's own state. |
 
-The agent and process manager run in Kotlin inside the foreground service. See [tech-stack.md](tech-stack.md) for why.
+The agent is a TypeScript program on the bundled Node, kept alive by the Kotlin service (D-107). It shares its protocol code with the CLI (`shared/`).
 
 ---
 
@@ -146,7 +145,8 @@ droidhost/
 
 ```
 droidhost/
-├── android/          # Control app, foreground service, agent, process manager (Kotlin)
+├── android/          # Phone app and foreground service (Kotlin)
+├── agent/            # Admin API, process manager, deploys, tunnels (TypeScript on Node)
 ├── cli/              # droidhost CLI (TypeScript)
 ├── dashboard/        # Web dashboard (SvelteKit, static)
 ├── shared/           # Admin API types and protocol, shared by cli and dashboard

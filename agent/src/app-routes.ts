@@ -28,5 +28,12 @@ export function appRoutes(agent: Agent): void {
     const { to } = ctx.json<{ to?: string }>()
     return apps.rollback(ctx.params.name ?? '', to)
   })
-  r.on('DELETE', '/apps/:name', 'paired', (ctx) => apps.remove(ctx.params.name ?? ''))
+  r.on('POST', '/apps/:name/expose', 'paired', (ctx) => agent.tunnels.expose(ctx.params.name ?? ''))
+  r.on('DELETE', '/apps/:name/expose', 'paired', (ctx) =>
+    agent.tunnels.unexpose(ctx.params.name ?? ''),
+  )
+  r.on('DELETE', '/apps/:name', 'paired', async (ctx) => {
+    await agent.tunnels.unexpose(ctx.params.name ?? '')
+    return apps.remove(ctx.params.name ?? '')
+  })
 }
