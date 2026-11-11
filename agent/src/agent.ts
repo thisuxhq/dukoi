@@ -3,6 +3,7 @@ import type { Server } from 'node:http'
 import { type PhoneInfo, PROTOCOL_VERSION } from '@droidhost/shared'
 import { AGENT_VERSION, type Config, paths } from './config.ts'
 import { Router } from './http.ts'
+import { pairingRoutes } from './pairing.ts'
 import { Store } from './store.ts'
 
 export class Agent {
@@ -44,6 +45,8 @@ export class Agent {
       computers: this.store.state.computers.length,
       apps: this.store.state.apps.length,
     }))
+
+    pairingRoutes(this)
   }
 
   start(): void {

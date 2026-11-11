@@ -101,6 +101,8 @@ private fun HomeScreen() {
       }
     }
 
+    PairingSection(context)
+
     SetupChecklist(refresh)
 
     Text("To pair a computer, run this on it:", style = MaterialTheme.typography.bodyMedium)
