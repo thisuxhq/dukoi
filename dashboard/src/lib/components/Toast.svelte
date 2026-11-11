@@ -11,7 +11,7 @@ import Icon from './Icon.svelte'
 			onclick={() => toast.hide()}
 			in:fly={{ y: -8, duration: 180 }}
 			out:fly={{ y: -8, duration: 120 }}
-			class="fixed top-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2.5 rounded bg-ink px-4 py-3.5 text-[15px] text-white"
+			class="fixed top-4 left-1/2 z-10 flex w-max max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-2.5 rounded bg-ink px-4 py-3.5 text-left text-[15px] text-white md:top-5"
 		>
 			<span class={toast.current.error ? 'text-log-error' : 'text-log-live'}>
 				<Icon name={toast.current.error ? 'alert' : 'check'} size={20} />

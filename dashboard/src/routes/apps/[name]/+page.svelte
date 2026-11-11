@@ -62,18 +62,18 @@ const live = $derived(app?.state === 'running')
 const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 </script>
 
-<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-5 md:gap-6">
 	<a href="/" class="flex w-fit items-center gap-1 text-sm font-semibold text-violet">
 		<Icon name="arrow-left" size={20} />Apps
 	</a>
 
-	<div class="flex items-end justify-between">
+	<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 		<div class="flex flex-col gap-2.5">
-			<h1 class="font-display text-[44px] leading-[48px] font-medium tracking-[-0.03em]">{params.name}</h1>
+			<h1 class="font-display text-[36px] leading-10 font-medium tracking-[-0.03em] break-all md:text-[44px] md:leading-[48px]">{params.name}</h1>
 			{#if app}<StateLabel state={app.state} big />{/if}
 		</div>
 		{#if app}
-			<div class="flex gap-3">
+			<div class="flex gap-3 *:flex-1 sm:*:flex-none">
 				<button type="button" disabled={busy !== null} onclick={restart} class="h-11 w-[120px] rounded border border-line bg-card text-sm font-semibold disabled:opacity-50">
 					Restart
 				</button>
@@ -86,8 +86,8 @@ const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 
 	{#if detail.current?.problem}<ProblemNote problem={detail.current.problem} />{/if}
 
-	<div class="flex h-[calc(100vh-300px)] min-h-[440px] gap-6">
-		<div class="flex w-[440px] shrink-0 flex-col gap-3 overflow-y-auto">
+	<div class="flex flex-col gap-6 lg:h-[calc(100vh-300px)] lg:min-h-[440px] lg:flex-row">
+		<div class="flex shrink-0 flex-col gap-3 lg:w-[400px] lg:overflow-y-auto xl:w-[440px]">
 			{#if app}
 				<div class="flex flex-col gap-px">
 					<div class="flex items-center gap-2 bg-card py-3.5 pr-2 pl-4">
@@ -142,7 +142,7 @@ const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 			{/if}
 		</div>
 
-		<section class="flex min-w-0 flex-1 flex-col gap-4 bg-night px-6 py-5">
+		<section class="flex h-[480px] min-w-0 flex-col gap-4 bg-night px-4 py-4 md:px-6 md:py-5 lg:h-auto lg:flex-1">
 			<h2 class="flex items-center gap-2 font-display text-xl font-medium text-white">
 				Logs
 				<span class="size-[7px] rounded-full {logs.connected && !logs.current?.problem ? 'bg-log-live' : 'bg-log-time'}"></span>
@@ -150,11 +150,11 @@ const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 			<div
 				bind:this={panel}
 				onscroll={() => panel && (pinned = panel.scrollHeight - panel.scrollTop - panel.clientHeight < 40)}
-				class="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto font-mono text-[13px] leading-5"
+				class="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto font-mono text-xs leading-[18px] md:text-[13px] md:leading-5"
 			>
 				{#each logs.current?.lines ?? [] as line, i (i)}
-					<div class="flex gap-3">
-						<span class="w-[72px] shrink-0 text-log-time">{line.time}</span>
+					<div class="flex gap-2 md:gap-3">
+						<span class="w-16 shrink-0 text-log-time md:w-[72px]">{line.time}</span>
 						<span class="w-6 shrink-0 {line.stream === 'err' ? 'text-log-error' : 'text-log-note'}">
 							{line.stream === 'agent' ? '●' : line.stream === 'err' ? 'err' : ''}
 						</span>
