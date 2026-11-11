@@ -166,11 +166,13 @@ private fun Details(app: AppInfo, onAction: (String) -> Unit) {
     }
   }
   Spacer(Modifier.height(12.dp))
+  // Numbers only mean something while the app runs.
+  val live = app.state == AppState.RUNNING
   StatsCard(
     listOf(
-      (app.cpuPercent?.let { "${Math.round(it)}%" } ?: "–") to "CPU",
-      (app.memoryMb?.let { "${Math.round(it)} MB" } ?: "–") to "Memory",
-      (if (app.state == AppState.RUNNING) formatUptime(app.startedAt) else "–") to "Uptime",
+      (app.cpuPercent?.takeIf { live }?.let { "${Math.round(it)}%" } ?: "–") to "CPU",
+      (app.memoryMb?.takeIf { live }?.let { "${Math.round(it)} MB" } ?: "–") to "Memory",
+      (if (live) formatUptime(app.startedAt) else "–") to "Uptime",
     ),
   )
   Spacer(Modifier.height(12.dp))
@@ -205,10 +207,10 @@ private fun CrashBanner(reason: String, onRollBack: () -> Unit, onRetry: () -> U
       Text(reason, style = Styles.Body.copy(fontWeight = Styles.Button.fontWeight), color = DeepRed)
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      Box(Modifier.weight(1f).height(44.dp).background(Violet).tap(onRollBack), contentAlignment = Alignment.Center) {
+      Box(Modifier.weight(1f).height(44.dp).background(Violet).press(onRollBack), contentAlignment = Alignment.Center) {
         Text("Roll back", style = Styles.Button.copy(fontSize = 14.sp), color = Card)
       }
-      Box(Modifier.weight(1f).height(44.dp).background(Card).tap(onRetry), contentAlignment = Alignment.Center) {
+      Box(Modifier.weight(1f).height(44.dp).background(Card).press(onRetry), contentAlignment = Alignment.Center) {
         Text("Try again", style = Styles.Button.copy(fontSize = 14.sp), color = com.thisux.droidhost.ui.theme.Ink)
       }
     }

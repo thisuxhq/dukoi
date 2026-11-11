@@ -2,6 +2,7 @@ package com.thisux.droidhost.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -19,7 +20,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -47,9 +48,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.thisux.droidhost.ui.theme.Ink
+import com.thisux.droidhost.ui.theme.LogError
 import com.thisux.droidhost.ui.theme.LogLive
 import com.thisux.droidhost.ui.theme.Styles
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // Motion rules (Emil Kowalski's): every animation has a job, UI motion stays under
 // 300 ms, things that enter use a strong ease-out, exits are faster than entrances,
@@ -71,16 +74,29 @@ object Durations {
   const val SHEET = 300
 }
 
-/** Tap with a slight press-in instead of a ripple, so the screen feels like it's listening. */
-fun Modifier.tap(onClick: () -> Unit): Modifier = composed {
+/**
+ * Tap with a press-in instead of a ripple, so the screen feels like it's listening.
+ * A quick tap still plays the whole press (down, then back up); otherwise the release
+ * arrives before the press-in is visible. [depth] is how far it presses: 0.97 for rows,
+ * deeper for buttons.
+ */
+fun Modifier.tap(onClick: () -> Unit): Modifier = pressIn(0.97f, onClick)
+
+fun Modifier.pressIn(depth: Float, onClick: () -> Unit): Modifier = composed {
   val source = remember { MutableInteractionSource() }
-  val pressed by source.collectIsPressedAsState()
-  val scale by animateFloatAsState(
-    targetValue = if (pressed) 0.97f else 1f,
-    animationSpec = tween(if (pressed) Durations.PRESS else Durations.RELEASE, easing = EaseOut),
-    label = "press",
-  )
-  graphicsLayer { scaleX = scale; scaleY = scale }.clickable(source, null, onClick = onClick)
+  val scale = remember { Animatable(1f) }
+  LaunchedEffect(source) {
+    source.interactions.collect { interaction ->
+      when (interaction) {
+        is PressInteraction.Press -> launch { scale.animateTo(depth, tween(Durations.PRESS, easing = EaseOut)) }
+        is PressInteraction.Release, is PressInteraction.Cancel -> launch {
+          if (scale.value > depth + 0.005f) scale.animateTo(depth, tween(70, easing = EaseOut))
+          scale.animateTo(1f, tween(Durations.RELEASE, easing = EaseOut))
+        }
+      }
+    }
+  }
+  graphicsLayer { scaleX = scale.value; scaleY = scale.value }.clickable(source, null, onClick = onClick)
 }
 
 /** A gentle breathing alpha, for states that are still changing (starting, restarting, live logs). */
@@ -133,11 +149,15 @@ fun CopyButton(tint: Color, size: Dp, box: Dp, onCopy: () -> Unit) {
 class Toast {
   var message by mutableStateOf<String?>(null)
     private set
+  var error by mutableStateOf(false)
+    private set
   var shownAt by mutableIntStateOf(0)
     private set
 
-  fun show(text: String) {
+  /** Shows [text]; a newer message replaces the current one and restarts its timer. */
+  fun show(text: String, error: Boolean = false) {
     message = text
+    this.error = error
     shownAt++
   }
 
@@ -171,7 +191,7 @@ fun BoxScope.ToastHost(toast: Toast) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
       ) {
-        Icon("checkmark-circle-02", 20.dp, LogLive)
+        if (toast.error) Icon("alert-02", 20.dp, LogError) else Icon("checkmark-circle-02", 20.dp, LogLive)
         Text(last, style = Styles.Body, color = Color.White)
       }
     }

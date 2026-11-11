@@ -81,7 +81,7 @@ fun SettingsScreen(
 
       if (hasApps) {
         Spacer(Modifier.height(32.dp))
-        Box(Modifier.fillMaxWidth().height(48.dp).background(SoftRed).tap(onStopAll), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxWidth().height(48.dp).background(SoftRed).press(onStopAll), contentAlignment = Alignment.Center) {
           Text("Stop all apps", style = Styles.Button.copy(fontSize = 14.sp), color = Crashed)
         }
       }
