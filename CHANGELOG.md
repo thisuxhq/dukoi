@@ -6,7 +6,7 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [0.1.0] - 2026-11-11
 
-The first version, with the CLI installable from dukoi.com. The APK isn't on GitHub Releases yet, so build it from this repo.
+The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https://dukoi.com/download/dukoi.apk) and the CLI with `curl -fsSL https://dukoi.com/install | sh`.
 
 ### Added
 
