@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.thisux.droidhost.ui.AppScreen
 import com.thisux.droidhost.ui.BatteryCareScreen
+import com.thisux.droidhost.ui.DisconnectCloudflareSheet
 import com.thisux.droidhost.ui.Durations
 import com.thisux.droidhost.ui.EaseOut
 import com.thisux.droidhost.ui.LocalToast
@@ -253,12 +254,20 @@ private fun App() {
 
     Screen.Settings -> {
       BackHandler { screen = Screen.Home }
+      var cloudflare by remember { mutableStateOf<DomainStatus?>(null) }
+      var disconnecting by remember { mutableStateOf(false) }
+      var reload by remember { mutableIntStateOf(0) }
+      LaunchedEffect(reload) { cloudflare = withContext(Dispatchers.IO) { Phone.domainStatus() } }
+      cloudflare?.takeIf { disconnecting }?.let { status ->
+        DisconnectCloudflareSheet(status, onDismiss = { disconnecting = false }, onDone = { disconnecting = false; reload++; refresh++ })
+      }
       SettingsScreen(
         computers = computers,
         phoneName = AgentSupervisor.phoneName(),
         address = Phone.wifiIp(context),
         setupDone = Setup.done(context),
         chargeLimit = care.limit,
+        cloudflare = cloudflare,
         hasApps = !apps.isNullOrEmpty(),
         onBack = { screen = Screen.Home },
         onRemove = { pc ->
@@ -267,6 +276,7 @@ private fun App() {
         },
         onFinishSetup = { next(OnboardingStep.WELCOME) },
         onBatteryCare = { screen = Screen.BatteryCare },
+        onDisconnectCloudflare = { disconnecting = true },
         onStopAll = ::stopAll,
       )
     }
