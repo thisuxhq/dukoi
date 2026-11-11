@@ -1,4 +1,5 @@
 <script lang="ts">
+import AgentPrompt from '#lib/components/AgentPrompt.svelte'
 import ApkButton from '#lib/components/ApkButton.svelte'
 import CopyCommand from '#lib/components/CopyCommand.svelte'
 import Icon from '#lib/components/Icon.svelte'
@@ -61,12 +62,12 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       Deploy real apps to the Android phone in your drawer and get a live URL. No root, no Termux, no cloud bill.
     </p>
     <div class="flex flex-col gap-4 pt-1 lg:flex-row lg:items-center lg:gap-5 lg:pt-2">
+      <AgentPrompt />
       <CopyCommand command="npx droidhost pair" class="lg:w-fit" />
-      <ApkButton class="lg:hidden" />
-      <a href={APK} class="hidden items-center gap-2 text-base font-semibold text-violet hover:underline lg:flex">
-        <Icon name="download-04" class="size-5" />Get the APK
-      </a>
     </div>
+    <a href={APK} class="flex w-fit items-center gap-2 text-base font-semibold text-violet hover:underline">
+      <Icon name="download-04" class="size-5" />Get the APK
+    </a>
   </div>
 </section>
 
@@ -77,7 +78,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
     {#each steps as step, i (step.title)}
       <li class="flex flex-col gap-2.5 bg-card px-5 py-6 lg:gap-3.5 lg:p-8">
         <div class="flex items-baseline gap-2.5 lg:flex-col lg:gap-3.5">
-          <span class="font-display text-lg font-medium text-violet lg:text-xl">{i + 1}</span>
+          <span class="font-display text-lg font-medium text-violet lg:text-xl" aria-hidden="true">{i + 1}</span>
           <h3 class="font-display text-[22px] leading-7 font-medium lg:text-[26px] lg:leading-8">{step.title}</h3>
         </div>
         <p class="text-[15px] leading-[22px] text-muted lg:text-base lg:leading-6">{step.body}</p>
@@ -103,7 +104,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
           Android kills background apps to save battery. DroidHost runs as a foreground service, restarts anything that stops within seconds, and starts it all again after a reboot.
         </p>
       </div>
-      <div class="flex flex-col gap-2 bg-night px-4 py-3.5 font-mono text-[13px] leading-5 lg:px-5 lg:py-[18px]">
+      <div aria-hidden="true" class="flex flex-col gap-2 bg-night px-4 py-3.5 font-mono text-[13px] leading-5 lg:px-5 lg:py-[18px]">
         <p class="flex gap-3.5"><span class="w-[72px] shrink-0 text-log-time">09:31:40</span><span class="text-log-note">● Android stopped the app to save battery. Restarted now.</span></p>
         <p class="flex gap-3.5"><span class="w-[72px] shrink-0 text-log-time">09:31:41</span><span class="text-log-text">hono-api listening on 40379</span></p>
         <p class="flex gap-3.5"><span class="w-[72px] shrink-0 text-log-time">09:33:02</span><span class="text-log-text">GET /notes 200 3ms</span></p>
@@ -116,7 +117,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>A public URL, no router setup</h3>
         <p class={tileBody}>Works behind CGNAT. A quick link in seconds, or your own domain through Cloudflare.</p>
       </div>
-      <p class="flex items-center gap-2.5 bg-white px-4 py-3.5 font-mono text-sm">
+      <p aria-hidden="true" class="flex items-center gap-2.5 bg-white px-4 py-3.5 font-mono text-sm">
         <span class="size-2 rounded-full bg-running"></span>hono-api.example.com
       </p>
     </div>
@@ -127,7 +128,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>Roll back in seconds</h3>
         <p class={tileBody}>Every deploy is a release. A bad one is one command away from gone.</p>
       </div>
-      <div class="flex flex-col gap-px">
+      <div aria-hidden="true" class="flex flex-col gap-px">
         <p class="flex items-center justify-between bg-white px-4 py-3 text-[13px]">
           <span class="font-mono">0006</span>
           <span class="flex items-center gap-1.5 font-medium"><span class="size-[7px] rounded-full bg-running"></span>Live</span>
@@ -144,7 +145,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>Live logs, anywhere</h3>
         <p class={tileBody}>On the phone, in your terminal and in the web dashboard. New lines in under a second.</p>
       </div>
-      <p class="flex h-11 items-center bg-white px-4 font-mono text-[13px]"><span class="text-muted">$</span>&nbsp;npx droidhost logs</p>
+      <p aria-hidden="true" class="flex h-11 items-center bg-white px-4 font-mono text-[13px]"><span class="text-muted">$</span>&nbsp;npx droidhost logs</p>
     </div>
 
     <div class="{tile} bg-rose lg:min-h-[340px]">
@@ -166,7 +167,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>A dashboard on your computer</h3>
         <p class={tileBody}>Every app, its status and its logs, with Restart and Roll back a click away. Only your computer can open it.</p>
       </div>
-      <div class="flex flex-1 flex-col gap-px self-center bg-divider">
+      <div aria-hidden="true" class="flex flex-1 flex-col gap-px self-center bg-divider">
         {#each [['hono-api', 'Running', 'hono-api.example.com'], ['portfolio', 'Running', 'Wi-Fi only'], ['telegram-bot', 'Restarting', 'No link']] as [name, state, link] (name)}
           <p class="flex items-center gap-3 bg-[#f7f6f9] px-[18px] py-4">
             <span class="flex-1 font-display text-[17px] font-medium">{name}</span>
@@ -185,7 +186,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>Battery care</h3>
         <p class={tileBody}>A phone on charge all day wears out its battery. DroidHost watches it and helps you cap it at 80%.</p>
       </div>
-      <p class="flex items-center justify-between bg-white px-4 py-3.5 text-sm">
+      <p aria-hidden="true" class="flex items-center justify-between bg-white px-4 py-3.5 text-sm">
         <span class="font-semibold">Stop charging at 80%</span>
         <span class="flex items-center gap-1.5 text-[13px] font-medium"><span class="size-[7px] rounded-full bg-running"></span>On</span>
       </p>

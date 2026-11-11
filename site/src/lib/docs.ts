@@ -48,3 +48,7 @@ export function pageAt(pathname: string): DocPage | undefined {
   const slug = pathname.replace(/^\/docs\/?/, '').replace(/\/$/, '')
   return pages.find((p) => p.slug === slug)
 }
+
+/** Every page's Markdown twin, written by scripts/markdown.ts: "/" → "/index.md", "/docs/deploy" → "/docs/deploy.md" */
+export const markdownPath = (pathname: string) =>
+  `${pathname === '/' ? '/index' : pathname.replace(/\/$/, '')}.md`

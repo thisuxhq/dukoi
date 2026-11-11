@@ -20,7 +20,7 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 | `agent/` | Runs on the phone on bundled Node: admin API, process manager, deploys, logs, tunnels |
 | `cli/` | The `droidhost` command |
 | `dashboard/` | The web dashboard: a SvelteKit 3 server with remote functions, started by `droidhost dashboard` on `127.0.0.1` |
-| `site/` | The landing page and the user guide at `/docs`: a static SvelteKit 3 site (D-110) |
+| `site/` | The landing page and the user guide at `/docs`: a static SvelteKit 3 site (D-110). The build also writes a `.md` twin of every page, `llms.txt` and `llms-full.txt` for AI agents (`site/scripts/markdown.ts`) |
 | `shared/` | Admin API types, request signing and archives, used by the agent, CLI and dashboard |
 | `starters/` | Apps that deploy with zero edits |
 | `docs/` | Product and engineering docs |

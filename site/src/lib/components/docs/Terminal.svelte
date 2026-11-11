@@ -25,7 +25,7 @@ async function copy() {
 }
 </script>
 
-<div class="flex flex-col rounded bg-night text-white">
+<div class="flex flex-col rounded bg-night text-white" data-terminal={command}>
   <div class="flex items-center justify-between gap-4 py-3 pr-3 pl-4 lg:pl-5 {output ? 'border-b border-night-raised' : ''}">
     <code class="overflow-x-auto font-mono text-sm leading-[22px] whitespace-pre lg:text-[15px]"><span class="text-prompt">$</span> {command}</code>
     <button
