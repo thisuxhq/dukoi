@@ -70,4 +70,4 @@ bun run --filter @droidhost/dashboard build && bun run cli dashboard
 - [docs/roadmap.md](docs/roadmap.md): what's next
 - [docs/README.md](docs/README.md): every doc
 - [AGENTS.md](AGENTS.md): for people and AI agents working in this repo
-- [site/](site): the landing page
+- [site/](site): the landing page and the user guide

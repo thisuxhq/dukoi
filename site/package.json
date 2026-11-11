@@ -25,5 +25,5 @@
     "typescript": "^6.0.3",
     "vite": "^8.3.0"
   },
-  "description": "The landing page: what DroidHost is and how to install it"
+  "description": "The landing page and user guide: what DroidHost is, how to install it and how to use it"
 }
