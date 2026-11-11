@@ -45,6 +45,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.thisux.droidhost.ui.AppScreen
+import com.thisux.droidhost.ui.BatteryCareScreen
 import com.thisux.droidhost.ui.Durations
 import com.thisux.droidhost.ui.EaseOut
 import com.thisux.droidhost.ui.LocalToast
@@ -93,6 +94,7 @@ private sealed interface Screen {
   data object Home : Screen
   data class App(val name: String) : Screen
   data object Settings : Screen
+  data object BatteryCare : Screen
 }
 
 private const val PREFS = "droidhost"
@@ -111,6 +113,7 @@ private fun App() {
   }
   var apps by remember { mutableStateOf<List<AppInfo>?>(null) }
   var vitals by remember { mutableStateOf(Vitals(null, null, null)) }
+  var care by remember { mutableStateOf(Battery.care(context)) }
   var pending by remember { mutableStateOf(emptyList<PairingRequest>()) }
   var computers by remember { mutableStateOf(emptyList<PairedComputer>()) }
   val firstSeen = remember { mutableStateMapOf<String, Long>() }
@@ -125,6 +128,7 @@ private fun App() {
       withContext(Dispatchers.IO) {
         apps = Phone.apps() ?: apps
         vitals = Phone.vitals(context)
+        care = Battery.care(context)
         Pairing.load()?.let { (p, c) -> pending = p; computers = c }
       }
       pending.forEach { firstSeen.putIfAbsent(it.publicKey, System.currentTimeMillis()) }
@@ -254,6 +258,7 @@ private fun App() {
         phoneName = AgentSupervisor.phoneName(),
         address = Phone.wifiIp(context),
         setupDone = Setup.done(context),
+        chargeLimit = care.limit,
         hasApps = !apps.isNullOrEmpty(),
         onBack = { screen = Screen.Home },
         onRemove = { pc ->
@@ -261,8 +266,14 @@ private fun App() {
           computers = computers - pc
         },
         onFinishSetup = { next(OnboardingStep.WELCOME) },
+        onBatteryCare = { screen = Screen.BatteryCare },
         onStopAll = ::stopAll,
       )
+    }
+
+    Screen.BatteryCare -> {
+      BackHandler { screen = Screen.Settings }
+      BatteryCareScreen(care, onBack = { screen = Screen.Settings }, onTurnOn = { Battery.openSettings(context) })
     }
   }
   }
@@ -273,6 +284,7 @@ private fun depth(s: Any): Int = when (s) {
   is Screen.Onboarding -> s.step.ordinal
   Screen.Home -> 10
   is Screen.App, Screen.Settings -> 11
+  Screen.BatteryCare -> 12
   else -> 20
 }
 

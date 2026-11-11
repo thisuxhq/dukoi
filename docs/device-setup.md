@@ -119,6 +119,19 @@ Rough expectations by phone class are in [device-lab.md](device-lab.md#expected-
 
 ---
 
+## Battery care
+
+A server phone stays plugged in all day. Sitting at 100% wears the battery out and can make it swell. Most phones can stop charging at 80% (Samsung calls it Protect battery, Pixel calls it Charging optimization), but each brand hides it in a different place.
+
+**Settings → Battery care** in the app shows:
+
+- Charge, temperature and battery health right now.
+- Whether a charge limit is on. Android has no public API for this, so DroidHost watches: plugged in and resting at 90% or below means **on**, plugged in at 95% or above means **off**. Unplugged, it looks at the last day of samples, or says **Not sure**.
+- **Turn on**, which opens the phone's battery settings. Apps can't change the limit themselves.
+- The last 7 days: hours a day at 100% and the hottest temperature. The service samples the battery every 10 minutes into `battery.csv` in the app's files. Nothing leaves the phone.
+
+---
+
 ## When an app still gets killed
 
 1. The watchdog brings it back within 5 seconds.
