@@ -27,10 +27,10 @@ if [ "$(uname -s)" = "Darwin" ]; then
   # Reuse an image with the tools already installed, if a past run saved one.
   image=ubuntu:24.04
   docker image inspect droidhost-native-tools:llvm21 >/dev/null 2>&1 && image=droidhost-native-tools:llvm21
-  # droidhost-node-build holds the NDK from build-node-android.sh (read only).
+  # The droidhost-node-native volume keeps the NDK, Node source and build tree,
+  # so upgrading to a new Node version only recompiles what changed.
   docker run -d --name droidhost-node-native --platform linux/arm64 \
     -v droidhost-node-native:/cache \
-    -v droidhost-node-build:/ndk-cache:ro \
     -v "$repo_dir/build:/work/build" \
     -v "$repo_dir/scripts:/work/scripts:ro" \
     -e IN_CONTAINER=1 \
@@ -43,18 +43,28 @@ fi
 
 [ "${IN_CONTAINER:-}" = "1" ] || { echo "✗ Run this on a Mac (it starts its own container)." >&2; exit 1; }
 
-NDK_DIR=/ndk-cache/ndk/android-ndk-$NDK_RELEASE
+NDK_DIR=/cache/ndk/android-ndk-$NDK_RELEASE
 NDK_TC=$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64
-[ -d "$NDK_TC/sysroot" ] || { echo "✗ No NDK at $NDK_DIR. Run scripts/build-node-android.sh once first." >&2; exit 1; }
 
 if ! command -v clang-$LLVM_VERSION >/dev/null; then
   step "Installing build tools and LLVM $LLVM_VERSION (native arm64)"
   export DEBIAN_FRONTEND=noninteractive
   apt-get update -qq
   apt-get install -y -qq --no-install-recommends \
-    python3 make g++ curl ca-certificates xz-utils file wget gnupg lsb-release software-properties-common >/dev/null
+    python3 make g++ curl ca-certificates xz-utils file wget unzip gnupg lsb-release software-properties-common >/dev/null
   wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
   bash /tmp/llvm.sh $LLVM_VERSION >/dev/null
+fi
+
+# The NDK is only used for its Android headers, libraries and runtime, which
+# are plain files, so its x86_64 Linux download works on arm64 too.
+if [ ! -d "$NDK_TC/sysroot" ]; then
+  step "Downloading Android NDK $NDK_RELEASE from dl.google.com"
+  command -v unzip >/dev/null || apt-get install -y -qq unzip >/dev/null
+  mkdir -p /cache/ndk
+  curl -fSL -o /cache/ndk/ndk.zip "https://dl.google.com/android/repository/android-ndk-$NDK_RELEASE-linux.zip"
+  unzip -q /cache/ndk/ndk.zip -d /cache/ndk
+  rm /cache/ndk/ndk.zip
 fi
 
 # Upstream clang keeps its own built-in headers (the NDK's are from Google's
