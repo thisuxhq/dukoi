@@ -30,14 +30,14 @@ This doc explains how DroidHost keeps the phone and its apps safe, and what it d
 
 - The computer makes an **Ed25519 key pair**. The private key never leaves the computer.
 - The phone shows a 6-digit code, and the CLI shows the same code. The user approves on the phone, and nothing happens without that tap.
-- The phone stores the public key. The CLI stores the phone's TLS certificate fingerprint, so a fake phone on the network can't intercept the connection.
+- The phone stores the computer's public key. The CLI stores the phone's public key and checks every response is signed by it, so a fake phone on the network can't answer for it.
 - **There are no passwords anywhere.**
 - Each request is signed with a timestamp and a nonce, and the phone rejects replays.
 - The phone app lists paired computers. Removing one takes effect on the next request.
 
 ## Admin API
 
-- Listens on one LAN port, with TLS and signed requests only.
+- Listens on one LAN port (7070). Every request must be signed by a paired computer, and every JSON response is signed by the phone. Traffic isn't encrypted in phase 1, so secrets are encrypted to the phone's key before they're sent (see D-104).
 - **It never goes through a tunnel.** The tunnel config is built from app ports only, and the agent refuses to create a tunnel to its own port.
 - Acceptance check: a port scan from outside finds only app ports.
 
