@@ -62,6 +62,8 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
   />
 </Section>
 
+<p class="pb-6">No app yet? Start from a <a href="/docs/templates">template</a>.</p>
+
 <Note title="Want a public URL?" icon="globe-02">
   Run <code>npx droidhost expose</code> for a quick link, or add <code>--domain api.example.com</code> to use your own domain. See <a href="/docs/public-urls">Public URLs</a>.
 </Note>
