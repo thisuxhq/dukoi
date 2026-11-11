@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thisux.droidhost.ChargeLimit
 import com.thisux.droidhost.PairedComputer
 import com.thisux.droidhost.ui.theme.Canvas
 import com.thisux.droidhost.ui.theme.Card
@@ -38,10 +39,12 @@ fun SettingsScreen(
   phoneName: String,
   address: String?,
   setupDone: Boolean,
+  chargeLimit: ChargeLimit,
   hasApps: Boolean,
   onBack: () -> Unit,
   onRemove: (PairedComputer) -> Unit,
   onFinishSetup: () -> Unit,
+  onBatteryCare: () -> Unit,
   onStopAll: () -> Unit,
 ) {
   Column(Modifier.fillMaxSize().background(Canvas).systemBarsPadding().verticalScroll(rememberScrollState())) {
@@ -76,6 +79,20 @@ fun SettingsScreen(
               Text(if (setupDone) "Done" else "Finish setup", style = Styles.Label)
             }
           }
+          InfoRow("Battery care", onBatteryCare) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+              Dot(limitColor(chargeLimit))
+              Text(
+                when (chargeLimit) {
+                  ChargeLimit.ON -> "Limit on"
+                  ChargeLimit.OFF -> "Limit off"
+                  ChargeLimit.UNKNOWN -> "Check"
+                },
+                style = Styles.Label,
+              )
+              Icon("arrow-right-01", 18.dp, com.thisux.droidhost.ui.theme.Muted)
+            }
+          }
         }
       }
 
@@ -91,7 +108,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun Section(title: String, content: @Composable () -> Unit) {
+internal fun Section(title: String, content: @Composable () -> Unit) {
   Spacer(Modifier.height(32.dp))
   Text(title, style = Styles.Section)
   Spacer(Modifier.height(12.dp))
@@ -99,7 +116,7 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun InfoRow(label: String, onClick: (() -> Unit)? = null, value: @Composable () -> Unit) {
+internal fun InfoRow(label: String, onClick: (() -> Unit)? = null, value: @Composable () -> Unit) {
   val base = Modifier.fillMaxWidth().background(Card)
   Row(
     (if (onClick != null) base.tap(onClick) else base).padding(horizontal = 16.dp, vertical = 13.dp),

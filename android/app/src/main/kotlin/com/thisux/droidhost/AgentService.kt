@@ -29,6 +29,7 @@ class AgentService : Service() {
   private var nsd: NsdManager? = null
   private var nsdListener: NsdManager.RegistrationListener? = null
   private var pairingWatcher: Thread? = null
+  private var batteryWatcher: Thread? = null
 
   override fun onCreate() {
     super.onCreate()
@@ -43,12 +44,14 @@ class AgentService : Service() {
     announce()
     AgentSupervisor.start(this)
     watchPairing()
+    watchBattery()
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
 
   override fun onDestroy() {
     pairingWatcher?.interrupt()
+    batteryWatcher?.interrupt()
     AgentSupervisor.stop()
     runCatching { nsdListener?.let { nsd?.unregisterService(it) } }
     wakeLock?.takeIf { it.isHeld }?.release()
@@ -79,6 +82,16 @@ class AgentService : Service() {
         try { Thread.sleep(1500) } catch (_: InterruptedException) { break }
       }
     }, "pairing-watcher").apply { isDaemon = true; start() }
+  }
+
+  /** Writes a battery sample every 10 minutes for the Battery care screen. */
+  private fun watchBattery() {
+    batteryWatcher = Thread({
+      while (!Thread.currentThread().isInterrupted) {
+        runCatching { Battery.sample(this) }
+        try { Thread.sleep(Battery.SAMPLE_MS) } catch (_: InterruptedException) { break }
+      }
+    }, "battery-watcher").apply { isDaemon = true; start() }
   }
 
   /** mDNS: lets the CLI find this phone on the same Wi-Fi. */
