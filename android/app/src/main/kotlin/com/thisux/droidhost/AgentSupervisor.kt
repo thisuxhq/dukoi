@@ -131,7 +131,8 @@ object AgentSupervisor {
     MessageDigest.getInstance("SHA-256").digest(bytes).take(4).joinToString("") { "%02x".format(it) }
   }.getOrDefault("missing")
 
-  private fun phoneName(): String {
+  /** This phone's name as the agent reports it, e.g. "a024" */
+  fun phoneName(): String {
     val model = Build.MODEL.lowercase(Locale.US).replace(Regex("[^a-z0-9]+"), "-").trim('-')
     return model.ifEmpty { "phone" }
   }

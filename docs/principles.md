@@ -6,6 +6,20 @@ These principles apply to everyone who touches DroidHost: the phone app, the CLI
 
 ---
 
+## 0. Fewer details, each one perfect
+
+> Make every detail perfect and limit the number of details to perfect.
+
+Before anything goes on a screen, in a command's output or in a doc, ask: **is it worth it?** If the screen still works without it, delete it.
+
+- One fact per place. Don't join facts with mid-dots (·).
+- No eyebrow text and no subtext under headlines. The headline and the action carry the meaning.
+- Plain one-colour headlines. No highlighted keywords or trailing full stops.
+- Short, direct words: "Pair", "Skip", "Public link".
+- No decoration that doesn't do a job.
+
+---
+
 ## 1. One obvious path
 
 There is one right way to do each thing, and it's the first thing you see.

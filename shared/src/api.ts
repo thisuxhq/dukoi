@@ -43,6 +43,8 @@ export interface PhoneStatus {
   storage: { totalMb: number; freeMb: number } | null
   load: number[]
   apps: { total: number; running: number }
+  /** Cores, so load can be shown as a percentage */
+  cpuCount: number
 }
 
 // ── Pairing ──────────────────────────────────────────────────────────────

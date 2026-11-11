@@ -56,3 +56,18 @@ test('a signed request from an unpaired computer is refused', async () => {
   const local = await fetch(`${base}/local/status`)
   expect(local.status).toBe(200)
 })
+
+test('the phone app reads apps and phone status on /local without signing', async () => {
+  const apps = await fetch(`${base}/local/apps`)
+  expect(apps.status).toBe(200)
+  expect(await apps.json()).toEqual([])
+
+  const phone = await fetch(`${base}/local/phone`)
+  expect(phone.status).toBe(200)
+  const status = (await phone.json()) as { name: string; cpuCount: number }
+  expect(status.name).toBe('test-phone')
+  expect(status.cpuCount).toBeGreaterThan(0)
+
+  // The signed twin still needs a paired computer.
+  expect((await fetch(`${base}/apps`)).status).toBe(401)
+})
