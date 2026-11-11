@@ -31,7 +31,7 @@ This doc explains how DroidHost's parts fit together in phase 1, with one phone 
 | Part | One-line job |
 | --- | --- |
 | **CLI** | Packs your folder and sends signed commands to the phone. |
-| **Phone app** | Kotlin. Setup checklist, pairing approval, Wi-Fi discovery (NSD) and the notification. |
+| **Phone app** | Kotlin and Compose. Onboarding (one screen per setup step), pairing approval, your apps with live logs, settings, Wi-Fi discovery (NSD) and the notification. Reads the agent through its `/local` endpoints. |
 | **Foreground service** | Keeps one process alive, the agent. Android protects it. A killed agent is back in about a second. |
 | **Agent** | TypeScript on the bundled Node (`agent/`). The admin API: checks signatures, signs answers, runs deploys, streams logs. |
 | **Process manager** | Part of the agent. Starts, watches and restarts apps (at once after a kill, with backoff after crashes) and writes logs. |

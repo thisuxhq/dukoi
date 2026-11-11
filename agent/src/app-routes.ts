@@ -1,4 +1,5 @@
-// Admin API routes for apps. All need a paired computer.
+// Admin API routes for apps. Computers need to be paired; the phone app
+// itself reads and controls apps through the same handlers under /local.
 import type { Agent } from './agent.ts'
 import { HttpError } from './http.ts'
 
@@ -18,14 +19,20 @@ export function appRoutes(agent: Agent): void {
     { raw: true },
   )
 
-  r.on('GET', '/apps', 'paired', () => apps.list())
-  r.on('GET', '/apps/:name', 'paired', (ctx) => apps.get(ctx.params.name ?? ''))
+  // Paired computers and the phone app (on 127.0.0.1) share these.
+  const both: typeof r.on = (method, path, _access, handler) => {
+    r.on(method, path, 'paired', handler)
+    r.on(method, `/local${path}`, 'local', handler)
+  }
+
+  both('GET', '/apps', 'paired', () => apps.list())
+  both('GET', '/apps/:name', 'paired', (ctx) => apps.get(ctx.params.name ?? ''))
   r.on('GET', '/apps/:name/releases', 'paired', (ctx) => apps.releases(ctx.params.name ?? ''))
-  r.on('POST', '/apps/:name/start', 'paired', (ctx) => apps.start(ctx.params.name ?? ''))
-  r.on('POST', '/apps/:name/stop', 'paired', (ctx) => apps.stop(ctx.params.name ?? ''))
-  r.on('POST', '/apps/:name/restart', 'paired', (ctx) => apps.restart(ctx.params.name ?? ''))
-  r.on('POST', '/apps/:name/rollback', 'paired', (ctx) => {
-    const { to } = ctx.json<{ to?: string }>()
+  both('POST', '/apps/:name/start', 'paired', (ctx) => apps.start(ctx.params.name ?? ''))
+  both('POST', '/apps/:name/stop', 'paired', (ctx) => apps.stop(ctx.params.name ?? ''))
+  both('POST', '/apps/:name/restart', 'paired', (ctx) => apps.restart(ctx.params.name ?? ''))
+  both('POST', '/apps/:name/rollback', 'paired', (ctx) => {
+    const { to } = ctx.body.length ? ctx.json<{ to?: string }>() : {}
     return apps.rollback(ctx.params.name ?? '', to)
   })
   r.on('POST', '/apps/:name/expose', 'paired', (ctx) => agent.tunnels.expose(ctx.params.name ?? ''))

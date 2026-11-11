@@ -1,6 +1,6 @@
 // droidhost logs and droidhost status.
 import { statfsSync } from 'node:fs'
-import { freemem, loadavg, totalmem, uptime } from 'node:os'
+import { availableParallelism, freemem, loadavg, totalmem, uptime } from 'node:os'
 import type { PhoneStatus } from '@droidhost/shared'
 import type { Agent } from './agent.ts'
 import { formatLine } from './log-file.ts'
@@ -29,7 +29,14 @@ export function observeRoutes(agent: Agent): void {
     res.end()
   })
 
-  r.on('GET', '/status', 'paired', async (): Promise<PhoneStatus> => {
+  // The phone app shows recent lines; it doesn't follow.
+  r.on('GET', '/local/apps/:name/logs', 'local', async (ctx) => {
+    const log = await agent.apps.logFile(ctx.params.name ?? '')
+    const lines = Math.min(MAX_LINES, Math.max(0, Number(ctx.query.get('lines') ?? 100)))
+    return { lines: log.tail(lines) }
+  })
+
+  const status = async (): Promise<PhoneStatus> => {
     const info = agent.info()
     const apps = await agent.apps.list()
     let storage: PhoneStatus['storage'] = null
@@ -55,6 +62,10 @@ export function observeRoutes(agent: Agent): void {
       storage,
       load: loadavg().map((n) => Math.round(n * 100) / 100),
       apps: { total: apps.length, running: apps.filter((a) => a.state === 'running').length },
+      // os.cpus() is empty on Android (no /proc/stat), so ask the scheduler.
+      cpuCount: availableParallelism(),
     }
-  })
+  }
+  r.on('GET', '/status', 'paired', status)
+  r.on('GET', '/local/phone', 'local', status)
 }

@@ -4,151 +4,301 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.thisux.droidhost.ui.AppScreen
+import com.thisux.droidhost.ui.Durations
+import com.thisux.droidhost.ui.EaseOut
+import com.thisux.droidhost.ui.LocalToast
+import com.thisux.droidhost.ui.Toast
+import com.thisux.droidhost.ui.ToastHost
+import com.thisux.droidhost.ui.HomeScreen
+import com.thisux.droidhost.ui.OnboardingStep
+import com.thisux.droidhost.ui.PairScreen
+import com.thisux.droidhost.ui.PairingRequestScreen
+import com.thisux.droidhost.ui.PermissionScreen
+import com.thisux.droidhost.ui.Problem
+import com.thisux.droidhost.ui.SettingsScreen
+import com.thisux.droidhost.ui.WelcomeScreen
+import com.thisux.droidhost.ui.theme.Canvas
 import com.thisux.droidhost.ui.theme.DroidHostTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.Inet4Address
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
+    // Dark icons on the light canvas.
+    enableEdgeToEdge(
+      statusBarStyle = SystemBarStyle.light(Canvas.toArgb(), Canvas.toArgb()),
+      navigationBarStyle = SystemBarStyle.light(Canvas.toArgb(), Canvas.toArgb()),
+    )
     if (AgentService.isWanted(this)) AgentService.start(this)
     setContent {
       DroidHostTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          HomeScreen()
+        val toast = remember { Toast() }
+        CompositionLocalProvider(LocalToast provides toast) {
+          Box(Modifier.fillMaxSize().background(Canvas)) {
+            App()
+            ToastHost(toast)
+          }
         }
       }
     }
   }
 }
 
+private sealed interface Screen {
+  data class Onboarding(val step: OnboardingStep) : Screen
+  data object Home : Screen
+  data class App(val name: String) : Screen
+  data object Settings : Screen
+}
+
+private const val PREFS = "droidhost"
+private const val KEY_ONBOARDED = "onboarded"
+
 @Composable
-private fun HomeScreen() {
+private fun App() {
   val context = LocalContext.current
+  val scope = rememberCoroutineScope()
+  val prefs = remember { context.getSharedPreferences(PREFS, Context.MODE_PRIVATE) }
   val supervisor by AgentSupervisor.status.collectAsStateWithLifecycle()
-  var agent by remember { mutableStateOf<JSONObject?>(null) }
-  var ip by remember { mutableStateOf<String?>(null) }
-  var refresh by remember { mutableStateOf(0) }
 
-  LaunchedEffect(Unit) {
+  var screen by remember {
+    mutableStateOf<Screen>(if (prefs.getBoolean(KEY_ONBOARDED, false)) Screen.Home else Screen.Onboarding(OnboardingStep.WELCOME))
+  }
+  var apps by remember { mutableStateOf<List<AppInfo>?>(null) }
+  var vitals by remember { mutableStateOf(Vitals(null, null, null)) }
+  var pending by remember { mutableStateOf(emptyList<PairingRequest>()) }
+  var computers by remember { mutableStateOf(emptyList<PairedComputer>()) }
+  val firstSeen = remember { mutableStateMapOf<String, Long>() }
+  var refresh by remember { mutableIntStateOf(0) }
+  // Bumped whenever the app comes back to the front, e.g. from a settings screen.
+  var resumed by remember { mutableIntStateOf(0) }
+  LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { resumed++ }
+
+  // Everything on screen is read from the agent every 1.5 s.
+  LaunchedEffect(refresh) {
     while (true) {
-      agent = withContext(Dispatchers.IO) { AgentClient.get("/local/status") }
-      ip = wifiIp(context)
-      refresh++
-      delay(2000)
+      withContext(Dispatchers.IO) {
+        apps = Phone.apps() ?: apps
+        vitals = Phone.vitals(context)
+        Pairing.load()?.let { (p, c) -> pending = p; computers = c }
+      }
+      pending.forEach { firstSeen.putIfAbsent(it.publicKey, System.currentTimeMillis()) }
+      delay(1500)
     }
   }
 
-  Column(
-    modifier = Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(16.dp),
-    verticalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    Text("DroidHost", style = MaterialTheme.typography.headlineMedium)
+  fun finishOnboarding() {
+    prefs.edit().putBoolean(KEY_ONBOARDED, true).apply()
+    screen = Screen.Home
+  }
 
-    Card(Modifier.fillMaxWidth()) {
-      Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        val ready = agent != null
-        Text(if (ready) "Ready" else statusWord(supervisor.state), style = MaterialTheme.typography.titleLarge)
-        supervisor.problem?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        agent?.let {
-          Text("Node ${it.optString("nodeVersion")} · agent ${it.optString("agentVersion")}")
-          Text("${it.optInt("computers")} paired computers · ${it.optInt("apps")} apps")
+  // The next onboarding screen: only steps Android hasn't confirmed, then Pair if no computer is paired.
+  fun next(after: OnboardingStep) {
+    val steps = OnboardingStep.entries.filter { it.ordinal > after.ordinal }
+    val step = steps.firstOrNull { !it.done(context) && (it != OnboardingStep.PAIR || computers.isEmpty()) }
+    if (step == null) finishOnboarding() else screen = Screen.Onboarding(step)
+  }
+
+  // A step finished in Android's settings moves on by itself.
+  LaunchedEffect(resumed, computers) {
+    val current = (screen as? Screen.Onboarding)?.step ?: return@LaunchedEffect
+    if (current != OnboardingStep.WELCOME && current.done(context)) next(current)
+    if (current == OnboardingStep.PAIR && computers.isNotEmpty()) finishOnboarding()
+  }
+
+  val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+    if (granted) next(OnboardingStep.BACKGROUND) else openNotificationSettings(context)
+  }
+
+  fun control(name: String, action: String) {
+    scope.launch(Dispatchers.IO) { Phone.control(name, action) }
+    refresh++
+  }
+
+  // A computer asking to pair takes over the screen, wherever you are.
+  val shown: Any = pending.firstOrNull() ?: screen
+  AnimatedContent(targetState = shown, transitionSpec = { transition(initialState, targetState) }, label = "screen") { target ->
+  if (target is PairingRequest) {
+    PairingRequestScreen(
+      request = target,
+      firstSeenAt = firstSeen[target.publicKey] ?: System.currentTimeMillis(),
+      onPair = { decide(scope, context, target, true); pending = pending - target; refresh++ },
+      onDeny = { decide(scope, context, target, false); pending = pending - target },
+    )
+    return@AnimatedContent
+  }
+
+  when (val s = target as Screen) {
+    is Screen.Onboarding -> when (s.step) {
+      OnboardingStep.WELCOME -> WelcomeScreen { next(OnboardingStep.WELCOME) }
+      OnboardingStep.PAIR -> PairScreen(onLater = ::finishOnboarding)
+      else -> PermissionScreen(
+        step = s.step,
+        onAction = {
+          when (s.step) {
+            OnboardingStep.BACKGROUND ->
+              if (Build.VERSION.SDK_INT >= 33) askNotifications.launch(Manifest.permission.POST_NOTIFICATIONS) else next(s.step)
+            OnboardingStep.BATTERY_LIMITS -> requestBatteryLimitsOff(context)
+            else -> openAppSettings(context)
+          }
+        },
+        onSkip = { next(s.step) },
+      )
+    }
+
+    Screen.Home -> HomeScreen(
+      apps = apps,
+      vitals = vitals,
+      problem = problem(context, supervisor),
+      onFix = {
+        if (supervisor.state == AgentSupervisor.State.FAILED) {
+          AgentService.stop(context); AgentService.start(context)
+        } else {
+          requestBatteryLimitsOff(context)
         }
-        Text(ip?.let { "On Wi-Fi at $it" } ?: "Not on Wi-Fi", style = MaterialTheme.typography.bodyMedium)
-        if (supervisor.restarts > 0) Text("Agent restarts: ${supervisor.restarts} (last: ${supervisor.lastExit})")
+      },
+      onOpenApp = { screen = Screen.App(it) },
+      onSettings = { screen = Screen.Settings },
+    )
+
+    is Screen.App -> {
+      BackHandler { screen = Screen.Home }
+      val app = apps?.firstOrNull { it.name == s.name }
+      var logs by remember(s.name) { mutableStateOf(emptyList<LogLine>()) }
+      LaunchedEffect(s.name, refresh) {
+        while (true) {
+          logs = withContext(Dispatchers.IO) { Phone.logs(s.name) }
+          delay(1500)
+        }
+      }
+      if (app == null) {
+        // Removed from the computer while open.
+        LaunchedEffect(apps) { if (apps != null) screen = Screen.Home }
+      } else {
+        AppScreen(app, logs, onBack = { screen = Screen.Home }, onAction = { control(app.name, it) })
       }
     }
 
-    PairingSection(context)
-
-    SetupChecklist(refresh)
-
-    Text("To pair a computer, run this on it:", style = MaterialTheme.typography.bodyMedium)
-    Text("npx droidhost pair", style = MaterialTheme.typography.titleMedium)
+    Screen.Settings -> {
+      BackHandler { screen = Screen.Home }
+      SettingsScreen(
+        computers = computers,
+        phoneName = AgentSupervisor.phoneName(),
+        address = Phone.wifiIp(context),
+        setupDone = Setup.done(context),
+        hasApps = !apps.isNullOrEmpty(),
+        onBack = { screen = Screen.Home },
+        onRemove = { pc ->
+          scope.launch(Dispatchers.IO) { Pairing.remove(pc.publicKey) }
+          computers = computers - pc
+        },
+        onFinishSetup = { next(OnboardingStep.WELCOME) },
+        onStopAll = { apps?.forEach { control(it.name, "stop") } },
+      )
+    }
+  }
   }
 }
 
-private fun statusWord(state: AgentSupervisor.State) = when (state) {
-  AgentSupervisor.State.STOPPED -> "Stopped"
-  AgentSupervisor.State.STARTING -> "Starting…"
-  AgentSupervisor.State.RUNNING -> "Starting…"
-  AgentSupervisor.State.RESTARTING -> "Restarting…"
-  AgentSupervisor.State.FAILED -> "Problem"
+/** How deep a screen sits, so moving deeper slides in from the right and going back slides from the left. */
+private fun depth(s: Any): Int = when (s) {
+  is Screen.Onboarding -> s.step.ordinal
+  Screen.Home -> 10
+  is Screen.App, Screen.Settings -> 11
+  else -> 20
 }
 
-/** Each step ticks only when Android confirms it. */
+private fun transition(from: Any, to: Any): ContentTransform {
+  // A pairing request rises from the bottom and sinks back down.
+  if (to is PairingRequest || from is PairingRequest) {
+    val rising = to is PairingRequest
+    return (slideInVertically(tween(Durations.SCREEN_IN, easing = EaseOut)) { if (rising) it / 8 else 0 } + fadeIn(tween(Durations.SCREEN_IN, easing = EaseOut)))
+      .togetherWith(slideOutVertically(tween(Durations.SCREEN_OUT, easing = EaseOut)) { if (rising) 0 else it / 8 } + fadeOut(tween(Durations.SCREEN_OUT)))
+  }
+  val forward = depth(to) >= depth(from)
+  // Enter with a strong ease-out; leave faster than you arrive.
+  return (slideInHorizontally(tween(Durations.SCREEN_IN, easing = EaseOut)) { if (forward) it / 5 else -it / 5 } + fadeIn(tween(Durations.SCREEN_IN, easing = EaseOut)))
+    .togetherWith(slideOutHorizontally(tween(Durations.SCREEN_OUT, easing = EaseOut)) { if (forward) -it / 10 else it / 10 } + fadeOut(tween(Durations.SCREEN_OUT)))
+}
+
+private fun OnboardingStep.done(context: Context) = when (this) {
+  OnboardingStep.WELCOME -> false
+  OnboardingStep.BACKGROUND -> Setup.notifications(context)
+  OnboardingStep.BATTERY_LIMITS -> Setup.batteryLimitsOff(context)
+  OnboardingStep.UNRESTRICTED -> Setup.unrestricted(context)
+  OnboardingStep.PAIR -> false
+}
+
+/** The home screen says plainly when apps can't run, and offers the fix. */
+private fun problem(context: Context, supervisor: AgentSupervisor.Status): Problem? = when {
+  supervisor.state == AgentSupervisor.State.FAILED ->
+    Problem(supervisor.problem ?: "DroidHost stopped", "Try again")
+  supervisor.restarts >= 2 && !Setup.batteryLimitsOff(context) ->
+    Problem("Android keeps stopping DroidHost", "Fix battery settings")
+  else -> null
+}
+
+private fun decide(scope: kotlinx.coroutines.CoroutineScope, context: Context, req: PairingRequest, approve: Boolean) {
+  scope.launch(Dispatchers.IO) {
+    Pairing.decide(req.publicKey, approve)
+    Pairing.clearNotification(context, req.publicKey)
+  }
+}
+
 @SuppressLint("BatteryLife")
-@Composable
-private fun SetupChecklist(refresh: Int) {
-  val context = LocalContext.current
-  val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
-  val notificationsOk = Build.VERSION.SDK_INT < 33 ||
-    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-  val batteryOk = context.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(context.packageName)
-  refresh // re-read on every refresh
-
-  Text("Setup", style = MaterialTheme.typography.titleMedium)
-  Step("Keep DroidHost running", AgentSupervisor.status.value.state != AgentSupervisor.State.FAILED, null) {}
-  Step("Allow notifications", notificationsOk, "Allow") {
-    if (Build.VERSION.SDK_INT >= 33) askNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
-  }
-  Step("Turn off battery optimization", batteryOk, "Turn off") {
-    context.startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}")))
-  }
+private fun requestBatteryLimitsOff(context: Context) {
+  context.startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}")))
 }
 
-@Composable
-private fun Step(label: String, done: Boolean, action: String?, onClick: () -> Unit) {
-  Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-    Text((if (done) "✓ " else "○ ") + label)
-    if (!done && action != null) OutlinedButton(onClick = onClick) { Text(action) }
-  }
+/** Battery → Unrestricted lives on the app's own settings page. */
+private fun openAppSettings(context: Context) {
+  context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")))
 }
 
-private fun wifiIp(context: Context): String? {
-  val cm = context.getSystemService(ConnectivityManager::class.java)
-  val props = cm.getLinkProperties(cm.activeNetwork) ?: return null
-  return props.linkAddresses.map { it.address }.firstOrNull { it is Inet4Address && !it.isLoopbackAddress }?.hostAddress
+private fun openNotificationSettings(context: Context) {
+  context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName))
 }

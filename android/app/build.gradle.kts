@@ -59,5 +59,7 @@ dependencies {
   implementation(libs.androidx.compose.ui)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
+  // Draws the illustrations and Hugeicons straight from their SVG files.
+  implementation(libs.androidsvg)
   debugImplementation(libs.androidx.compose.ui.tooling)
 }
