@@ -33,7 +33,8 @@ async function copy() {
       ? 'h-[54px] gap-5 pr-2.5 pl-4 lg:h-[60px] lg:pr-3 lg:pl-5'
       : 'h-11 px-4 lg:h-12 lg:px-[18px]'} {className}"
 >
-  <code class="font-mono whitespace-pre {size === 'sm' ? 'text-sm lg:text-[15px]' : size === 'md' ? 'text-[15px] lg:text-[17px]' : 'text-base lg:text-lg'}"
+  <!-- Scrolls sideways on a phone, where the install line is wider than the screen -->
+  <code class="min-w-0 overflow-x-auto font-mono whitespace-pre [scrollbar-width:none] {size === 'sm' ? 'text-sm lg:text-[15px]' : size === 'md' ? 'text-[15px] lg:text-[17px]' : 'text-base lg:text-lg'}"
     ><span class="text-prompt">$</span> {command}</code
   >
   {#if size !== 'sm'}

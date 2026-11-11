@@ -38,7 +38,7 @@ async function copy() {
 <button
   type="button"
   onclick={copy}
-  class="flex h-14 shrink-0 items-center justify-center gap-3 rounded bg-violet text-base font-semibold text-white transition-colors hover:bg-[#6a2fe0] lg:h-[60px] lg:w-[264px] lg:text-[17px] {className}"
+  class="flex h-14 shrink-0 items-center justify-center gap-3 rounded bg-violet px-7 text-base font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#6a2fe0] lg:h-[60px] lg:text-[17px] {className}"
 >
   {copied ? 'Copied' : 'Copy prompt for agent'}
   <Icon name={copied ? 'tick-02' : 'copy-01'} class="size-[18px]" />

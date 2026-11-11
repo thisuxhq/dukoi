@@ -3,7 +3,7 @@ import AgentPrompt from '#lib/components/AgentPrompt.svelte'
 import ApkButton from '#lib/components/ApkButton.svelte'
 import CopyCommand from '#lib/components/CopyCommand.svelte'
 import Icon from '#lib/components/Icon.svelte'
-import { APK, INSTALL } from '#lib/links.js'
+import { INSTALL } from '#lib/links.js'
 import { templates } from '#lib/templates.js'
 import welcome from '#lib/welcome.svg'
 
@@ -54,13 +54,14 @@ const chip = 'grid size-12 place-items-center bg-white/70'
     <p class="text-[17px] leading-[26px] text-muted lg:max-w-[560px] lg:text-[19px] lg:leading-[30px]">
       Deploy real apps to the Android phone in your drawer and get a live URL. No root, no Termux, no cloud bill.
     </p>
-    <div class="flex flex-col gap-4 pt-1 lg:flex-row lg:items-center lg:gap-5 lg:pt-2">
-      <AgentPrompt />
-      <CopyCommand command={INSTALL} class="lg:w-fit" />
+    <!-- As wide as the install line, with the two buttons splitting it -->
+    <div class="flex flex-col gap-3 pt-1 sm:w-fit lg:gap-4 lg:pt-2">
+      <CopyCommand command={INSTALL} />
+      <div class="grid gap-3 sm:grid-cols-2 lg:gap-4">
+        <AgentPrompt />
+        <ApkButton tone="muted" />
+      </div>
     </div>
-    <a href={APK} class="flex w-fit items-center gap-2 text-base font-semibold text-violet hover:underline">
-      <Icon name="download-04" class="size-5" />Get the APK
-    </a>
   </div>
 </section>
 
@@ -240,7 +241,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
 
 <!-- Closing -->
 <section class="px-5 pb-12 lg:px-16 lg:pb-20">
-  <div class="flex flex-col gap-6 bg-night px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:p-16">
+  <div class="flex flex-col gap-6 bg-night px-6 py-8 lg:gap-10 lg:p-16 xl:flex-row xl:items-center xl:justify-between xl:gap-12">
     <div class="flex flex-col gap-3 lg:max-w-[620px] lg:gap-4">
       <h2 class="font-display text-4xl leading-10 font-medium tracking-[-0.035em] text-white lg:text-[56px] lg:leading-[58px]">
         There’s a server in your drawer
@@ -249,7 +250,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         Install the app, pair once, and deploy. Your first URL is two minutes away.
       </p>
     </div>
-    <div class="flex flex-col gap-3 lg:w-[380px] lg:shrink-0 lg:gap-3.5">
+    <div class="flex flex-col gap-3 lg:w-fit lg:shrink-0 lg:gap-3.5">
       <CopyCommand command={INSTALL} size="md" tone="raised" />
       <ApkButton />
     </div>
