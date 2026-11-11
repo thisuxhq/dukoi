@@ -27,7 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -55,12 +58,18 @@ import com.thisux.droidhost.ui.theme.Violet
 import kotlinx.coroutines.delay
 
 val Gutter = 28.dp
+
+/** Buttons press deeper than rows and give a light haptic tick, like a real key. */
+fun Modifier.press(onClick: () -> Unit): Modifier = composed {
+  val haptics = LocalHapticFeedback.current
+  pressIn(0.95f) { haptics.performHapticFeedback(HapticFeedbackType.ContextClick); onClick() }
+}
 private val ButtonShape = RoundedCornerShape(4.dp)
 
 @Composable
 fun PrimaryButton(label: String, modifier: Modifier = Modifier, height: Dp = 52.dp, onClick: () -> Unit) {
   Box(
-    modifier.fillMaxWidth().height(height).background(Violet, ButtonShape).tap(onClick),
+    modifier.fillMaxWidth().height(height).background(Violet, ButtonShape).press(onClick),
     contentAlignment = Alignment.Center,
   ) { Text(label, style = Styles.Button, color = Card) }
 }
@@ -69,7 +78,7 @@ fun PrimaryButton(label: String, modifier: Modifier = Modifier, height: Dp = 52.
 fun SecondaryButton(label: String, modifier: Modifier = Modifier, height: Dp = 52.dp, square: Boolean = false, onClick: () -> Unit) {
   val shape = if (square) RoundedCornerShape(0.dp) else ButtonShape
   Box(
-    modifier.fillMaxWidth().height(height).background(Card, shape).border(1.dp, Border, shape).tap(onClick),
+    modifier.fillMaxWidth().height(height).background(Card, shape).border(1.dp, Border, shape).press(onClick),
     contentAlignment = Alignment.Center,
   ) { Text(label, style = if (height < 52.dp) Styles.Button.copy(fontSize = Styles.Label.fontSize) else Styles.Button, color = Ink) }
 }

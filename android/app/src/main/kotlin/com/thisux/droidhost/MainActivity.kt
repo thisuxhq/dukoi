@@ -102,6 +102,7 @@ private const val KEY_ONBOARDED = "onboarded"
 private fun App() {
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
+  val toast = LocalToast.current
   val prefs = remember { context.getSharedPreferences(PREFS, Context.MODE_PRIVATE) }
   val supervisor by AgentSupervisor.status.collectAsStateWithLifecycle()
 
@@ -154,9 +155,32 @@ private fun App() {
     if (granted) next(OnboardingStep.BACKGROUND) else openNotificationSettings(context)
   }
 
+  // Every action confirms itself: a snackbar while it runs (if it takes a moment),
+  // then what happened, or the agent's own words if it failed.
   fun control(name: String, action: String) {
-    scope.launch(Dispatchers.IO) { Phone.control(name, action) }
-    refresh++
+    val (doing, done) = when (action) {
+      "start" -> "Starting $name" to "Started $name"
+      "stop" -> null to "Stopped $name"
+      "restart" -> "Restarting $name" to "Restarted $name"
+      else -> "Rolling back $name" to "Rolled back $name"
+    }
+    doing?.let { toast.show(it) }
+    scope.launch {
+      val problem = withContext(Dispatchers.IO) { Phone.control(name, action) }
+      if (problem == null) toast.show(done) else toast.show(problem, error = true)
+      refresh++
+    }
+  }
+
+  fun stopAll() {
+    val names = apps?.map { it.name }.orEmpty()
+    toast.show("Stopping all apps")
+    scope.launch {
+      val failed = withContext(Dispatchers.IO) { names.count { Phone.control(it, "stop") != null } }
+      if (failed == 0) toast.show("Stopped all apps")
+      else toast.show("Couldn’t stop $failed of ${names.size} apps", error = true)
+      refresh++
+    }
   }
 
   // A computer asking to pair takes over the screen, wherever you are.
@@ -237,7 +261,7 @@ private fun App() {
           computers = computers - pc
         },
         onFinishSetup = { next(OnboardingStep.WELCOME) },
-        onStopAll = { apps?.forEach { control(it.name, "stop") } },
+        onStopAll = ::stopAll,
       )
     }
   }

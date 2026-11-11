@@ -54,7 +54,11 @@ object Phone {
       ?.let { arr -> (0 until arr.length()).mapNotNull { parseLog(arr.getString(it)) } }
       .orEmpty()
 
-  fun control(name: String, action: String) = AgentClient.post("/local/apps/${enc(name)}/$action")
+  /** Runs start, stop, restart or rollback. Null on success, otherwise the agent's message. */
+  fun control(name: String, action: String): String? {
+    val reply = AgentClient.post("/local/apps/${enc(name)}/$action") ?: return "Couldn’t reach DroidHost on this phone."
+    return if (reply.has("name")) null else reply.optString("message", "Something went wrong.")
+  }
 
   fun vitals(context: Context): Vitals {
     val status = AgentClient.get("/local/phone")
