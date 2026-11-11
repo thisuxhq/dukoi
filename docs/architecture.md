@@ -52,6 +52,7 @@ The agent is a TypeScript program on the bundled Node, kept alive by the Kotlin 
 2. DroidHost scores the device using chip, RAM, storage and battery health, then gives a plain verdict.
 3. The checklist walks through each item: foreground service, battery optimization, child processes (the phantom process killer), and the steps for the detected brand.
 4. Each item ticks green only after Android confirms it.
+5. With no apps yet, Home offers **Try a template**. One tap deploys a template bundled in the APK (`assets/templates/<id>.tgz`, copied to the app's files and passed to the agent as `DROIDHOST_TEMPLATES`). The Telegram bot asks for its token first. The app's page then shows **Make it yours** with `npx droidhost init <template>` for the computer.
 
 ### 2. Pairing
 

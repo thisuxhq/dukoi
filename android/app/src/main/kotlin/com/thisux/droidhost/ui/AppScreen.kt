@@ -185,17 +185,26 @@ private fun Details(app: AppInfo, onAction: (String) -> Unit) {
     }
   }
   if (editing) PublicLinkSheet(app) { editing = false }
-  Spacer(Modifier.height(12.dp))
-  // Numbers only mean something while the app runs.
-  val live = app.state == AppState.RUNNING
-  StatsCard(
-    listOf(
-      (app.cpuPercent?.takeIf { live }?.let { "${Math.round(it)}%" } ?: "–") to "CPU",
-      (app.memoryMb?.takeIf { live }?.let { "${Math.round(it)} MB" } ?: "–") to "Memory",
-      (if (live) formatUptime(app.startedAt) else "–") to "Uptime",
-    ),
-  )
-  Spacer(Modifier.height(12.dp))
+  // A template deployed on the phone: the next step is getting its code, so that
+  // takes the stats card's place.
+  val template = app.template
+  if (template != null) {
+    Spacer(Modifier.height(16.dp))
+    MakeItYoursCard(template)
+    Spacer(Modifier.height(16.dp))
+  } else {
+    Spacer(Modifier.height(12.dp))
+    // Numbers only mean something while the app runs.
+    val live = app.state == AppState.RUNNING
+    StatsCard(
+      listOf(
+        (app.cpuPercent?.takeIf { live }?.let { "${Math.round(it)}%" } ?: "–") to "CPU",
+        (app.memoryMb?.takeIf { live }?.let { "${Math.round(it)} MB" } ?: "–") to "Memory",
+        (if (live) formatUptime(app.startedAt) else "–") to "Uptime",
+      ),
+    )
+    Spacer(Modifier.height(12.dp))
+  }
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     SecondaryButton("Restart", Modifier.weight(1f), height = 44.dp, square = true) { onAction("restart") }
     if (app.state == AppState.STOPPED) {

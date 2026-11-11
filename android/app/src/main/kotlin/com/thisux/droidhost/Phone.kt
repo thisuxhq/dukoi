@@ -36,7 +36,21 @@ data class AppInfo(
   val publicUrl: String?,
   /** Set when the public URL is on a custom domain (it never changes). */
   val domain: String?,
+  /** The template it started from on this phone, like "notes-api", else null. */
+  val template: String? = null,
 )
+
+/** An app you can deploy from the phone in one tap. */
+data class TemplateInfo(
+  val id: String,
+  val name: String,
+  val description: String,
+  /** The setting it needs first, like TELEGRAM_BOT_TOKEN, else null. */
+  val secret: String?,
+)
+
+/** What a template deploy returned: the new app, or the agent's own words. */
+data class Deployed(val app: AppInfo?, val error: String?)
 
 /** The phone's link to Cloudflare for custom domains. */
 data class DomainStatus(val loggedIn: Boolean, val zone: String?, val loginUrl: String?, val domains: List<AppDomain> = emptyList())
@@ -69,6 +83,25 @@ object Phone {
   fun control(name: String, action: String): String? {
     val reply = AgentClient.post("/local/apps/${enc(name)}/$action", timeoutMs = 30_000) ?: return "Couldn’t reach DroidHost on this phone."
     return if (reply.has("name")) null else reply.optString("message", "Something went wrong.")
+  }
+
+  // ── Templates ─────────────────────────────────────────────────────────────
+
+  /** Templates bundled with this build. Empty if none are, or the agent is down. */
+  fun templates(): List<TemplateInfo> = AgentClient.getArray("/local/templates")?.objects()?.map {
+    TemplateInfo(it.getString("id"), it.getString("name"), it.optString("description"), it.optStringOrNull("secret"))
+  }.orEmpty()
+
+  /** Deploys a template as an app named after it. It installs and health-checks, so allow a minute. */
+  fun deployTemplate(id: String, env: Map<String, String> = emptyMap()): Deployed {
+    val body = JSONObject().put("env", JSONObject(env))
+    val reply = AgentClient.post("/local/templates/${enc(id)}/deploy", body, timeoutMs = 90_000)
+      ?: return Deployed(null, UNREACHABLE)
+    reply.optJSONObject("app")?.let { return Deployed(parseApp(it), null) }
+    val message = reply.optString("message", "Something went wrong.")
+    // One-line hints say what to do; long ones are log tails, which belong in the logs.
+    val hint = reply.optStringOrNull("hint")?.takeIf { '\n' !in it }
+    return Deployed(null, if (hint != null) "$message $hint" else message)
   }
 
   // ── Public links ──────────────────────────────────────────────────────────
@@ -150,6 +183,7 @@ object Phone {
     localUrl = o.optString("localUrl"),
     publicUrl = o.optStringOrNull("publicUrl"),
     domain = o.optStringOrNull("domain"),
+    template = o.optStringOrNull("template"),
   )
 
   private val clock = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault())
