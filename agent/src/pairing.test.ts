@@ -18,7 +18,9 @@ const computer = generateKeyPair()
 const post = (path: string, body?: unknown) =>
   fetch(base + path, { method: 'POST', body: body ? JSON.stringify(body) : undefined })
 
-beforeAll(() => agent.start())
+beforeAll(async () => {
+  await agent.start()
+})
 afterAll(async () => {
   await agent.stop()
   rmSync(home, { recursive: true, force: true })

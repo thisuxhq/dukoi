@@ -99,3 +99,21 @@ export interface LogQuery {
   lines?: number
   follow?: boolean
 }
+
+// ── Releases ─────────────────────────────────────────────────────────────
+
+/** Where the CLI writes the manifest inside an upload */
+export const MANIFEST_PATH = '.droidhost/manifest.json'
+
+/** Written by the CLI into every upload. Tells the phone how to run it. */
+export interface ReleaseManifest {
+  kind: 'node' | 'static'
+  /** For node apps: arguments to node, e.g. ["server.js"]. For static: the folder to serve. */
+  start: string[]
+  /** Path to GET for the health check, or null for workers that open no port */
+  healthCheck: string | null
+  /** Shown in `droidhost releases` */
+  source: { files: number; bytes: number; cli: string }
+}
+
+export const APP_NAME_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/
