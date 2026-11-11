@@ -28,6 +28,7 @@ import type { Agent } from './agent.ts'
 import { AppProcess, killLeftover, type ProcessSpec } from './app-process.ts'
 import { HttpError } from './http.ts'
 import { LogFile } from './log-file.ts'
+import { ProcStats, type Usage } from './proc-stats.ts'
 import { freePort, StablePort } from './proxy.ts'
 import type { SavedApp } from './store.ts'
 
@@ -45,6 +46,7 @@ class AppRuntime {
   live: Live | null = null
   readonly log: LogFile
   readonly stable: StablePort
+  usage: Usage = { cpuPercent: null, memoryMb: null }
   publicUrl: string | null = null
   /** Deploys and rollbacks for one app run one at a time */
   busy: Promise<unknown> = Promise.resolve()
@@ -66,8 +68,17 @@ class AppRuntime {
 
 export class Apps {
   private runtimes = new Map<string, AppRuntime>()
+  private stats = new ProcStats()
+  private sampler: NodeJS.Timeout
 
-  constructor(private agent: Agent) {}
+  constructor(private agent: Agent) {
+    // CPU and memory for `droidhost ps`, measured every 2 seconds.
+    this.sampler = setInterval(() => {
+      for (const rt of this.runtimes.values())
+        rt.usage = this.stats.sample(rt.live?.proc.pid ?? null)
+    }, 2000)
+    this.sampler.unref()
+  }
 
   private get home() {
     return this.agent.paths.apps
@@ -481,14 +492,15 @@ export class Apps {
       restarts: proc?.restarts ?? 0,
       lastExit: proc?.lastExit ?? null,
       startedAt: proc?.startedAt?.toISOString() ?? null,
-      cpuPercent: null,
-      memoryMb: null,
+      cpuPercent: rt.usage.cpuPercent,
+      memoryMb: rt.usage.memoryMb,
       localUrl: `http://${wifiAddress()}:${rt.saved.port}`,
       publicUrl: rt.publicUrl,
     }
   }
 
   async stopAll(): Promise<void> {
+    clearInterval(this.sampler)
     for (const rt of this.runtimes.values()) {
       await rt.live?.proc.stop(2000)
       await rt.stable.close()

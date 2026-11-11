@@ -5,6 +5,7 @@ import { appRoutes } from './app-routes.ts'
 import { Apps } from './apps.ts'
 import { AGENT_VERSION, type Config, paths } from './config.ts'
 import { Router } from './http.ts'
+import { observeRoutes } from './observe-routes.ts'
 import { pairingRoutes } from './pairing.ts'
 import { Store } from './store.ts'
 
@@ -52,6 +53,7 @@ export class Agent {
 
     pairingRoutes(this)
     appRoutes(this)
+    observeRoutes(this)
   }
 
   async start(): Promise<void> {

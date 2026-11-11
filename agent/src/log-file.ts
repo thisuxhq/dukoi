@@ -55,6 +55,7 @@ export class LogFile {
 
   /** The last `count` lines, oldest first. */
   tail(count: number): string[] {
+    if (count <= 0) return []
     const read = (f: string) => {
       try {
         return readFileSync(f, 'utf8').split('\n').filter(Boolean)

@@ -30,6 +30,21 @@ export interface PhoneInfo {
   protocol: number
 }
 
+/** `droidhost status` */
+export interface PhoneStatus {
+  name: string
+  model: string
+  android: string
+  agentVersion: string
+  nodeVersion: string
+  agentUptimeSeconds: number
+  phoneUptimeSeconds: number
+  memory: { totalMb: number; freeMb: number }
+  storage: { totalMb: number; freeMb: number } | null
+  load: number[]
+  apps: { total: number; running: number }
+}
+
 // ── Pairing ──────────────────────────────────────────────────────────────
 
 export interface PairRequest {

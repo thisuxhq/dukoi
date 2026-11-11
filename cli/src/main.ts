@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util'
 import { PROTOCOL_VERSION } from '@droidhost/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
 import { deploy } from './commands/deploy.ts'
+import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { CliError, c, printError } from './output.ts'
 
@@ -27,6 +28,11 @@ ${c.bold('Apps')}
   rollback [app]       Go back to the previous release (--to <id> for another)
   remove [app]         Delete an app from the phone (asks first; --yes to skip)
 
+${c.bold('Watching')}
+  ps                   All apps: status, CPU, memory, uptime, URL
+  logs [app]           Recent lines, then live (--lines 200, --no-follow)
+  status               Phone health: memory, storage, uptime
+
 ${c.bold('Options')}
   --device <name>      Which phone (default: the last one used)
   --host <ip[:port]>   Skip Wi-Fi discovery and use this address
@@ -50,6 +56,8 @@ async function main(argv: string[]): Promise<void> {
       host: { type: 'string' },
       name: { type: 'string' },
       to: { type: 'string' },
+      lines: { type: 'string' },
+      'no-follow': { type: 'boolean', default: false },
       yes: { type: 'boolean', default: false },
       'no-health-check': { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
@@ -84,6 +92,18 @@ async function main(argv: string[]): Promise<void> {
       return control(command, arg, values.device, json)
     case 'rollback':
       return rollback(arg, values.to, values.device, json)
+    case 'ps':
+      return ps(values.device, json)
+    case 'status':
+      return status(values.device, json)
+    case 'logs':
+      return logs({
+        app: arg,
+        lines: Number(values.lines ?? 100),
+        follow: !(values['no-follow'] ?? false) && process.stdout.isTTY === true,
+        device: values.device,
+        json,
+      })
     case 'releases':
       return releases(arg, values.device, json)
     case 'remove':
