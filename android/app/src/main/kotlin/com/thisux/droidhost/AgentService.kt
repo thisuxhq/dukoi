@@ -28,6 +28,7 @@ class AgentService : Service() {
   private var wifiLock: WifiManager.WifiLock? = null
   private var nsd: NsdManager? = null
   private var nsdListener: NsdManager.RegistrationListener? = null
+  private var pairingWatcher: Thread? = null
 
   override fun onCreate() {
     super.onCreate()
@@ -41,11 +42,13 @@ class AgentService : Service() {
     acquireLocks()
     announce()
     AgentSupervisor.start(this)
+    watchPairing()
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
 
   override fun onDestroy() {
+    pairingWatcher?.interrupt()
     AgentSupervisor.stop()
     runCatching { nsdListener?.let { nsd?.unregisterService(it) } }
     wakeLock?.takeIf { it.isHeld }?.release()
@@ -63,6 +66,19 @@ class AgentService : Service() {
     wifiLock = applicationContext.getSystemService(WifiManager::class.java)
       .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "DroidHost:agent")
       .apply { setReferenceCounted(false); acquire() }
+  }
+
+  /** Shows a notification for each new pairing request, even when the app is closed. */
+  private fun watchPairing() {
+    pairingWatcher = Thread({
+      val notified = mutableSetOf<String>()
+      while (!Thread.currentThread().isInterrupted) {
+        Pairing.load()?.first?.forEach { req ->
+          if (notified.add(req.publicKey)) Pairing.notify(this, req)
+        }
+        try { Thread.sleep(1500) } catch (_: InterruptedException) { break }
+      }
+    }, "pairing-watcher").apply { isDaemon = true; start() }
   }
 
   /** mDNS: lets the CLI find this phone on the same Wi-Fi. */

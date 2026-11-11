@@ -11,6 +11,10 @@
     "typecheck": "tsc -p ."
   },
   "dependencies": {
-    "@droidhost/shared": "workspace:*"
+    "@droidhost/shared": "workspace:*",
+    "multicast-dns": "7.2.5"
+  },
+  "devDependencies": {
+    "@types/multicast-dns": "7.2.4"
   }
 }

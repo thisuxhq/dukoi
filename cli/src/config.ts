@@ -1,0 +1,95 @@
+// What the CLI remembers: this computer's key and the phones it's paired with.
+// Stored in ~/.config/droidhost (or $DROIDHOST_CONFIG), readable only by you.
+import { chmodSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { homedir, hostname, userInfo } from 'node:os'
+import { join } from 'node:path'
+import { generateKeyPair, type KeyPair } from '@droidhost/shared'
+
+export interface SavedPhone {
+  name: string
+  host: string
+  port: number
+  /** Pinned at pairing; every response must be signed by it */
+  publicKey: string
+  model: string
+  pairedAt: string
+}
+
+interface Phones {
+  phones: SavedPhone[]
+  lastUsed: string | null
+}
+
+export function configDir(): string {
+  const base = process.env.XDG_CONFIG_HOME ?? join(homedir(), '.config')
+  return process.env.DROIDHOST_CONFIG ?? join(base, 'droidhost')
+}
+
+function readJson<T>(file: string): T | null {
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')) as T
+  } catch {
+    return null
+  }
+}
+
+function writePrivate(file: string, value: unknown): void {
+  mkdirSync(configDir(), { recursive: true, mode: 0o700 })
+  const tmp = `${file}.tmp`
+  writeFileSync(tmp, JSON.stringify(value, null, 2), { mode: 0o600 })
+  renameSync(tmp, file)
+  chmodSync(file, 0o600)
+}
+
+/** This computer's key, made on first use. */
+export function computerKey(): KeyPair {
+  const file = join(configDir(), 'key.json')
+  const existing = readJson<KeyPair>(file)
+  if (existing?.publicKey && existing.privateKeyPem) return existing
+  const key = generateKeyPair()
+  writePrivate(file, key)
+  return key
+}
+
+export function computerName(): string {
+  const user = (() => {
+    try {
+      return userInfo().username
+    } catch {
+      return ''
+    }
+  })()
+  const host = hostname().replace(/\.local$/, '')
+  return user ? `${user} on ${host}` : host
+}
+
+const phonesFile = () => join(configDir(), 'phones.json')
+
+export function loadPhones(): Phones {
+  return readJson<Phones>(phonesFile()) ?? { phones: [], lastUsed: null }
+}
+
+export function savePhone(phone: SavedPhone): void {
+  const data = loadPhones()
+  data.phones = data.phones.filter((p) => p.publicKey !== phone.publicKey && p.name !== phone.name)
+  data.phones.push(phone)
+  data.lastUsed = phone.name
+  writePrivate(phonesFile(), data)
+}
+
+export function removePhone(name: string): boolean {
+  const data = loadPhones()
+  const before = data.phones.length
+  data.phones = data.phones.filter((p) => p.name !== name)
+  if (data.lastUsed === name) data.lastUsed = data.phones[0]?.name ?? null
+  writePrivate(phonesFile(), data)
+  return data.phones.length < before
+}
+
+export function markUsed(name: string): void {
+  const data = loadPhones()
+  if (data.lastUsed !== name) {
+    data.lastUsed = name
+    writePrivate(phonesFile(), data)
+  }
+}

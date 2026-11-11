@@ -12,6 +12,8 @@ object AgentClient {
 
   fun post(path: String, body: JSONObject = JSONObject()): JSONObject? = request("POST", path, body)
 
+  fun delete(path: String): JSONObject? = request("DELETE", path, null)
+
   private fun request(method: String, path: String, body: JSONObject?): JSONObject? = runCatching {
     val conn = URL("$BASE$path").openConnection() as HttpURLConnection
     conn.requestMethod = method
