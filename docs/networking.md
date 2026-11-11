@@ -75,6 +75,16 @@ You need a domain on Cloudflare, which can be on the free plan. Use this for any
 - **A domain replaces a quick tunnel** for that app. `droidhost expose --off` (or **Off** on the phone) removes the route and the DNS record.
 - **One domain per phone login.** Names must be under the domain picked at login, for example `*.example.com`.
 
+### Disconnecting from Cloudflare
+
+**Settings → Cloudflare → Disconnect** on the phone (admin API: `DELETE /domain`) undoes the login:
+
+- Every app with a domain loses its public URL, and the DNS records DroidHost made are deleted. Records it didn't make are left alone.
+- The phone's tunnel is deleted from your Cloudflare account, and the login certificate is deleted from the phone.
+- The login's API token stays in your account, because a token can't delete itself. Remove it at **dash.cloudflare.com → My Profile → API Tokens**.
+
+Adding a domain again starts a fresh login, so you can switch to a different domain this way.
+
 ### If Cloudflare says "Quota limit exceeded"
 
 Cloudflare allows 50 API tokens per account, and each login adds one. Delete tokens you no longer use at **dash.cloudflare.com → My Profile → API Tokens**, then run the command again.

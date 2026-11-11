@@ -8,7 +8,7 @@
 // app ports, never at the admin API.
 import { type ChildProcess, execFile, spawn } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { DomainStatus, ExposeResult } from '@droidhost/shared'
 import type { Agent } from './agent.ts'
@@ -173,6 +173,36 @@ export class Domains {
     if (cert && tunnel) await this.deleteDns(cert, hostname, tunnel.id).catch(() => {})
     await this.apply(false)
     await this.agent.apps.setPublicUrl(name, null)
+  }
+
+  /**
+   * Disconnects the phone from Cloudflare. Every domain loses its public URL
+   * and the DNS record DroidHost made, then the phone's tunnel and the login
+   * certificate are deleted. The login's API token stays in the Cloudflare
+   * account, because a token can't delete itself.
+   */
+  async logout(): Promise<DomainStatus> {
+    this.login?.kill()
+    const cert = this.cert()
+    const tunnel = this.agent.store.state.tunnel
+    for (const app of this.agent.store.state.apps.filter((a) => a.domain)) {
+      if (cert && tunnel)
+        await this.deleteDns(cert, app.domain as string, tunnel.id).catch(() => {})
+      delete app.domain
+      await this.agent.apps.setPublicUrl(app.name, null)
+      ;(await this.agent.apps.logFile(app.name)).note(
+        'Public URL removed: disconnected from Cloudflare',
+      )
+    }
+    await this.runner?.stop()
+    this.runner = null
+    if (cert && tunnel) await this.run(['delete', '-f', tunnel.id]).catch(() => {})
+    delete this.agent.store.state.tunnel
+    this.agent.store.save()
+    rmSync(join(this.dir, '.cloudflared'), { recursive: true, force: true })
+    rmSync(join(this.dir, 'config.yml'), { force: true })
+    this.zoneName = null
+    return this.status()
   }
 
   /** Brings the tunnel back after the agent restarts. */
