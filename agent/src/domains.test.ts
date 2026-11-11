@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, expect, test } from 'bun:test'
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer, type Server } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -32,6 +32,9 @@ if (args[0] === 'login') {
 } else if (args[0] === 'create') {
   fs.writeFileSync(path.join(dir, '${TUNNEL_ID}.json'), '{}')
   console.log('Created tunnel ' + args[1] + ' with id ${TUNNEL_ID}')
+} else if (args[0] === 'delete') {
+  fs.rmSync(path.join(dir, '${TUNNEL_ID}.json'), { force: true })
+  fs.writeFileSync(path.join(process.env.HOME, 'deleted'), args[args.length - 1])
 } else if (args.includes('run')) {
   console.log('INF Registered tunnel connection connIndex=0')
   setInterval(() => {}, 1000)
@@ -202,4 +205,25 @@ test('turning the public URL off removes the route and its DNS record', async ()
   expect(records.filter((r) => r.name === 'api.example.com')).toHaveLength(0)
   const status = (await (await fetch(`${base}/local/domain`)).json()) as DomainStatus
   expect(status.domains).toEqual([])
+})
+
+test('disconnecting removes every domain, its DNS record, the tunnel and the login', async () => {
+  const added = await post('/local/apps/blog/domain', { hostname: 'news.example.com' })
+  expect(added.status).toBe(200)
+  expect(records.filter((r) => r.name === 'news.example.com')).toHaveLength(1)
+
+  const res = await fetch(`${base}/local/domain`, { method: 'DELETE' })
+  expect(res.status).toBe(200)
+  const status = (await res.json()) as DomainStatus
+  expect(status).toMatchObject({ loggedIn: false, zone: null, domains: [] })
+
+  expect(records.filter((r) => r.name === 'news.example.com')).toHaveLength(0)
+  // A record DroidHost didn't make is left alone.
+  expect(records.find((r) => r.id === 'x')?.content).toBe('1.2.3.4')
+  expect(readFileSync(join(home, 'tunnels', 'deleted'), 'utf8')).toBe(TUNNEL_ID)
+  expect(existsSync(join(home, 'tunnels', '.cloudflared', 'cert.pem'))).toBe(false)
+  expect(agent.store.state.tunnel).toBeUndefined()
+
+  const apps = (await (await fetch(`${base}/local/apps`)).json()) as AppInfo[]
+  expect(apps.find((a) => a.name === 'blog')?.publicUrl).toBeNull()
 })

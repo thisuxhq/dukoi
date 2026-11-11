@@ -43,6 +43,7 @@ export function appRoutes(agent: Agent): void {
   })
   both('GET', '/domain', 'paired', () => agent.domains.status())
   both('POST', '/domain/login', 'paired', () => agent.domains.startLogin())
+  both('DELETE', '/domain', 'paired', () => agent.domains.logout())
   both('POST', '/apps/:name/domain', 'paired', (ctx) => {
     const { hostname } = ctx.json<{ hostname?: string }>()
     return agent.domains.add(ctx.params.name ?? '', hostname ?? '')
