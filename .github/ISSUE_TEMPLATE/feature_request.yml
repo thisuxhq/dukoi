@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest something Dukoi should do
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dukoi aims for a working URL in under two minutes, with good defaults instead of options. The most useful requests describe the problem first.
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What are you trying to do?
+      description: The app you're running, the phone, and where Dukoi gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help?
+      description: How it could work, as a command, a screen or a default. Rough is fine.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you do today instead?

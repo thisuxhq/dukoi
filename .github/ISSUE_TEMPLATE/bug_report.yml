@@ -1,0 +1,66 @@
+name: Bug report
+description: Something in Dukoi doesn't work the way it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. For a security problem, don't file it here. Email hello@thisux.com instead (see SECURITY.md).
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is the problem?
+      options:
+        - Phone app (setup, pairing, keeping apps alive)
+        - CLI (dukoi command)
+        - Deploys, releases or rollback
+        - Public URLs or custom domains
+        - Web dashboard
+        - Install script (dukoi.com/install)
+        - A template
+        - Website or docs
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Paste the command you ran and what it printed. Add --json to a command to get the error code.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. dukoi init notes-api
+        2. dukoi deploy
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: Phone
+      description: Brand, model and Android version, as shown by dukoi status
+      placeholder: Nothing A024, Android 16
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: dukoi --version, and your computer's OS
+      placeholder: dukoi 0.1.0 (protocol 1), macOS 26
+  - type: textarea
+    id: logs
+    attributes:
+      label: App logs
+      description: If it's about an app, paste the output of dukoi logs <app> --no-follow. Remove any secrets first.
+      render: shell

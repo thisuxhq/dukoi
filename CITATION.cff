@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Dukoi"
+abstract: "Deploy real apps to old Android phones. One command. No root, no Termux, no cloud bill."
+authors:
+  - name: "THISUX Private Limited"
+    website: "https://github.com/thisuxhq"
+license: Apache-2.0
+repository-code: "https://github.com/thisuxhq/dukoi"
+url: "https://dukoi.com"
+version: "0.1.0"
+date-released: "2026-11-11"
+keywords:
+  - android
+  - self-hosting
+  - deployment
+  - cli

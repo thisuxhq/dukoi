@@ -90,4 +90,4 @@ We say these things in the docs and the app, not just here:
 
 ## Reporting a vulnerability
 
-Please email the maintainers privately rather than opening a public issue. We'll add the address and a `SECURITY.md` to the repo before the open-source launch.
+Email hello@thisux.com rather than opening a public issue. [SECURITY.md](../SECURITY.md) says what to include and what happens next.

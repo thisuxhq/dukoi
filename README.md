@@ -1,5 +1,8 @@
 # Dukoi
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Copyright](https://img.shields.io/badge/©-THISUX%20Private%20Limited-111111.svg)](NOTICE)
+
 Deploy real apps to old Android phones. One command. No root, no Termux, no cloud bill.
 
 A 2019 flagship has more compute than a $5 server, draws 2 to 5 watts, and its battery works like a built-in UPS. Dukoi turns it into an app server: install one APK, pair the phone with your computer, run `dukoi deploy` and get a live URL.
@@ -74,4 +77,13 @@ bun run --filter @dukoi/dashboard build && bun run cli dashboard
 - [docs/roadmap.md](docs/roadmap.md): what's next
 - [docs/README.md](docs/README.md): every doc
 - [AGENTS.md](AGENTS.md): for people and AI agents working in this repo
-- [site/](site): the landing page and the user guide
+- [site/](site): the landing page and the user guide, live at [dukoi.com](https://dukoi.com)
+- [CONTRIBUTING.md](CONTRIBUTING.md): set up the repo and send a pull request
+- [SECURITY.md](SECURITY.md): report a vulnerability privately
+- [CHANGELOG.md](CHANGELOG.md): what changed in each version
+
+## License
+
+Copyright © 2026 [THISUX Private Limited](https://github.com/thisuxhq).
+
+Dukoi is released under the [Apache License 2.0](LICENSE). You can use, change and share it, for personal or commercial work, as long as you keep the copyright and license notices and the [NOTICE](NOTICE) file. The license also grants you a patent license from everyone who contributes.

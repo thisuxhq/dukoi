@@ -9,7 +9,7 @@ This doc covers how to set up the repo, make a change and get it merged. It's ai
 | Tool | For |
 | --- | --- |
 | Bun 1.4+ and Node.js 24+ | Installs, tests and bundling (Bun); the CLI and agent run on Node |
-| [Android CLI](android-cli.md) (`android`), plus a JDK 17+ | The phone app: create, build, run, screenshots |
+| [Android CLI](docs/android-cli.md) (`android`), plus a JDK 17+ | The phone app: create, build, run, screenshots |
 | An arm64 Android phone, Android 10+ | Running it for real. An emulator works for UI only. |
 
 ## Set up
@@ -37,7 +37,7 @@ android run --apks=app/build/outputs/apk/debug/app-debug.apk   # install and lau
 ./gradlew test           # Kotlin unit tests
 ```
 
-Use the Android CLI for all phone work: running the app, screenshots (`android screen capture`) and finding UI elements (`android layout`). Use `adb` only where the CLI has no command. See [android-cli.md](android-cli.md).
+Use the Android CLI for all phone work: running the app, screenshots (`android screen capture`) and finding UI elements (`android layout`). Use `adb` only where the CLI has no command. See [android-cli.md](docs/android-cli.md).
 
 Then pair with the phone and try a starter:
 
@@ -51,16 +51,18 @@ bun run cli deploy starters/notes-api
 ## Where things live
 
 ```
-android/     Control app, foreground service, agent, process manager (Kotlin)
+android/     The phone app (Kotlin): keeps the agent alive, runs setup, approves pairing
+agent/       Runs on the phone on bundled Node: admin API, process manager, deploys, logs
 cli/         dukoi CLI (TypeScript)
 dashboard/   Web dashboard (SvelteKit 3 server with remote functions)
 shared/      Admin API types, shared by agent, cli and dashboard
 starters/    The five templates (dukoi init)
 scripts/     Binary fetch and pack scripts
-docs/        These docs
+docs/        Product and engineering docs
+site/        The landing page and user guide at dukoi.com
 ```
 
-More detail is in [architecture.md](architecture.md).
+More detail is in [architecture.md](docs/architecture.md).
 
 ---
 
@@ -76,8 +78,8 @@ More detail is in [architecture.md](architecture.md).
 
 - Biome formats and lints JS and TS. ktlint handles Kotlin. Don't argue with the formatter.
 - Name things for what they are. No abbreviations.
-- Write boring code. See [dx-principles.md](dx-principles.md#part-2-building-dukoi).
-- User-facing text follows [writing-style.md](writing-style.md).
+- Write boring code. See [dx-principles.md](docs/dx-principles.md#part-2-building-dukoi).
+- User-facing text follows [writing-style.md](docs/writing-style.md).
 - Icons: Hugeicons stroke-rounded SVGs, copied into the repo. No other icon set.
 
 ### Commits and PRs
@@ -98,8 +100,16 @@ More detail is in [architecture.md](architecture.md).
 
 ## Decisions
 
-If your change makes a choice that's hard to undo, add an entry to [decisions.md](decisions.md).
+If your change makes a choice that's hard to undo, add an entry to [decisions.md](docs/decisions.md).
 
 ## Security issues
 
-Don't open a public issue. See [security.md](security.md#reporting-a-vulnerability).
+Don't open a public issue. Email hello@thisux.com instead, as [SECURITY.md](SECURITY.md) explains.
+
+## Code of conduct
+
+Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+Dukoi is under the [Apache License 2.0](LICENSE), copyright THISUX Private Limited. By sending a pull request, you agree your contribution is licensed under the same terms (section 5 of the license). You don't need to sign anything else.

@@ -172,12 +172,18 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** One line works on a computer without Node, so static sites deploy with nothing else installed, and `dukoi` starts at once instead of downloading on every run like `npx`. The repo is private, so GitHub Releases can't serve the downloads, and at 24 to 40 MB they're over the 25 MB limit for static assets.
 - **Trade-off:** We build and publish five archives per release. Node apps still need Node on the computer, because `dukoi deploy` runs `npm install` there (D-108). `dukoi dashboard` runs its server through the CLI's own Bun (`BUN_BE_BUN=1`) instead of Node. The CLI isn't on npm yet, so there's no `npx dukoi`.
 
+### D-114: Apache License 2.0
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** Dukoi is released under the Apache License 2.0, copyright THISUX Private Limited. `LICENSE` holds the license text and `NOTICE` lists what the APK and CLI bundle (Node.js, cloudflared, Bun). Contributions come in under the same license.
+- **Why:** It's the license people and companies adopt without a legal review, and unlike MIT it includes a patent grant from every contributor. It matches cloudflared, which the APK bundles.
+- **Trade-off:** Anyone can run a hosted copy of Dukoi without sharing changes, which AGPL would have prevented. We rely on the hosted parts (relay, hosted dashboard, backups) being hard to run, as `mission.md` says.
+
 ## Open questions
 
 | Question | Options | Decides |
 | --- | --- | --- |
 | Solo or with a cofounder? | | Pace, YC application |
-| License | Apache 2.0 (adoption) or AGPL (protects against clones) | Contributors, business |
 | Device lab models | Which Redmi and Oppo | Test coverage |
 | Lowest Android version | 10 (reach) or 12 (simpler) | Setup steps, test matrix |
 | First business angle | AI agents with phone hardware, or offline edge compute for Indian shops | Phase 2 priorities |

@@ -1,0 +1,15 @@
+Dukoi
+Copyright 2026 THISUX Private Limited
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The Dukoi phone app (APK) bundles these programs, each under its own license:
+
+- Node.js (https://nodejs.org), MIT License, built for Android from the
+  official source. Its license and the licenses of the code it includes are at
+  https://github.com/nodejs/node/blob/main/LICENSE
+- cloudflared (https://github.com/cloudflare/cloudflared), Apache License 2.0,
+  Copyright Cloudflare, Inc., built for Android from the official source.
+
+The standalone dukoi CLI (from https://dukoi.com/install) is built with Bun
+(https://bun.sh), MIT License, and includes the Bun runtime.

@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "description": "Deploy real apps to old Android phones. One command. No root. No cloud bill.",
+  "license": "Apache-2.0",
   "bin": {
     "dukoi": "./src/main.ts"
   },

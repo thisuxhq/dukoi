@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security problem
+    url: https://github.com/thisuxhq/dukoi/blob/main/SECURITY.md
+    about: Please email hello@thisux.com instead of opening a public issue.
+  - name: Read the docs
+    url: https://dukoi.com/docs
+    about: Setup, deploys, public URLs and troubleshooting.
