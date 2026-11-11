@@ -13,16 +13,17 @@ object AgentClient {
 
   fun getArray(path: String): JSONArray? = request("GET", path, null)?.let { runCatching { JSONArray(it) }.getOrNull() }
 
-  fun post(path: String, body: JSONObject = JSONObject()): JSONObject? =
-    request("POST", path, body)?.let { runCatching { JSONObject(it) }.getOrNull() }
+  fun post(path: String, body: JSONObject = JSONObject(), timeoutMs: Int = 3000): JSONObject? =
+    request("POST", path, body, timeoutMs)?.let { runCatching { JSONObject(it) }.getOrNull() }
 
-  fun delete(path: String): JSONObject? = request("DELETE", path, null)?.let { runCatching { JSONObject(it) }.getOrNull() }
+  fun delete(path: String, timeoutMs: Int = 3000): JSONObject? =
+    request("DELETE", path, null, timeoutMs)?.let { runCatching { JSONObject(it) }.getOrNull() }
 
-  private fun request(method: String, path: String, body: JSONObject?): String? = runCatching {
+  private fun request(method: String, path: String, body: JSONObject?, timeoutMs: Int = 3000): String? = runCatching {
     val conn = URL("$BASE$path").openConnection() as HttpURLConnection
     conn.requestMethod = method
     conn.connectTimeout = 1500
-    conn.readTimeout = 3000
+    conn.readTimeout = timeoutMs
     if (body != null) {
       conn.doOutput = true
       conn.setRequestProperty("content-type", "application/json")

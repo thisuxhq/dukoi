@@ -35,11 +35,20 @@ export function appRoutes(agent: Agent): void {
     const { to } = ctx.body.length ? ctx.json<{ to?: string }>() : {}
     return apps.rollback(ctx.params.name ?? '', to)
   })
-  r.on('POST', '/apps/:name/expose', 'paired', (ctx) => agent.tunnels.expose(ctx.params.name ?? ''))
-  r.on('DELETE', '/apps/:name/expose', 'paired', (ctx) =>
-    agent.tunnels.unexpose(ctx.params.name ?? ''),
-  )
+  // Public URLs: a quick tunnel, or a custom domain on the phone's named tunnel.
+  both('POST', '/apps/:name/expose', 'paired', (ctx) => agent.tunnels.expose(ctx.params.name ?? ''))
+  both('DELETE', '/apps/:name/expose', 'paired', async (ctx) => {
+    await agent.domains.remove(ctx.params.name ?? '')
+    return agent.tunnels.unexpose(ctx.params.name ?? '')
+  })
+  both('GET', '/domain', 'paired', () => agent.domains.status())
+  both('POST', '/domain/login', 'paired', () => agent.domains.startLogin())
+  both('POST', '/apps/:name/domain', 'paired', (ctx) => {
+    const { hostname } = ctx.json<{ hostname?: string }>()
+    return agent.domains.add(ctx.params.name ?? '', hostname ?? '')
+  })
   r.on('DELETE', '/apps/:name', 'paired', async (ctx) => {
+    await agent.domains.remove(ctx.params.name ?? '')
     await agent.tunnels.unexpose(ctx.params.name ?? '')
     return apps.remove(ctx.params.name ?? '')
   })

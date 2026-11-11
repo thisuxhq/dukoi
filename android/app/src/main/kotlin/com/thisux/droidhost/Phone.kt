@@ -34,7 +34,15 @@ data class AppInfo(
   val memoryMb: Double?,
   val localUrl: String,
   val publicUrl: String?,
+  /** Set when the public URL is on a custom domain (it never changes). */
+  val domain: String?,
 )
+
+/** The phone's link to Cloudflare for custom domains. */
+data class DomainStatus(val loggedIn: Boolean, val zone: String?, val loginUrl: String?)
+
+/** What an action returned: the new public URL, or the agent's own words if it failed. */
+data class Outcome(val publicUrl: String?, val error: String?, val code: String?)
 
 data class Vitals(val cpuPercent: Int?, val memoryPercent: Int?, val temperatureC: Int?)
 
@@ -56,9 +64,37 @@ object Phone {
 
   /** Runs start, stop, restart or rollback. Null on success, otherwise the agent's message. */
   fun control(name: String, action: String): String? {
-    val reply = AgentClient.post("/local/apps/${enc(name)}/$action") ?: return "Couldn’t reach DroidHost on this phone."
+    val reply = AgentClient.post("/local/apps/${enc(name)}/$action", timeoutMs = 30_000) ?: return "Couldn’t reach DroidHost on this phone."
     return if (reply.has("name")) null else reply.optString("message", "Something went wrong.")
   }
+
+  // ── Public links ──────────────────────────────────────────────────────────
+
+  fun domainStatus(): DomainStatus? = AgentClient.get("/local/domain")?.let(::parseDomain)
+
+  /** Starts Cloudflare login; the status carries the page to open. */
+  fun startDomainLogin(): Pair<DomainStatus?, String?> {
+    val reply = AgentClient.post("/local/domain/login", timeoutMs = 20_000) ?: return null to UNREACHABLE
+    return if (reply.has("loggedIn")) parseDomain(reply) to null else null to reply.optString("message")
+  }
+
+  fun quickLink(name: String) = outcome(AgentClient.post("/local/apps/${enc(name)}/expose", timeoutMs = 45_000))
+
+  fun setDomain(name: String, hostname: String) =
+    outcome(AgentClient.post("/local/apps/${enc(name)}/domain", JSONObject().put("hostname", hostname), timeoutMs = 60_000))
+
+  fun makePrivate(name: String) = outcome(AgentClient.delete("/local/apps/${enc(name)}/expose", timeoutMs = 30_000))
+
+  private fun outcome(reply: JSONObject?): Outcome = when {
+    reply == null -> Outcome(null, UNREACHABLE, null)
+    reply.has("app") -> Outcome(reply.optStringOrNull("publicUrl"), null, null)
+    else -> Outcome(null, reply.optString("message", "Something went wrong."), reply.optStringOrNull("code"))
+  }
+
+  private fun parseDomain(o: JSONObject) =
+    DomainStatus(o.optBoolean("loggedIn"), o.optStringOrNull("zone"), o.optStringOrNull("loginUrl"))
+
+  private const val UNREACHABLE = "Couldn’t reach DroidHost on this phone."
 
   fun vitals(context: Context): Vitals {
     val status = AgentClient.get("/local/phone")
@@ -97,6 +133,7 @@ object Phone {
     memoryMb = o.optDoubleOrNull("memoryMb"),
     localUrl = o.optString("localUrl"),
     publicUrl = o.optStringOrNull("publicUrl"),
+    domain = o.optStringOrNull("domain"),
   )
 
   private val clock = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault())

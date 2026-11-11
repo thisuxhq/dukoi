@@ -39,6 +39,7 @@ This doc explains how DroidHost keeps the phone and its apps safe, and what it d
 
 - Listens on one LAN port (7070). Every request must be signed by a paired computer, and every JSON response is signed by the phone. Traffic isn't encrypted in phase 1, so secrets are encrypted to the phone's key before they're sent (see D-104).
 - **It never goes through a tunnel.** The tunnel config is built from app ports only, and the agent refuses to create a tunnel to its own port.
+- Custom domains: the Cloudflare login certificate and tunnel credentials live only in the phone's private storage. DroidHost changes only DNS records it created itself (see D-109).
 - The phone app talks to the same agent on `127.0.0.1` through `/local/...` endpoints, which answer only requests from the phone itself. They cover pairing approval, the app list, app logs, start, stop, restart, roll back and phone status. Anything running on the phone can reach loopback, including your own apps, so treat deployed apps as trusted code (see the limits below).
 - Acceptance check: a port scan from outside finds only app ports.
 

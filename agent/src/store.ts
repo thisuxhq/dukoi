@@ -12,8 +12,10 @@ export interface SavedApp {
   release: string | null
   /** true = should be running; survives reboots */
   wanted: boolean
-  /** true = has a public URL; survives restarts */
+  /** true = has a quick-tunnel public URL; survives restarts */
   exposed?: boolean
+  /** Custom domain, e.g. api.example.com, served by the phone's named tunnel */
+  domain?: string
   createdAt: string
 }
 
@@ -21,6 +23,8 @@ export interface State {
   identity: KeyPair
   computers: PairedComputer[]
   apps: SavedApp[]
+  /** The phone's Cloudflare named tunnel, made when the first domain is added */
+  tunnel?: { id: string; name: string }
 }
 
 export class Store {
@@ -34,7 +38,12 @@ export class Store {
     try {
       const raw = JSON.parse(readFileSync(this.file, 'utf8')) as Partial<State>
       if (raw.identity?.publicKey && raw.identity.privateKeyPem) {
-        return { identity: raw.identity, computers: raw.computers ?? [], apps: raw.apps ?? [] }
+        return {
+          identity: raw.identity,
+          computers: raw.computers ?? [],
+          apps: raw.apps ?? [],
+          ...(raw.tunnel ? { tunnel: raw.tunnel } : {}),
+        }
       }
     } catch {
       // First run, or an unreadable file: start fresh with a new identity.

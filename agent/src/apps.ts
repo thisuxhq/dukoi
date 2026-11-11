@@ -496,6 +496,7 @@ export class Apps {
       memoryMb: rt.usage.memoryMb,
       localUrl: `http://${wifiAddress()}:${rt.saved.port}`,
       publicUrl: rt.publicUrl,
+      domain: rt.saved.domain ?? null,
     }
   }
 
