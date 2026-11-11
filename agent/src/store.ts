@@ -12,6 +12,8 @@ export interface SavedApp {
   release: string | null
   /** true = should be running; survives reboots */
   wanted: boolean
+  /** true = has a public URL; survives restarts */
+  exposed?: boolean
   createdAt: string
 }
 

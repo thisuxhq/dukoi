@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util'
 import { PROTOCOL_VERSION } from '@droidhost/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
 import { deploy } from './commands/deploy.ts'
+import { expose } from './commands/expose.ts'
 import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { CliError, c, printError } from './output.ts'
@@ -27,6 +28,7 @@ ${c.bold('Apps')}
   releases [app]       List the last 5 releases
   rollback [app]       Go back to the previous release (--to <id> for another)
   remove [app]         Delete an app from the phone (asks first; --yes to skip)
+  expose [app]         Give an app a public HTTPS URL (--off to remove it)
 
 ${c.bold('Watching')}
   ps                   All apps: status, CPU, memory, uptime, URL
@@ -43,6 +45,7 @@ ${c.bold('Options')}
 ${c.bold('Examples')}
   droidhost pair
   droidhost deploy
+  droidhost expose
   droidhost rollback my-api
 `
 
@@ -56,6 +59,8 @@ async function main(argv: string[]): Promise<void> {
       host: { type: 'string' },
       name: { type: 'string' },
       to: { type: 'string' },
+      off: { type: 'boolean', default: false },
+      domain: { type: 'string' },
       lines: { type: 'string' },
       'no-follow': { type: 'boolean', default: false },
       yes: { type: 'boolean', default: false },
@@ -101,6 +106,14 @@ async function main(argv: string[]): Promise<void> {
         app: arg,
         lines: Number(values.lines ?? 100),
         follow: !(values['no-follow'] ?? false) && process.stdout.isTTY === true,
+        device: values.device,
+        json,
+      })
+    case 'expose':
+      return expose({
+        app: arg,
+        off: values.off ?? false,
+        domain: values.domain,
         device: values.device,
         json,
       })

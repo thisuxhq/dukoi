@@ -43,7 +43,19 @@ droidhost expose
 - Good for demos, testing and webhooks you can update.
 - The CLI and dashboard always show the current URL.
 
+### Our own cloudflared build
+
+Cloudflare's `cloudflared-linux-arm64` can't look up names on Android, because it reads `/etc/resolv.conf`, which Android doesn't have. We build `cloudflared` from Cloudflare's source with `GOOS=android` so it uses Android's resolver, publish it as a GitHub Release, and ship it in the APK as `libcloudflared.so` (`scripts/fetch-cloudflared.sh`). See `spikes/cloudflared`.
+
+### How the agent runs tunnels
+
+- One `cloudflared` per exposed app, pointing at the app's **stable port**. It never points at the admin port.
+- It's supervised like an app. If it restarts, the quick tunnel URL changes; the agent reads the new one from `cloudflared`'s output, and `droidhost ps` shows it.
+- Exposed apps get their tunnel back by themselves after the agent or phone restarts.
+
 ## Custom domains (named tunnels)
+
+> Not in this version yet. `droidhost expose --domain` says so and suggests a quick tunnel.
 
 ```bash
 droidhost expose --domain api.example.com

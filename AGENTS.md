@@ -46,6 +46,8 @@ We use Bun for installs, tests and bundling, with Bun workspaces. The agent runs
 - We bundle **Node.js 24 LTS**, built from the official source and published as a GitHub Release (`node-v24.22.2-android-arm64`).
 - **Never rebuild Node for app work.** Run `scripts/fetch-node.sh`. A rebuild takes about an hour, so do it only when upgrading Node, then publish a new release.
 - The binary ships inside the APK as `jniLibs/arm64-v8a/libnode.so`, because Android 10+ only runs binaries from `nativeLibraryDir`.
+- `cloudflared` works the same way: our Android build is a GitHub Release (`cloudflared-2026.10.7-android-arm64`), fetched by `scripts/fetch-cloudflared.sh`, shipped as `libcloudflared.so`. Cloudflare's own Linux build can't resolve DNS on Android.
+- `scripts/prepare-android.sh` fetches both and bundles the agent. Run it before building the APK.
 
 ## Android work
 
