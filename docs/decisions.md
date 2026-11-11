@@ -80,7 +80,7 @@ This doc is the decision log. It records what we decided, why we decided it, and
 ## Proposed (in these docs, not yet confirmed)
 
 ### D-101: Agent and process manager in Kotlin inside the service
-- **Status:** Proposed
+- **Status:** Replaced by D-107
 - **Date:** 2026-11-10
 - **Decision:** Write the admin API and supervisor in Kotlin (Ktor), not as a Node process.
 - **Why:** Android protects the service. A Node supervisor could itself be killed as a phantom process, leaving nothing to restart apps.
@@ -100,12 +100,12 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** Keeps the admin API private, with no hosting needed.
 - **Trade-off:** No dashboard from your phone's browser or away from home in phase 1.
 
-### D-104: Ed25519 keys over TLS with a pinned certificate
-- **Status:** Proposed
-- **Date:** 2026-11-10
-- **Decision:** Each request is signed by the computer's key. The phone's self-signed certificate fingerprint is pinned at pairing.
-- **Why:** No passwords, and safe on shared Wi-Fi.
-- **Trade-off:** We have to build and test the pairing protocol ourselves.
+### D-104: Signed requests and responses, no TLS in phase 1
+- **Status:** Decided (replaces "Ed25519 keys over TLS with a pinned certificate")
+- **Date:** 2026-11-11
+- **Decision:** The CLI signs every admin request with its Ed25519 key, plus a timestamp and nonce. The phone signs its JSON responses with its own Ed25519 key, which the CLI pinned at pairing. Plain HTTP on the LAN. Code: `shared/src/signing.ts`.
+- **Why:** It stops fake phones, tampering and replays as well as TLS with a pinned certificate would, with no certificate generation on the phone and one small file of shared code.
+- **Trade-off:** Traffic on the Wi-Fi isn't encrypted, so others on the same network can read app code being uploaded and log lines. Secrets (`droidhost env`) must be encrypted to the phone's key before they're sent. Add TLS or Noise later if that's not enough.
 
 ### D-105: Build on the computer, install on the phone
 - **Status:** Proposed
@@ -122,6 +122,20 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Trade-off:** The agent runs on Node, not Bun, on the phone, so its code can't use Bun-only APIs. Contributors used to ESLint or Prettier have to adjust.
 
 ---
+
+### D-107: Agent in TypeScript on the bundled Node, kept alive by Kotlin
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** The Kotlin foreground service keeps exactly one process alive: the agent, a TypeScript program running on our bundled Node. The agent runs the admin API and the process manager for apps. Kotlin handles the setup checklist, pairing approval, Wi-Fi discovery (NSD) and the notification.
+- **Why:** The agent and CLI share one language and one copy of the protocol code. Node already has crypto, HTTP, streams and zlib. The survival spike showed a Kotlin service brings a crashed or killed Node process back in about a second.
+- **Trade-off:** If the agent restarts, admin commands pause for a second. The agent must restore running apps on start and clear any orphaned app processes.
+
+### D-108: Install dependencies on the computer
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** `droidhost deploy` runs `npm install --omit=dev` on the computer and uploads the app with its `node_modules`. The phone never runs npm.
+- **Why:** The phone needs no npm, registry access or compiler. Native modules are caught on the computer, before upload, with a clear error.
+- **Trade-off:** Uploads are bigger, and packages with platform-specific binaries won't work. Phase 1 doesn't support those anyway.
 
 ## Open questions
 
