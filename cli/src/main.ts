@@ -4,7 +4,9 @@ import { PROTOCOL_VERSION } from '@droidhost/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
 import { dashboard } from './commands/dashboard.ts'
 import { deploy } from './commands/deploy.ts'
+import { env } from './commands/env.ts'
 import { expose } from './commands/expose.ts'
+import { init } from './commands/init.ts'
 import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { CliError, c, printError } from './output.ts'
@@ -22,6 +24,7 @@ ${c.bold('Pairing')}
   unpair [phone]       Forget a phone
 
 ${c.bold('Apps')}
+  init [template]      Start from a template and deploy it (lists them if you leave it out)
   deploy [folder]      Ship an app to the phone (default: this folder)
   start [app]          Start an app
   stop [app]           Stop an app (it stays stopped after a reboot)
@@ -31,6 +34,8 @@ ${c.bold('Apps')}
   remove [app]         Delete an app from the phone (asks first; --yes to skip)
   expose [app]         Give an app a public HTTPS URL (--domain api.example.com for
                        one that never changes, --off to remove it)
+  env set KEY=value    Save a setting on the phone, like a bot token (also: env list,
+                       env unset KEY; --app picks the app)
 
 ${c.bold('Watching')}
   ps                   All apps: status, CPU, memory, uptime, URL
@@ -46,6 +51,7 @@ ${c.bold('Options')}
   -v, --version        Show the version
 
 ${c.bold('Examples')}
+  droidhost init
   droidhost pair
   droidhost deploy
   droidhost expose
@@ -60,6 +66,7 @@ async function main(argv: string[]): Promise<void> {
     strict: true,
     options: {
       device: { type: 'string' },
+      app: { type: 'string' },
       host: { type: 'string' },
       name: { type: 'string' },
       to: { type: 'string' },
@@ -88,14 +95,19 @@ async function main(argv: string[]): Promise<void> {
       return devices(json)
     case 'unpair':
       return unpair(arg ?? values.device, json)
+    case 'init':
+      return init({ template: arg, device: values.device })
+    case 'env':
+      return env(arg, positionals.slice(2), { app: values.app, device: values.device, json })
     case 'deploy':
-      return deploy({
+      await deploy({
         folder: arg ?? '.',
         name: values.name,
         device: values.device,
         noHealthCheck: values['no-health-check'] ?? false,
         json,
       })
+      return
     case 'start':
     case 'stop':
     case 'restart':

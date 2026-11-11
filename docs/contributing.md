@@ -43,7 +43,7 @@ Then pair with the phone and try a starter:
 
 ```bash
 bun run cli pair
-bun run cli deploy starters/hono-api
+bun run cli deploy starters/notes-api
 ```
 
 ---
@@ -55,7 +55,7 @@ android/     Control app, foreground service, agent, process manager (Kotlin)
 cli/         droidhost CLI (TypeScript)
 dashboard/   Web dashboard (SvelteKit 3 server with remote functions)
 shared/      Admin API types, shared by agent, cli and dashboard
-starters/    The five starters
+starters/    The five templates (droidhost init)
 scripts/     Binary fetch and pack scripts
 docs/        These docs
 ```
