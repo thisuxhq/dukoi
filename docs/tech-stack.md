@@ -81,7 +81,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 ### Web dashboard: SvelteKit 3 with remote functions
 
 - `droidhost dashboard` starts the built SvelteKit server (adapter-node) on `127.0.0.1` and opens the browser.
-- Remote functions in `dashboard/src/lib/phone.remote.ts` talk to the phone. They use the CLI's signed client (`droidhost/client`), so they sign with this computer's key and check the phone's signature. `query.live` streams app status every 2 seconds and logs as they're written. `command` runs start, stop, restart and rollback.
+- Remote functions in `dashboard/src/lib/phone.remote.ts` talk to the phone. They use the CLI's signed client (`droidhost/client`), so they sign with this computer's key and check the phone's signature. `query.live` streams app status every 2 seconds and logs as they're written. `command` runs start, stop, restart and rollback. Settings (`settings.remote.ts`) shows the phone, paired computers and Cloudflare, and can disconnect Cloudflare, stop all apps or unpair this computer, each after a confirm dialog. Removing other computers stays on the phone.
 - Small hand-written Svelte components in the phone app's v4 style, Tailwind 4 and Hugeicons (stroke-rounded) copied in as SVG paths. The fonts are the phone app's.
 - **Why on the computer:** it keeps the admin API private. The dashboard talks to the phone through the CLI's paired channel, never through the internet. The hosted dashboard is a later Pro feature.
 
