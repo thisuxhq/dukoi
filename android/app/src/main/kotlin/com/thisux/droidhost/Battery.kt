@@ -24,7 +24,7 @@ data class BatteryReading(
 
 data class BatteryWeek(
   /** Average hours a day spent plugged in at 100%, or null with no history yet. */
-  val hoursFullPerDay: Int?,
+  val hoursFullPerDay: Double?,
   val hottestC: Int?,
   /** "Tuesday", or null with no history yet. */
   val hottestDay: String?,
@@ -103,12 +103,16 @@ object Battery {
   private fun summarise(week: List<Sample>): BatteryWeek {
     if (week.isEmpty()) return BatteryWeek(null, null, null)
     val days = ((week.last().at - week.first().at) / 86_400.0).coerceAtLeast(1.0)
-    val fullHours = week.count { it.plugged && it.level >= 100 } * (SAMPLE_MS / 3_600_000.0)
+    // Each sample at 100% counts until the next one, but never more than one sampling gap.
+    val fullSeconds = week.zipWithNext().sumOf { (a, b) ->
+      if (a.plugged && a.level >= 100) minOf(b.at - a.at, SAMPLE_MS / 1000) else 0L
+    }
+    val fullHours = fullSeconds / 3600.0
     val hottest = week.filter { it.tempC != null }.maxByOrNull { it.tempC!! }
     val day = hottest?.let {
       Instant.ofEpochSecond(it.at).atZone(ZoneId.systemDefault()).dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
     }
-    return BatteryWeek(Math.round(fullHours / days).toInt().coerceAtMost(24), hottest?.tempC, day)
+    return BatteryWeek(fullHours / days, hottest?.tempC, day)
   }
 
   private data class Sample(val at: Long, val level: Int, val plugged: Boolean, val tempC: Int?)

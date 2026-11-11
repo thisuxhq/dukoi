@@ -74,7 +74,7 @@ fun BatteryCareScreen(care: BatteryCare, onBack: () -> Unit, onTurnOn: () -> Uni
       Section("Last 7 days") {
         Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
           InfoRow("Time at 100%") {
-            Text(care.week.hoursFullPerDay?.let { if (it == 0) "None" else "${it}h a day" } ?: "No data yet", style = Styles.Label)
+            Text(care.week.hoursFullPerDay?.let(::hoursLabel) ?: "No data yet", style = Styles.Label)
           }
           InfoRow("Hottest") {
             val hottest = care.week.hottestC?.let { c -> care.week.hottestDay?.let { "$c°C on $it" } ?: "$c°C" }
@@ -85,6 +85,13 @@ fun BatteryCareScreen(care: BatteryCare, onBack: () -> Unit, onTurnOn: () -> Uni
       Spacer(Modifier.height(28.dp))
     }
   }
+}
+
+/** 0 → "None", 0.3 → "Under 1h a day", 21.6 → "22h a day". */
+private fun hoursLabel(hours: Double) = when {
+  hours <= 0.0 -> "None"
+  hours < 1.0 -> "Under 1h a day"
+  else -> "${Math.round(hours).coerceAtMost(24)}h a day"
 }
 
 fun limitColor(limit: ChargeLimit) = when (limit) {
