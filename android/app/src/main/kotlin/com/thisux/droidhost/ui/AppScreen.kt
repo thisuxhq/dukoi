@@ -38,6 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.toArgb
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.AnnotatedString
@@ -146,11 +153,15 @@ fun AppScreen(
 private fun Details(app: AppInfo, onAction: (String) -> Unit) {
   val clipboard = LocalClipboardManager.current
   val toast = LocalToast.current
+  val context = LocalContext.current
+  // Tap a link to open it; the icon copies it.
   Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
     app.publicUrl?.let { url ->
-      LinkRow("Public", url.removePrefix("https://"), Violet) { clipboard.setText(AnnotatedString(url)); toast.show("URL copied") }
+      LinkRow("Public", url.removePrefix("https://"), Violet, onOpen = { openInTab(context, url) }) {
+        clipboard.setText(AnnotatedString(url)); toast.show("URL copied")
+      }
     }
-    LinkRow("Wi-Fi", app.localUrl.removePrefix("http://"), com.thisux.droidhost.ui.theme.Ink) {
+    LinkRow("Wi-Fi", app.localUrl.removePrefix("http://"), com.thisux.droidhost.ui.theme.Ink, onOpen = { openInTab(context, app.localUrl) }) {
       clipboard.setText(AnnotatedString(app.localUrl)); toast.show("URL copied")
     }
   }
@@ -174,9 +185,9 @@ private fun Details(app: AppInfo, onAction: (String) -> Unit) {
 }
 
 @Composable
-private fun LinkRow(label: String, value: String, color: Color, onCopy: (() -> Unit)?) {
+private fun LinkRow(label: String, value: String, color: Color, onOpen: () -> Unit, onCopy: (() -> Unit)?) {
   Row(Modifier.fillMaxWidth().background(Card).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(Modifier.weight(1f).tap(onOpen), verticalArrangement = Arrangement.spacedBy(2.dp)) {
       Text(label, style = Styles.Small.copy(fontSize = 12.sp, lineHeight = 16.sp))
       Text(value, style = Styles.Log.copy(fontSize = 13.sp, lineHeight = 18.sp, color = color), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
@@ -263,4 +274,12 @@ private fun LogRow(line: LogLine) {
     )
     Text(line.text, style = Styles.Log.copy(color = color), modifier = Modifier.weight(1f))
   }
+}
+
+/** Opens a link in an in-app browser tab, in DroidHost's colours. */
+private fun openInTab(context: Context, url: String) {
+  val colors = CustomTabColorSchemeParams.Builder().setToolbarColor(Canvas.toArgb()).build()
+  val tab = CustomTabsIntent.Builder().setDefaultColorSchemeParams(colors).setShowTitle(true).build()
+  runCatching { tab.launchUrl(context, Uri.parse(url)) }
+    .onFailure { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
