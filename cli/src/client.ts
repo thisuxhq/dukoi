@@ -1,7 +1,7 @@
 // Talks to a phone's admin API. Signs every request with this computer's key
 // and checks every response is signed by the phone we paired with.
 import { randomBytes } from 'node:crypto'
-import { type ApiError, HEADER, signRequest, verifyResponse } from '@dukoi/shared'
+import { type ApiError, HEADER, PROTOCOL_VERSION, signRequest, verifyResponse } from '@dukoi/shared'
 import { computerKey, loadPhones, markUsed, type SavedPhone } from './config.ts'
 import { CliError } from './output.ts'
 
@@ -59,6 +59,7 @@ export function parseVerified<T>(target: Target, res: Response, text: string, no
       'Something else may be using its address. Check the phone is on, then run `dukoi pair` again.',
     )
   }
+  checkProtocol(Number(res.headers.get(HEADER.protocol) ?? PROTOCOL_VERSION))
   let value: unknown
   try {
     value = JSON.parse(text)
@@ -70,6 +71,24 @@ export function parseVerified<T>(target: Target, res: Response, text: string, no
   }
   if (!res.ok) throw CliError.from(value as ApiError)
   return value as T
+}
+
+/** Stops before a CLI and a phone that don't speak the same admin API talk past each other. */
+export function checkProtocol(phone: number): void {
+  if (phone > PROTOCOL_VERSION) {
+    throw new CliError(
+      'CLI_OUTDATED',
+      'The Dukoi app on the phone is newer than this CLI.',
+      'Update the CLI: curl -fsSL https://dukoi.com/install | sh',
+    )
+  }
+  if (phone < PROTOCOL_VERSION) {
+    throw new CliError(
+      'PHONE_OUTDATED',
+      'This CLI is newer than the Dukoi app on the phone.',
+      'Install the new app on the phone from https://dukoi.com/download/dukoi.apk, then try again.',
+    )
+  }
 }
 
 export function unreachable(target: Target, err: unknown): CliError {

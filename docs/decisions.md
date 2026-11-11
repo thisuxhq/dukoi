@@ -87,7 +87,7 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Trade-off:** Two languages in the project, Kotlin and TypeScript.
 
 ### D-102: CLI in TypeScript on npm
-- **Status:** Proposed
+- **Status:** Superseded by D-113
 - **Date:** 2026-11-10
 - **Decision:** Publish `dukoi` on npm so `dukoi` works.
 - **Why:** Users already have Node, and it shares types with the dashboard.
@@ -168,7 +168,7 @@ This doc is the decision log. It records what we decided, why we decided it, and
 ### D-113: Install the CLI with one line from dukoi.com
 - **Status:** Decided
 - **Date:** 2026-11-11
-- **Decision:** `curl -fsSL https://dukoi.com/install | sh` (macOS, Linux) and `irm https://dukoi.com/install.ps1 | iex` (Windows) install the CLI as one Bun program per platform, built by `bun build --compile` in `scripts/build-cli.ts`. Everything goes in `~/.dukoi`: `bin/dukoi`, the dashboard and the templates. The script checks the download against `SHA256SUMS`, adds `~/.dukoi/bin` to PATH, never uses sudo, and updates when run again. The archives live in the `dukoi-downloads` R2 bucket, uploaded by `scripts/publish-cli.sh` and served at `dukoi.com/download/` by the site's worker. The docs use plain `dukoi <command>` instead of `npx dukoi`.
+- **Decision:** `curl -fsSL https://dukoi.com/install | sh` (macOS, Linux) and `irm https://dukoi.com/install.ps1 | iex` (Windows) install the CLI as one Bun program per platform, built by `bun build --compile` in `scripts/build-cli.ts`. Everything goes in `~/.dukoi`: `bin/dukoi`, the dashboard and the templates. The script checks the download against `SHA256SUMS`, adds `~/.dukoi/bin` to PATH, never uses sudo, and updates when run again. The archives live in the `dukoi-downloads` R2 bucket, uploaded by `scripts/publish-release.sh` and served at `dukoi.com/download/` by the site's worker (see D-115). The docs use plain `dukoi <command>` instead of `npx dukoi`.
 - **Why:** One line works on a computer without Node, so static sites deploy with nothing else installed, and `dukoi` starts at once instead of downloading on every run like `npx`. The repo is private, so GitHub Releases can't serve the downloads, and at 24 to 40 MB they're over the 25 MB limit for static assets.
 - **Trade-off:** We build and publish five archives per release. Node apps still need Node on the computer, because `dukoi deploy` runs `npm install` there (D-108). `dukoi dashboard` runs its server through the CLI's own Bun (`BUN_BE_BUN=1`) instead of Node. The CLI isn't on npm yet, so there's no `npx dukoi`.
 
@@ -178,6 +178,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Decision:** Dukoi is released under the Apache License 2.0, copyright THISUX Private Limited. `LICENSE` holds the license text and `NOTICE` lists what the APK and CLI bundle (Node.js, cloudflared, Bun). Contributions come in under the same license.
 - **Why:** It's the license people and companies adopt without a legal review, and unlike MIT it includes a patent grant from every contributor. It matches cloudflared, which the APK bundles.
 - **Trade-off:** Anyone can run a hosted copy of Dukoi without sharing changes, which AGPL would have prevented. We rely on the hosted parts (relay, hosted dashboard, backups) being hard to run, as `mission.md` says.
+
+### D-115: One release command for the app, CLI and site
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** `scripts/release.sh <version>` releases everything at one version, read from `shared/src/version.ts`. It runs the checks, builds a signed APK and the CLI archives, tags `v<version>` on `main`, uploads the downloads to R2 in `<version>/` and `latest/`, deploys dukoi.com and creates the GitHub release. The APK is served at `dukoi.com/download/dukoi.apk`. Every admin API answer carries the phone's `PROTOCOL_VERSION`, and the CLI says which side to update when they differ. See `docs/releasing.md`.
+- **Why:** One version means `dukoi --version` and the phone app always match. The repo is private, so GitHub Releases can't be the public download, and dukoi.com already serves the CLI. One command makes a release hard to get half right.
+- **Trade-off:** Releases run on a laptop that has the release key, the Android SDK and the Cloudflare login, until we move them to GitHub Actions. Losing the release key would stop every phone from updating.
 
 ## Open questions
 

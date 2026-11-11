@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util'
-import { PROTOCOL_VERSION } from '@dukoi/shared'
+import { DUKOI_VERSION, PROTOCOL_VERSION } from '@dukoi/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
 import { dashboard } from './commands/dashboard.ts'
 import { deploy } from './commands/deploy.ts'
@@ -10,8 +10,6 @@ import { init } from './commands/init.ts'
 import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { CliError, c, printError } from './output.ts'
-
-const VERSION = '0.1.0'
 
 const HELP = `${c.bold('dukoi')} — deploy real apps to old Android phones
 
@@ -85,7 +83,8 @@ async function main(argv: string[]): Promise<void> {
   const json = values.json ?? false
   const [command, arg] = positionals
 
-  if (values.version) return void console.log(`dukoi ${VERSION} (protocol ${PROTOCOL_VERSION})`)
+  if (values.version)
+    return void console.log(`dukoi ${DUKOI_VERSION} (protocol ${PROTOCOL_VERSION})`)
   if (values.help || !command || command === 'help') return void console.log(HELP)
 
   switch (command) {

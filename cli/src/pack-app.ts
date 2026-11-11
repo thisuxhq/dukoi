@@ -13,11 +13,11 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, relative, sep } from 'node:path'
-import { MANIFEST_PATH, pack, type ReleaseManifest } from '@dukoi/shared'
+import { DUKOI_VERSION, MANIFEST_PATH, pack, type ReleaseManifest } from '@dukoi/shared'
 import type { AppFolder } from './app-folder.ts'
 import { CliError } from './output.ts'
 
-export const CLI_VERSION = '0.1.0'
+export const CLI_VERSION = DUKOI_VERSION
 
 const ALWAYS_IGNORE = ['.git', 'node_modules', '.DS_Store', '.dukoi', '.env', '.env.local']
 

@@ -28,7 +28,7 @@ dukoi deploy
 
 You get a Wi-Fi URL straight away. `dukoi expose` adds a public HTTPS URL through Cloudflare, and `--domain api.example.com` puts it on your own domain.
 
-> Dukoi is in early development. The APK isn't on GitHub Releases yet, so for now build it from this repo (see below).
+> Dukoi is in early development. Download the APK from [dukoi.com/download/dukoi.apk](https://dukoi.com/download/dukoi.apk) once the first release is out, or build it from this repo (see below).
 
 ## What you get
 

@@ -6,3 +6,7 @@ dist/
 
 # Temp files from bun build --compile
 *.bun-build
+
+# Android signing keys. Never commit them (docs/releasing.md)
+*.jks
+*.keystore

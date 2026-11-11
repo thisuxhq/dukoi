@@ -35,6 +35,7 @@ The source of truth for scope is the [Dukoi PRD](https://claude.ai/artifact/AFJq
 | [starters.md](starters.md) | The five starters and the rules they follow |
 | [device-lab.md](device-lab.md) | Test phones, acceptance checks and benchmarks |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Repo setup, making a change and the PR checklist |
+| [releasing.md](releasing.md) | Versions, the release key and `scripts/release.sh` |
 | [android-cli.md](android-cli.md) | How we build, run and test the phone app with `android` |
 | [writing-style.md](writing-style.md) | How Dukoi sounds in errors, alerts, UI and docs |
 | [glossary.md](glossary.md) | Every term in plain words |

@@ -6,8 +6,8 @@
 //   starters/        the templates for `dukoi init`
 //
 // Usage: bun scripts/build-cli.ts
-// Output: build/cli/dukoi-<os>-<arch>.tar.gz (.zip for Windows) and SHA256SUMS
-// Publish with scripts/publish-cli.sh.
+// Output: build/release/dukoi-<os>-<arch>.tar.gz (.zip for Windows) and SHA256SUMS
+// scripts/release.sh runs this, adds the APK and publishes them all.
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { $ } from 'bun'
@@ -21,7 +21,7 @@ const PLATFORMS = [
 ]
 
 const repo = join(import.meta.dir, '..')
-const out = join(repo, 'build', 'cli')
+const out = join(repo, 'build', 'release')
 rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 
@@ -61,4 +61,4 @@ for (const { name, target } of PLATFORMS) {
 writeFileSync(join(out, 'SHA256SUMS'), `${sums.join('\n')}\n`)
 rmSync(join(out, 'stage'), { recursive: true, force: true })
 if (!existsSync(join(out, 'SHA256SUMS'))) throw new Error('No SHA256SUMS written')
-console.log(`✓ build/cli/SHA256SUMS`)
+console.log(`✓ build/release/SHA256SUMS`)

@@ -1,6 +1,13 @@
 // A small router for the admin API, with signed requests and responses.
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
-import { type ApiError, HEADER, NonceCache, signResponse, verifyRequest } from '@dukoi/shared'
+import {
+  type ApiError,
+  HEADER,
+  NonceCache,
+  PROTOCOL_VERSION,
+  signResponse,
+  verifyRequest,
+} from '@dukoi/shared'
 
 export class HttpError extends Error {
   constructor(
@@ -152,7 +159,10 @@ export class Router {
   send(req: IncomingMessage, res: ServerResponse, status: number, value: unknown): void {
     const body = JSON.stringify(value)
     const nonce = req.headers[HEADER.nonce]
-    const headers: Record<string, string> = { 'content-type': 'application/json' }
+    const headers: Record<string, string> = {
+      'content-type': 'application/json',
+      [HEADER.protocol]: String(PROTOCOL_VERSION),
+    }
     if (typeof nonce === 'string') {
       headers[HEADER.signature] = signResponse(status, nonce, body, this.privateKeyPem)
     }

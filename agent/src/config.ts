@@ -1,8 +1,8 @@
 // Settings the Kotlin app passes in when it starts the agent.
 import { join } from 'node:path'
-import { ADMIN_PORT } from '@dukoi/shared'
+import { ADMIN_PORT, DUKOI_VERSION } from '@dukoi/shared'
 
-export const AGENT_VERSION = '0.1.0'
+export const AGENT_VERSION = DUKOI_VERSION
 
 export interface Config {
   /** Root of everything the agent stores: state, apps, logs */

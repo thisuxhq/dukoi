@@ -11,7 +11,7 @@
     // see every request
     "run_worker_first": true
   },
-  // The standalone CLI, too big for static assets. scripts/publish-cli.sh fills it.
+  // The APK and the standalone CLI, too big for static assets. scripts/publish-release.sh fills it.
   "r2_buckets": [{ "binding": "DOWNLOADS", "bucket_name": "dukoi-downloads" }],
   "routes": [
     { "pattern": "dukoi.com", "custom_domain": true },

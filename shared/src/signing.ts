@@ -12,6 +12,8 @@ export const HEADER = {
   time: 'x-dukoi-time',
   nonce: 'x-dukoi-nonce',
   signature: 'x-dukoi-signature',
+  /** The phone's PROTOCOL_VERSION, on every admin API response */
+  protocol: 'x-dukoi-protocol',
 } as const
 
 /** How far apart the computer's and phone's clocks may be. */

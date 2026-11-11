@@ -14,6 +14,11 @@ const SCRIPTS: Record<string, string> = {
   '/install.ps1': '/install.ps1',
 }
 
+const CONTENT_TYPES: Record<string, string> = {
+  apk: 'application/vnd.android.package-archive',
+  SHA256SUMS: 'text/plain; charset=utf-8',
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
@@ -31,20 +36,22 @@ export default {
       })
     }
 
-    // /download/dukoi-darwin-arm64.tar.gz → cli/latest/dukoi-darwin-arm64.tar.gz in R2
+    // /download/dukoi.apk → latest/dukoi.apk in R2 (scripts/publish-release.sh)
     const file = url.pathname.match(/^\/download\/([\w.-]+)$/)?.[1]
     if (file) {
-      const object = await env.DOWNLOADS.get(`cli/latest/${file}`)
+      const object =
+        (await env.DOWNLOADS.get(`latest/${file}`)) ??
+        // Where the CLI lived before the first full release. Remove after it.
+        (await env.DOWNLOADS.get(`cli/latest/${file}`))
       if (!object) return new Response('Not found\n', { status: 404 })
-      return new Response(object.body, {
-        headers: {
-          'content-type':
-            file === 'SHA256SUMS' ? 'text/plain; charset=utf-8' : 'application/octet-stream',
-          'content-length': String(object.size),
-          etag: object.httpEtag,
-          'cache-control': 'no-cache',
-        },
-      })
+      const headers: Record<string, string> = {
+        'content-type': CONTENT_TYPES[file.split('.').pop() ?? ''] ?? 'application/octet-stream',
+        'content-length': String(object.size),
+        etag: object.httpEtag,
+        'cache-control': 'no-cache',
+      }
+      if (file.endsWith('.apk')) headers['content-disposition'] = `attachment; filename="${file}"`
+      return new Response(object.body, { headers })
     }
 
     return env.ASSETS.fetch(request)

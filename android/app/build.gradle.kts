@@ -3,6 +3,21 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
+// The version lives in shared/src/version.ts, so the app, agent and CLI always match.
+val dukoiVersion: String =
+  Regex("DUKOI_VERSION = '([0-9]+\\.[0-9]+\\.[0-9]+)'")
+    .find(rootDir.resolve("../shared/src/version.ts").readText())
+    ?.groupValues?.get(1)
+    ?: error("Couldn't read DUKOI_VERSION from shared/src/version.ts")
+
+// 1.2.3 becomes 10203, so every release installs over the last one.
+val dukoiVersionCode: Int =
+  dukoiVersion.split(".").map(String::toInt).let { (major, minor, patch) -> major * 10000 + minor * 100 + patch }
+
+// Release builds are signed with the release key, given by scripts/release.sh.
+// See docs/releasing.md. Without it, assembleRelease makes an unsigned APK.
+val releaseKeystore: String? = System.getenv("DUKOI_KEYSTORE")
+
 android {
   namespace = "com.thisux.dukoi"
   compileSdk = 37
@@ -10,14 +25,26 @@ android {
     applicationId = "com.thisux.dukoi"
     minSdk = 29
     targetSdk = 37
-    versionCode = 1
-    versionName = "0.1.0"
+    versionCode = dukoiVersionCode
+    versionName = dukoiVersion
     // Phase 1 is arm64 only. The bundled Node binary is arm64.
     ndk { abiFilters += "arm64-v8a" }
   }
 
+  signingConfigs {
+    if (releaseKeystore != null) {
+      create("release") {
+        storeFile = file(releaseKeystore)
+        storePassword = System.getenv("DUKOI_KEYSTORE_PASSWORD")
+        keyAlias = System.getenv("DUKOI_KEY_ALIAS") ?: "dukoi"
+        keyPassword = System.getenv("DUKOI_KEY_PASSWORD") ?: System.getenv("DUKOI_KEYSTORE_PASSWORD")
+      }
+    }
+  }
+
   buildTypes {
     release {
+      if (releaseKeystore != null) signingConfig = signingConfigs.getByName("release")
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
