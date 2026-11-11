@@ -111,7 +111,7 @@ The phone keeps the last 5 releases. A rollback points the app at an earlier rel
 | --- | --- | --- |
 | Admin API | One port on the LAN, using TLS and signed requests | Paired computers only |
 | Each app | Its own port | The LAN (local URL), and the internet through the tunnel if exposed |
-| Dashboard | `localhost` on the computer | That computer only |
+| Dashboard | `127.0.0.1:7071` on the computer | That computer only. It also rejects requests whose `Host` isn't `127.0.0.1` or `localhost`. |
 
 The tunnel only ever maps to app ports. A security test from outside should find nothing else.
 
@@ -148,8 +148,8 @@ droidhost/
 ├── android/          # Phone app and foreground service (Kotlin)
 ├── agent/            # Admin API, process manager, deploys, tunnels (TypeScript on Node)
 ├── cli/              # droidhost CLI (TypeScript)
-├── dashboard/        # Web dashboard (SvelteKit, static)
-├── shared/           # Admin API types and protocol, shared by cli and dashboard
+├── dashboard/        # Web dashboard (SvelteKit 3 server with remote functions)
+├── shared/           # Admin API types and protocol, shared by agent, cli and dashboard
 ├── starters/         # hono-api, telegram-bot, static-site, file-storage, mcp-server
 ├── scripts/          # Fetch and pack Node + cloudflared into jniLibs
 └── docs/             # You are here

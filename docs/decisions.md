@@ -94,11 +94,11 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Trade-off:** Needs Node on the computer. A single binary could come later.
 
 ### D-103: Dashboard served locally by the CLI
-- **Status:** Proposed
-- **Date:** 2026-11-10
-- **Decision:** `droidhost dashboard` serves a static SvelteKit app on `localhost`, built with shadcn-svelte and Hugeicons.
-- **Why:** Keeps the admin API private, with no hosting needed.
-- **Trade-off:** No dashboard from your phone's browser or away from home in phase 1.
+- **Status:** Decided (replaces "a static SvelteKit app with shadcn-svelte")
+- **Date:** 2026-11-11
+- **Decision:** `droidhost dashboard` starts a SvelteKit 3 server (adapter-node) on `127.0.0.1`. Its remote functions call the phone with the CLI's own key: `query.live` for app status and logs, `command` for start, stop, restart and rollback. Small hand-written components and Hugeicons, no shadcn-svelte.
+- **Why:** Keeps the admin API private, with no hosting needed. The key stays on the server side and never reaches the browser, and there's no second pairing. Remote functions replace a hand-written proxy. The design is flat and custom, so a component library would mostly be restyled.
+- **Trade-off:** No dashboard from your phone's browser or away from home in phase 1. Remote functions are experimental in SvelteKit 3, so upgrades may need changes.
 
 ### D-104: Signed requests and responses, no TLS in phase 1
 - **Status:** Decided (replaces "Ed25519 keys over TLS with a pinned certificate")

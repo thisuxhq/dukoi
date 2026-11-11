@@ -7,7 +7,7 @@
     "droidhost": "./src/main.ts"
   },
   "scripts": {
-    "build": "bun build src/main.ts --target=node --format=esm --outfile=dist/droidhost.mjs",
+    "build": "bun run --cwd ../dashboard build && bun build src/main.ts --target=node --format=esm --outfile=dist/droidhost.mjs && rm -rf dist/dashboard && cp -R ../dashboard/build dist/dashboard",
     "typecheck": "tsc -p ."
   },
   "dependencies": {
@@ -16,5 +16,9 @@
   },
   "devDependencies": {
     "@types/multicast-dns": "7.2.4"
+  },
+  "exports": {
+    "./client": "./src/client.ts",
+    "./config": "./src/config.ts"
   }
 }

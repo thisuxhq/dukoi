@@ -166,7 +166,7 @@ See [networking.md](networking.md).
 | --- | --- |
 | `droidhost logs [app]` | Streams live logs. Use `--lines 200` for history and `--no-follow` to print and exit. |
 | `droidhost status` | Phone health: CPU, memory, temperature, battery, setup warnings |
-| `droidhost dashboard` | Opens the web dashboard on `localhost` |
+| `droidhost dashboard` | Opens the web dashboard on `127.0.0.1:7071` (or the next free port). Only this computer can reach it. `--no-open` skips the browser. |
 | `droidhost alerts` | Sets up crash, kill, overheat and power-cut alerts by email or Telegram |
 
 ---

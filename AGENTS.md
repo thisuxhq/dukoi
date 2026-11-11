@@ -18,6 +18,7 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 | `android/` | The phone app (Kotlin). Keeps the agent alive, runs setup and approves pairing. |
 | `agent/` | Runs on the phone on bundled Node: admin API, process manager, deploys, logs, tunnels |
 | `cli/` | The `droidhost` command |
+| `dashboard/` | The web dashboard: a SvelteKit 3 server with remote functions, started by `droidhost dashboard` on `127.0.0.1` |
 | `shared/` | Admin API types, request signing and archives, used by the agent and the CLI |
 | `starters/` | Apps that deploy with zero edits |
 | `docs/` | Product and engineering docs |
@@ -33,6 +34,7 @@ bun test                     # all TypeScript tests
 bun run typecheck            # TypeScript in every package
 bun run lint                 # Biome
 bun run cli <command>        # run the CLI from source, e.g. bun run cli pair
+bun run --filter @droidhost/dashboard build && bun run cli dashboard   # the web dashboard
 
 scripts/prepare-android.sh   # fetch Node and bundle the agent into the APK
 cd android && ./gradlew assembleDebug

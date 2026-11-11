@@ -53,8 +53,8 @@ bun run cli deploy starters/hono-api
 ```
 android/     Control app, foreground service, agent, process manager (Kotlin)
 cli/         droidhost CLI (TypeScript)
-dashboard/   Web dashboard (SvelteKit, static)
-shared/      Admin API types, shared by cli and dashboard
+dashboard/   Web dashboard (SvelteKit 3 server with remote functions)
+shared/      Admin API types, shared by agent, cli and dashboard
 starters/    The five starters
 scripts/     Binary fetch and pack scripts
 docs/        These docs
