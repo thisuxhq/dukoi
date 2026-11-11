@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thisux.droidhost.ChargeLimit
+import com.thisux.droidhost.DomainStatus
 import com.thisux.droidhost.PairedComputer
 import com.thisux.droidhost.ui.theme.Canvas
 import com.thisux.droidhost.ui.theme.Card
@@ -40,11 +41,13 @@ fun SettingsScreen(
   address: String?,
   setupDone: Boolean,
   chargeLimit: ChargeLimit,
+  cloudflare: DomainStatus?,
   hasApps: Boolean,
   onBack: () -> Unit,
   onRemove: (PairedComputer) -> Unit,
   onFinishSetup: () -> Unit,
   onBatteryCare: () -> Unit,
+  onDisconnectCloudflare: () -> Unit,
   onStopAll: () -> Unit,
 ) {
   Column(Modifier.fillMaxSize().background(Canvas).systemBarsPadding().verticalScroll(rememberScrollState())) {
@@ -92,6 +95,20 @@ fun SettingsScreen(
               )
               Icon("arrow-right-01", 18.dp, com.thisux.droidhost.ui.theme.Muted)
             }
+          }
+        }
+      }
+
+      // Only once the phone has logged in to Cloudflare for a custom domain.
+      if (cloudflare?.loggedIn == true) {
+        Section("Cloudflare") {
+          Row(Modifier.fillMaxWidth().background(Card).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+              Text(cloudflare.zone ?: "Connected", style = Styles.Body.copy(fontWeight = Styles.Button.fontWeight), maxLines = 1, overflow = TextOverflow.Ellipsis)
+              val apps = cloudflare.domains.map { it.app }
+              Text(if (apps.isEmpty()) "No apps yet" else "Used by ${apps.joinToString(", ")}", style = Styles.Small, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            Text("Disconnect", style = Styles.Label.copy(fontSize = 14.sp, fontWeight = Styles.Button.fontWeight), color = Violet, modifier = Modifier.tap(onDisconnectCloudflare).padding(start = 12.dp))
           }
         }
       }

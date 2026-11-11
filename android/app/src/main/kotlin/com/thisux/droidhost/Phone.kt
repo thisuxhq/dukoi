@@ -39,7 +39,10 @@ data class AppInfo(
 )
 
 /** The phone's link to Cloudflare for custom domains. */
-data class DomainStatus(val loggedIn: Boolean, val zone: String?, val loginUrl: String?)
+data class DomainStatus(val loggedIn: Boolean, val zone: String?, val loginUrl: String?, val domains: List<AppDomain> = emptyList())
+
+/** An app and the domain it's served on. */
+data class AppDomain(val app: String, val hostname: String)
 
 /** What an action returned: the new public URL, or the agent's own words if it failed. */
 data class Outcome(val publicUrl: String?, val error: String?, val code: String?)
@@ -78,6 +81,12 @@ object Phone {
     return if (reply.has("loggedIn")) parseDomain(reply) to null else null to reply.optString("message")
   }
 
+  /** Disconnects the phone from Cloudflare. Null on success, otherwise the agent's message. */
+  fun disconnectCloudflare(): String? {
+    val reply = AgentClient.delete("/local/domain", timeoutMs = 60_000) ?: return UNREACHABLE
+    return if (reply.has("loggedIn")) null else reply.optString("message", "Something went wrong.")
+  }
+
   fun quickLink(name: String) = outcome(AgentClient.post("/local/apps/${enc(name)}/expose", timeoutMs = 45_000))
 
   fun setDomain(name: String, hostname: String) =
@@ -92,7 +101,14 @@ object Phone {
   }
 
   private fun parseDomain(o: JSONObject) =
-    DomainStatus(o.optBoolean("loggedIn"), o.optStringOrNull("zone"), o.optStringOrNull("loginUrl"))
+    DomainStatus(
+      o.optBoolean("loggedIn"),
+      o.optStringOrNull("zone"),
+      o.optStringOrNull("loginUrl"),
+      o.optJSONArray("domains")?.let { a ->
+        (0 until a.length()).mapNotNull { i -> a.optJSONObject(i)?.let { AppDomain(it.optString("app"), it.optString("hostname")) } }
+      }.orEmpty(),
+    )
 
   private const val UNREACHABLE = "Couldn’t reach DroidHost on this phone."
 
