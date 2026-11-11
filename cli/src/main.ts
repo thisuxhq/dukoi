@@ -2,6 +2,7 @@
 import { parseArgs } from 'node:util'
 import { PROTOCOL_VERSION } from '@droidhost/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
+import { dashboard } from './commands/dashboard.ts'
 import { deploy } from './commands/deploy.ts'
 import { expose } from './commands/expose.ts'
 import { logs, ps, status } from './commands/observe.ts'
@@ -35,6 +36,7 @@ ${c.bold('Watching')}
   ps                   All apps: status, CPU, memory, uptime, URL
   logs [app]           Recent lines, then live (--lines 200, --no-follow)
   status               Phone health: memory, storage, uptime
+  dashboard            Open the web dashboard on this computer (--no-open to skip the browser)
 
 ${c.bold('Options')}
   --device <name>      Which phone (default: the last one used)
@@ -65,6 +67,7 @@ async function main(argv: string[]): Promise<void> {
       domain: { type: 'string' },
       lines: { type: 'string' },
       'no-follow': { type: 'boolean', default: false },
+      'no-open': { type: 'boolean', default: false },
       yes: { type: 'boolean', default: false },
       'no-health-check': { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
@@ -119,6 +122,8 @@ async function main(argv: string[]): Promise<void> {
         device: values.device,
         json,
       })
+    case 'dashboard':
+      return dashboard({ device: values.device, open: !(values['no-open'] ?? false) })
     case 'releases':
       return releases(arg, values.device, json)
     case 'remove':

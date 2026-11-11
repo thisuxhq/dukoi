@@ -21,7 +21,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 | App runtime | Phone | Node.js 24 LTS, built from source with the NDK, bundled as `lib*.so` | Decided |
 | Tunnel | Phone | `cloudflared`, bundled as `lib*.so` | Decided |
 | CLI | Computer | TypeScript on Node.js, shipped on npm | Proposed |
-| Web dashboard | Computer | SvelteKit (static), shadcn-svelte, served by the CLI | Proposed |
+| Web dashboard | Computer | SvelteKit 3 server with remote functions, started by the CLI | Decided (D-103) |
 | Starters | Phone | Hono, `@hono/node-server`, `node:sqlite` | Decided |
 | Distribution | | GitHub Releases, F-Droid, then Play Store | Decided |
 
@@ -78,10 +78,11 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 - Packing uses tar plus gzip, and ignores `node_modules`, `.git` and anything in `.gitignore`.
 - Phone discovery on Wi-Fi uses mDNS. The phone advertises itself with Android's NSD.
 
-### Web dashboard: SvelteKit static
+### Web dashboard: SvelteKit 3 with remote functions
 
-- **Proposed:** a SvelteKit app built as static files and served by `droidhost dashboard` on `localhost`.
-- UI components come from shadcn-svelte. Icons are Hugeicons (stroke-rounded), copied into the repo as SVGs.
+- `droidhost dashboard` starts the built SvelteKit server (adapter-node) on `127.0.0.1` and opens the browser.
+- Remote functions in `dashboard/src/lib/phone.remote.ts` talk to the phone. They use the CLI's signed client (`droidhost/client`), so they sign with this computer's key and check the phone's signature. `query.live` streams app status every 2 seconds and logs as they're written. `command` runs start, stop, restart and rollback.
+- Small hand-written Svelte components in the phone app's v4 style, Tailwind 4 and Hugeicons (stroke-rounded) copied in as SVG paths. The fonts are the phone app's.
 - **Why on the computer:** it keeps the admin API private. The dashboard talks to the phone through the CLI's paired channel, never through the internet. The hosted dashboard is a later Pro feature.
 
 ---
