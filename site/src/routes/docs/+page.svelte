@@ -28,10 +28,18 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="pair" step={2} title="Pair your computer">
   <p>
-    On your computer, on the same Wi-Fi, run this. It finds the phone and shows a six-digit code. Check it matches the phone, then tap <strong>Approve</strong>.
+    Install the <code>dukoi</code> command. On Windows, run <code>irm https://dukoi.com/install.ps1 | iex</code> in PowerShell instead.
   </p>
   <Terminal
-    command="npx dukoi pair"
+    command="curl -fsSL https://dukoi.com/install | sh"
+    output={`
+✓ Installed dukoi 0.1.0 in ~/.dukoi`}
+  />
+  <p>
+    Then, on the same Wi-Fi as the phone, run this. It finds the phone and shows a six-digit code. Check it matches the phone, then tap <strong>Approve</strong>.
+  </p>
+  <Terminal
+    command="dukoi pair"
     output={`
 ✓ Found a024 (Nothing A024, Android 16) at 192.168.0.112
 
@@ -47,7 +55,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
     In your app’s folder, run deploy. Dukoi packs the folder, ships it to the phone, starts it and waits until it answers.
   </p>
   <Terminal
-    command="npx dukoi deploy"
+    command="dukoi deploy"
     output={`
 ✓ Packed hono-api (48 KB)
 ✓ Uploaded to a024
@@ -65,5 +73,5 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 <p class="pb-6">No app yet? Start from a <a href="/docs/templates">template</a>.</p>
 
 <Note title="Want a public URL?" icon="globe-02">
-  Run <code>npx dukoi expose</code> for a quick link, or add <code>--domain api.example.com</code> to use your own domain. See <a href="/docs/public-urls">Public URLs</a>.
+  Run <code>dukoi expose</code> for a quick link, or add <code>--domain api.example.com</code> to use your own domain. See <a href="/docs/public-urls">Public URLs</a>.
 </Note>

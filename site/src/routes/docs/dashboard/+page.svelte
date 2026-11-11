@@ -12,7 +12,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="open" title="Open it">
   <Terminal
-    command="npx dukoi dashboard"
+    command="dukoi dashboard"
     output={`
 Dashboard for a024: http://127.0.0.1:7071
 Only this computer can open it. Press Ctrl+C to stop.`}

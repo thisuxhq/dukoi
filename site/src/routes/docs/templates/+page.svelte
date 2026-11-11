@@ -22,7 +22,7 @@ import { templates } from '#lib/templates.js'
 <Section id="from-your-computer" title="Start from your computer">
   <p>Run <code>init</code> on its own to choose from a list. It makes the folder and deploys it straight away.</p>
   <Terminal
-    command="npx dukoi init"
+    command="dukoi init"
     output={`
 Pick a template:
   1  static-site    A one-page site with your name on it
@@ -41,7 +41,7 @@ Number (1-5): 2
 
   Make it yours: edit notes-api/server.js, then run dukoi deploy`}
   />
-  <p>Or name one to skip the list: <code>npx dukoi init notes-api</code>. If this computer isn’t paired yet, <code>init</code> only makes the folder and tells you to pair first.</p>
+  <p>Or name one to skip the list: <code>dukoi init notes-api</code>. If this computer isn’t paired yet, <code>init</code> only makes the folder and tells you to pair first.</p>
 </Section>
 
 <Section id="from-the-phone" title="Start from the phone">

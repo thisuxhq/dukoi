@@ -105,7 +105,7 @@ fun TemplatesSection(templates: List<TemplateInfo>, onDeployed: (AppInfo) -> Uni
   Spacer(Modifier.height(12.dp))
   Text("Pair your computer, then run this in your app’s folder.", style = Paragraph)
   Spacer(Modifier.height(16.dp))
-  CommandBox("npx dukoi deploy", compact = true)
+  CommandBox("dukoi deploy", compact = true)
 
   picked?.let { template ->
     TemplateSheet(template, onDismiss = { picked = null }, onDeployed = { picked = null; onDeployed(it) })
@@ -260,6 +260,6 @@ fun MakeItYoursCard(template: String) {
       style = Styles.Small.copy(fontSize = 14.sp, lineHeight = 21.sp, color = Body),
     )
     Spacer(Modifier.height(4.dp))
-    CommandBox("npx dukoi init $template", Modifier.fillMaxWidth(), compact = true)
+    CommandBox("dukoi init $template", Modifier.fillMaxWidth(), compact = true)
   }
 }

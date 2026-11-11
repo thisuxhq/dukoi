@@ -7,7 +7,7 @@ A small JSON API for notes, built with [Hono](https://hono.dev). Notes are saved
 Edit `server.js`. Add your routes next to the notes ones, then run:
 
 ```bash
-npx dukoi deploy
+dukoi deploy
 ```
 
 Your notes survive deploys and rollbacks: they live in `DATA_DIR`, which Dukoi keeps.

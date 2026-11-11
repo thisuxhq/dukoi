@@ -15,12 +15,14 @@ const prompt = () => `Set up Dukoi so I can host my apps on my old Android phone
 1. Ask me to install the Dukoi app on the phone from
    ${APK}
    and tap through its four setup steps. Wait until I say it's done.
-2. Run npx dukoi pair here. When it shows a six-digit code,
+2. Install the CLI with curl -fsSL https://dukoi.com/install | sh
+   (on Windows: irm https://dukoi.com/install.ps1 | iex).
+3. Run dukoi pair here. When it shows a six-digit code,
    ask me to check it matches the phone and tap Approve.
-3. In my app's folder, run npx dukoi deploy. The app must
+4. In my app's folder, run dukoi deploy. The app must
    listen on process.env.PORT. If deploy fails, the error says why
    and what to change.
-4. If I want a public URL, run npx dukoi expose.
+5. If I want a public URL, run dukoi expose.
 
 Add --json to any command for output you can parse.
 Docs: ${location.origin}/llms.txt`

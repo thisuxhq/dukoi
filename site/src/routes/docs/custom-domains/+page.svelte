@@ -16,7 +16,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="add" title="Add a domain">
   <Terminal
-    command="npx dukoi expose --domain api.example.com"
+    command="dukoi expose --domain api.example.com"
     output={`
 Pointing api.example.com at hono-api…
 

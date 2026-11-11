@@ -20,7 +20,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 | Process manager | Phone | Kotlin, inside the foreground service | Proposed |
 | App runtime | Phone | Node.js 24 LTS, built from source with the NDK, bundled as `lib*.so` | Decided |
 | Tunnel | Phone | `cloudflared`, bundled as `lib*.so` | Decided |
-| CLI | Computer | TypeScript on Node.js, shipped on npm | Proposed |
+| CLI | Computer | TypeScript, shipped as one Bun program per platform by dukoi.com/install | Decided (D-113) |
 | Web dashboard | Computer | SvelteKit 3 server with remote functions, started by the CLI | Decided (D-103) |
 | Starters | Phone | Hono, `@hono/node-server`, `node:sqlite` | Decided |
 | Distribution | | GitHub Releases, F-Droid, then Play Store | Decided |
@@ -70,10 +70,10 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 ## Computer
 
-### CLI: TypeScript on Node.js
+### CLI: TypeScript, compiled with Bun
 
-- **Proposed:** TypeScript, published to npm as `dukoi`, so `npx dukoi` works with no install.
-- **Why:** our users already have Node. It shares types with the dashboard and starters, and it's easy for contributors to read.
+- **Decided (D-113):** TypeScript, compiled by `bun build --compile` into one program per platform and installed by `curl -fsSL https://dukoi.com/install | sh`. The code still sticks to Node APIs, so it also runs on Node from source.
+- **Why:** it shares types with the dashboard and starters, and it's easy for contributors to read. The compiled program needs no Node on the computer, so static sites deploy without it.
 - Keep dependencies few. Prefer Node's built-ins such as `fetch`, `node:crypto`, `node:test` and `util.parseArgs`.
 - Packing uses tar plus gzip, and ignores `node_modules`, `.git` and anything in `.gitignore`.
 - Phone discovery on Wi-Fi uses mDNS. The phone advertises itself with Android's NSD.

@@ -1,4 +1,4 @@
-// Serves the static build at dukoi.com. See docs/decisions.md (D-112).
+// Serves the static build at dukoi.com. See docs/decisions.md (D-112, D-113).
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "dukoi-site",
@@ -7,9 +7,12 @@
   "assets": {
     "directory": "./build",
     "binding": "ASSETS",
-    // The worker only redirects www, but it has to see every request to do that
+    // The worker redirects www and serves /install and /download, so it has to
+    // see every request
     "run_worker_first": true
   },
+  // The standalone CLI, too big for static assets. scripts/publish-cli.sh fills it.
+  "r2_buckets": [{ "binding": "DOWNLOADS", "bucket_name": "dukoi-downloads" }],
   "routes": [
     { "pattern": "dukoi.com", "custom_domain": true },
     { "pattern": "www.dukoi.com", "custom_domain": true }

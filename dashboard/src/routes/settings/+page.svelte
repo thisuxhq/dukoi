@@ -82,7 +82,7 @@ const cloudflareImpact = $derived(
         {#if !unpaired.phoneForgot}The phone wasn’t reachable, so remove this computer in the Dukoi app too.{/if}
       </p>
       <p class="text-[15px] leading-[22px] text-muted">To pair again, run this, then start the dashboard again.</p>
-      <div class="w-fit"><CommandBox command="npx dukoi pair" /></div>
+      <div class="w-fit"><CommandBox command="dukoi pair" /></div>
     </div>
   {:else}
     {#if data?.problem}<div class="max-w-[720px]"><ProblemNote problem={data.problem} /></div>{/if}

@@ -7,21 +7,25 @@ A 2019 flagship has more compute than a $5 server, draws 2 to 5 watts, and its b
 ## Quick start
 
 1. Install the Dukoi APK on a spare Android phone (Android 10 or newer, arm64) and follow the four setup steps on screen.
-2. On your computer, on the same Wi-Fi:
+2. On your computer, install the CLI (on Windows: `irm https://dukoi.com/install.ps1 | iex` in PowerShell), then pair on the same Wi-Fi:
 
 ```bash
-npx dukoi pair
+curl -fsSL https://dukoi.com/install | sh
+```
+
+```bash
+dukoi pair
 ```
 
 3. In your app's folder:
 
 ```bash
-npx dukoi deploy
+dukoi deploy
 ```
 
-You get a Wi-Fi URL straight away. `npx dukoi expose` adds a public HTTPS URL through Cloudflare, and `--domain api.example.com` puts it on your own domain.
+You get a Wi-Fi URL straight away. `dukoi expose` adds a public HTTPS URL through Cloudflare, and `--domain api.example.com` puts it on your own domain.
 
-> Dukoi is in early development. The APK isn't on GitHub Releases yet and the CLI isn't on npm yet, so for now build both from this repo (see below).
+> Dukoi is in early development. The APK isn't on GitHub Releases yet, so for now build it from this repo (see below).
 
 ## What you get
 

@@ -36,6 +36,6 @@ const change = `<h1>Hi, I'm Priya</h1>`
     <p>Put your own name in <code>index.html</code>, in place of “Your Name”:</p>
     <Code code={change} />
     <p>Then deploy again. The new page is live in a few seconds.</p>
-    <Terminal command="npx dukoi deploy" />
+    <Terminal command="dukoi deploy" />
   </Section>
 </TemplatePage>

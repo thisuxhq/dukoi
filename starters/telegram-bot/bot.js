@@ -45,6 +45,6 @@ if (token) {
   })
 } else {
   // Stay up without a token, so the app doesn't crash over and over.
-  console.log('No TELEGRAM_BOT_TOKEN yet. Run: npx dukoi env set TELEGRAM_BOT_TOKEN=<token>')
+  console.log('No TELEGRAM_BOT_TOKEN yet. Run: dukoi env set TELEGRAM_BOT_TOKEN=<token>')
   setInterval(() => {}, 1 << 30)
 }

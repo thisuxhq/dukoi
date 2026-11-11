@@ -85,7 +85,7 @@ fun PermissionScreen(step: OnboardingStep, onAction: () -> Unit, onSkip: () -> U
 @Composable
 fun PairScreen(onLater: () -> Unit) {
   OnboardingFrame(OnboardingStep.PAIR) {
-    CommandBox("npx dukoi pair", Modifier.fillMaxWidth())
+    CommandBox("dukoi pair", Modifier.fillMaxWidth())
     Spacer(Modifier.height(28.dp))
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
       WaitingDots()

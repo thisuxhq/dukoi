@@ -117,7 +117,7 @@ private fun EmptyBox() {
   ) {
     Text("Deploy from your computer", style = Styles.CardTitle.copy(lineHeight = 26.sp))
     Spacer(Modifier.height(24.dp))
-    CommandBox("npx dukoi deploy", compact = true)
+    CommandBox("dukoi deploy", compact = true)
   }
 }
 

@@ -44,6 +44,6 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
       Cloudflare’s free plan limits uploads through a public URL to 100 MB. On your Wi-Fi there’s no such limit.
     </Note>
     <p>Then deploy again. Files already uploaded stay where they are.</p>
-    <Terminal command="npx dukoi deploy" />
+    <Terminal command="dukoi deploy" />
   </Section>
 </TemplatePage>

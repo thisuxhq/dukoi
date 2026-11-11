@@ -19,7 +19,7 @@ const config = `{
 
 <Section id="deploy" title="Deploy">
   <Terminal
-    command="npx dukoi deploy"
+    command="dukoi deploy"
     output={`
 ✓ Built on this computer
 ✓ Installed dependencies

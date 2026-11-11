@@ -10,7 +10,7 @@ This doc describes the five templates (the folders in `starters/`), how people s
 
 | From | How | What happens |
 | --- | --- | --- |
-| A computer | `npx dukoi init` (a numbered list) or `npx dukoi init notes-api` | Copies the template into a new folder and, if the computer is paired, deploys it and prints the file to edit |
+| A computer | `dukoi init` (a numbered list) or `dukoi init notes-api` | Copies the template into a new folder and, if the computer is paired, deploys it and prints the file to edit |
 | The phone | **Try a template** on the empty Home screen | Deploys the template's archive from the APK, with no computer. The app page then shows the `init` command to get the code |
 
 The CLI ships the template folders next to its bundle (`dist/starters`). The APK ships them packed, as `assets/templates/<id>.tgz`, built by `scripts/pack-templates.ts` the same way `dukoi deploy` packs an app (see `scripts/prepare-android.sh`). The list itself is `TEMPLATES` in `shared/src/api.ts`.

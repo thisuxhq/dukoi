@@ -58,7 +58,7 @@ fun SettingsScreen(
 
       Section("Computers") {
         if (computers.isEmpty()) {
-          Text("None yet. Run npx dukoi pair on your computer.", style = Styles.Small.copy(fontSize = 14.sp))
+          Text("None yet. Run dukoi pair on your computer.", style = Styles.Small.copy(fontSize = 14.sp))
         }
         computers.forEach { pc ->
           Row(Modifier.fillMaxWidth().background(Card).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {

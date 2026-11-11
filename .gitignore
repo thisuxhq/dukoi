@@ -3,3 +3,6 @@ build/
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Temp files from bun build --compile
+*.bun-build

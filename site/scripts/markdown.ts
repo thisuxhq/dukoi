@@ -125,7 +125,7 @@ writeFileSync(
     '',
     '> Deploy real apps to an old Android phone and get a live URL. No root, no Termux, no cloud bill.',
     '',
-    'Install the Dukoi app on the phone, run `npx dukoi pair` on a computer on the same Wi-Fi, then `npx dukoi deploy` in an app folder. Every command takes `--json` for output an agent can parse. Every page below is Markdown; llms-full.txt has them all in one file.',
+    'Install the Dukoi app on the phone, install the CLI on a computer with `curl -fsSL https://dukoi.com/install | sh` (Windows: `irm https://dukoi.com/install.ps1 | iex`), run `dukoi pair` on the same Wi-Fi, then `dukoi deploy` in an app folder. Every command takes `--json` for output an agent can parse. Every page below is Markdown; llms-full.txt has them all in one file.',
     '',
     ...sections.flatMap((s) => [
       `## ${s.title}`,

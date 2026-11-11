@@ -9,6 +9,7 @@ import { existsSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { fileURLToPath } from 'node:url'
 import { pickPhone } from '../client.ts'
+import { installedPath } from '../installed.ts'
 import { CliError, info } from '../output.ts'
 
 export const DASHBOARD_PORT = 7071
@@ -26,7 +27,15 @@ export async function dashboard(opts: DashboardOptions): Promise<void> {
   const url = `http://127.0.0.1:${port}`
 
   const server = spawn(process.execPath, [entry], {
-    env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), DUKOI_DEVICE: phone.name },
+    env: {
+      ...process.env,
+      HOST: '127.0.0.1',
+      PORT: String(port),
+      DUKOI_DEVICE: phone.name,
+      // The standalone CLI is a Bun program: this makes it run the server file
+      // like `bun index.js`. Node ignores it.
+      BUN_BE_BUN: '1',
+    },
     stdio: ['ignore', 'ignore', 'inherit'],
   })
   const stop = () => server.kill()
@@ -44,13 +53,14 @@ export async function dashboard(opts: DashboardOptions): Promise<void> {
   }
 }
 
-/** The built server: next to the bundled CLI, or in the repo when running from source. */
+/** The built server: in ~/.dukoi, next to the bundled CLI, or in the repo when running from source. */
 function serverEntry(): string {
   const candidates = [
+    installedPath('dashboard', 'index.js'),
     fileURLToPath(new URL('./dashboard/index.js', import.meta.url)),
     fileURLToPath(new URL('../../../dashboard/build/index.js', import.meta.url)),
   ]
-  const found = candidates.find((file) => existsSync(file))
+  const found = candidates.find((file): file is string => !!file && existsSync(file))
   if (!found) {
     throw new CliError(
       'NO_DASHBOARD',

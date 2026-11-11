@@ -3,7 +3,7 @@ import AgentPrompt from '#lib/components/AgentPrompt.svelte'
 import ApkButton from '#lib/components/ApkButton.svelte'
 import CopyCommand from '#lib/components/CopyCommand.svelte'
 import Icon from '#lib/components/Icon.svelte'
-import { APK } from '#lib/links.js'
+import { APK, INSTALL } from '#lib/links.js'
 import { templates } from '#lib/templates.js'
 import welcome from '#lib/welcome.svg'
 
@@ -15,13 +15,13 @@ const steps = [
   },
   {
     title: 'Pair your computer',
-    body: 'On the same Wi-Fi. Tap Approve on the phone. No passwords.',
-    command: 'npx dukoi pair',
+    body: 'Install the CLI, then pair on the same Wi-Fi. Tap Approve on the phone. No passwords.',
+    command: 'dukoi pair',
   },
   {
     title: 'Deploy',
     body: 'From your app’s folder. You get a URL, and a public one when you want it.',
-    command: 'npx dukoi deploy',
+    command: 'dukoi deploy',
   },
 ]
 
@@ -56,7 +56,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
     </p>
     <div class="flex flex-col gap-4 pt-1 lg:flex-row lg:items-center lg:gap-5 lg:pt-2">
       <AgentPrompt />
-      <CopyCommand command="npx dukoi pair" class="lg:w-fit" />
+      <CopyCommand command={INSTALL} class="lg:w-fit" />
     </div>
     <a href={APK} class="flex w-fit items-center gap-2 text-base font-semibold text-violet hover:underline">
       <Icon name="download-04" class="size-5" />Get the APK
@@ -138,7 +138,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <h3 class={tileTitle}>Live logs, anywhere</h3>
         <p class={tileBody}>On the phone, in your terminal and in the web dashboard. New lines in under a second.</p>
       </div>
-      <p aria-hidden="true" class="flex h-11 items-center bg-white px-4 font-mono text-[13px]"><span class="text-muted">$</span>&nbsp;npx dukoi logs</p>
+      <p aria-hidden="true" class="flex h-11 items-center bg-white px-4 font-mono text-[13px]"><span class="text-muted">$</span>&nbsp;dukoi logs</p>
     </div>
 
     <div class="{tile} bg-rose lg:min-h-[340px]">
@@ -250,7 +250,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       </p>
     </div>
     <div class="flex flex-col gap-3 lg:w-[380px] lg:shrink-0 lg:gap-3.5">
-      <CopyCommand command="npx dukoi pair" size="md" tone="raised" />
+      <CopyCommand command={INSTALL} size="md" tone="raised" />
       <ApkButton />
     </div>
   </div>

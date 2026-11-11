@@ -13,7 +13,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 <Section id="pair" title="Pair">
   <p>Open Dukoi on the phone, then run this on a computer on the same Wi-Fi:</p>
   <Terminal
-    command="npx dukoi pair"
+    command="dukoi pair"
     output={`
 Looking for phones on this Wi-Fi…
 ✓ Found a024 (Nothing A024, Android 16) at 192.168.0.112
@@ -30,13 +30,13 @@ Looking for phones on this Wi-Fi…
 
 <Section id="no-phone-found" title="If it can’t find the phone">
   <p>Check Dukoi is open on the phone and both are on the same Wi-Fi. Some routers block devices from finding each other. If yours does, pass the phone’s address. You’ll find it in the app.</p>
-  <Terminal command="npx dukoi pair --host 192.168.0.112" />
+  <Terminal command="dukoi pair --host 192.168.0.112" />
 </Section>
 
 <Section id="more-phones" title="More than one phone">
   <p>Pair each phone the same way. Commands use the last phone you used, and <code>--device</code> picks another.</p>
   <Terminal
-    command="npx dukoi devices"
+    command="dukoi devices"
     output={`
    NAME       MODEL           ADDRESS              PAIRED
 ●  a024       Nothing A024    192.168.0.112:7070   2026-11-11

@@ -16,7 +16,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="list" title="See releases">
   <Terminal
-    command="npx dukoi releases"
+    command="dukoi releases"
     output={`
    RELEASE  CREATED              SIZE
 ●  0004     2026-11-11 09:41:07  2412 KB
@@ -29,7 +29,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="rollback" title="Roll back">
   <Terminal
-    command="npx dukoi rollback"
+    command="dukoi rollback"
     output={`
 ✓ hono-api is back on release 0003 (1.1s)`}
   />

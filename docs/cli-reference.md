@@ -2,13 +2,14 @@
 
 This doc lists every `dukoi` command for phase 1: what it does, its flags and what it prints.
 
-Install nothing. Run it with:
+Install it with one line (D-113). Run the same line again to update.
 
 ```bash
-npx dukoi <command>
+curl -fsSL https://dukoi.com/install | sh        # macOS and Linux
+irm https://dukoi.com/install.ps1 | iex          # Windows, in PowerShell
 ```
 
-Or install it once with `npm i -g dukoi`.
+It puts everything in `~/.dukoi` and the command in `~/.dukoi/bin`, which it adds to your PATH.
 
 ---
 

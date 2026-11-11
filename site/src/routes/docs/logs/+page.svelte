@@ -11,7 +11,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="follow" title="Follow an app’s logs">
   <Terminal
-    command="npx dukoi logs"
+    command="dukoi logs"
     output={`
 09:31:40 ●   Android stopped the app to save battery. Restarted now.
 09:31:41 out hono-api listening on 3000
@@ -28,7 +28,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 
 <Section id="ps" title="See every app">
   <Terminal
-    command="npx dukoi ps"
+    command="dukoi ps"
     output={`
 APP        STATUS      CPU  MEM    UPTIME  RESTARTS  URL
 hono-api   running     2%   48 MB  3d 4h   0         https://api.example.com
@@ -40,7 +40,7 @@ portfolio  restarting  –    –      –       4         http://192.168.0.112:
 
 <Section id="status" title="Check the phone">
   <Terminal
-    command="npx dukoi status"
+    command="dukoi status"
     output={`
 a024  Nothing A024, Android 16
 Apps      3 running of 3

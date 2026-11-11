@@ -7,7 +7,7 @@ A one-page site in plain HTML and CSS. There’s no build step and no `package.j
 Edit `index.html`: change the name, the sentence and the links. Then run:
 
 ```bash
-npx dukoi deploy
+dukoi deploy
 ```
 
 Add more pages as `.html` files next to `index.html`, and pictures in the same folder.

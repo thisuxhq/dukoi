@@ -48,6 +48,6 @@ const change = `{
     <p>Add a tool to the list in <code>tools.js</code>:</p>
     <Code code={change} />
     <p>Then deploy again. Your assistant sees the new tool the next time it connects.</p>
-    <Terminal command="npx dukoi deploy" />
+    <Terminal command="dukoi deploy" />
   </Section>
 </TemplatePage>

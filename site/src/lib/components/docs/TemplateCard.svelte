@@ -15,5 +15,5 @@ let { template: t, wide = false }: { template: SiteTemplate; wide?: boolean } = 
     <h3 class="font-display text-[22px] leading-7 font-medium tracking-[-0.01em] group-hover:underline">{t.name}</h3>
     <p class="text-[15px] leading-[23px] text-body">{t.description}.</p>
   </div>
-  <code class="flex h-10 w-fit max-w-full items-center overflow-x-auto bg-white px-3.5 font-mono text-[13px] whitespace-pre"><span class="text-prompt">$&nbsp;</span>npx dukoi init {t.id}</code>
+  <code class="flex h-10 w-fit max-w-full items-center overflow-x-auto bg-white px-3.5 font-mono text-[13px] whitespace-pre"><span class="text-prompt">$&nbsp;</span>dukoi init {t.id}</code>
 </a>

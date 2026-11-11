@@ -6,6 +6,7 @@ import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { TEMPLATES, type TemplateInfo } from '@dukoi/shared'
 import { loadPhones } from '../config.ts'
+import { installedPath } from '../installed.ts'
 import { CliError, c, info, ok } from '../output.ts'
 import { deploy } from './deploy.ts'
 import { setEnv } from './env.ts'
@@ -34,9 +35,7 @@ export async function init(opts: InitOptions): Promise<void> {
 
   const makeItYours = `Make it yours: edit ${folder}/${template.edit}, then run ${c.cyan('dukoi deploy')}`
   if (loadPhones().phones.length === 0) {
-    info(
-      `\n  Next: ${c.cyan('npx dukoi pair')}, then ${c.cyan(`cd ${folder} && npx dukoi deploy`)}`,
-    )
+    info(`\n  Next: ${c.cyan('dukoi pair')}, then ${c.cyan(`cd ${folder} && dukoi deploy`)}`)
     return
   }
 
@@ -102,18 +101,19 @@ async function ask(name: string): Promise<string | null> {
   }
 }
 
-/** The template folders: next to the bundled CLI, or in the repo when running from source. */
+/** The template folders: in ~/.dukoi, next to the bundled CLI, or in the repo when running from source. */
 function source(id: string): string {
   const candidates = [
+    installedPath('starters', id),
     fileURLToPath(new URL(`./starters/${id}`, import.meta.url)),
     fileURLToPath(new URL(`../../../starters/${id}`, import.meta.url)),
   ]
-  const found = candidates.find((dir) => existsSync(join(dir, 'README.md')))
+  const found = candidates.find((dir): dir is string => !!dir && existsSync(join(dir, 'README.md')))
   if (!found)
     throw new CliError(
       'NO_TEMPLATES',
       `This copy of the CLI is missing the ${id} template.`,
-      'Reinstall it: npm i -g dukoi',
+      'Reinstall it: curl -fsSL https://dukoi.com/install | sh',
     )
   return found
 }

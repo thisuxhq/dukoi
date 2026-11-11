@@ -70,7 +70,7 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
   lead="Every command and flag the CLI has today. Commands that take an app use the one in the current folder when you leave it out."
 />
 
-<p class="pb-10">Run any command with <code>npx dukoi</code>, or install it once with <code>npm i -g dukoi</code>.</p>
+<p class="pb-10">Install it with <code>curl -fsSL https://dukoi.com/install | sh</code> on macOS and Linux, or <code>irm https://dukoi.com/install.ps1 | iex</code> in PowerShell on Windows. Run the same line again to update.</p>
 
 {#each groups as group (group.id)}
   <Section id={group.id} title={group.title}>

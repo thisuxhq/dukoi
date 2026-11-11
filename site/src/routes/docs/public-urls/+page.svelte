@@ -30,7 +30,7 @@ const kinds: [string, string, string][] = [
 
 <Section id="quick-link" title="Get a quick link">
   <Terminal
-    command="npx dukoi expose"
+    command="dukoi expose"
     output={`
 Asking Cloudflare for a public URL…
 ✓ hono-api is public
@@ -42,7 +42,7 @@ Asking Cloudflare for a public URL…
 </Section>
 
 <Section id="off" title="Turn it off">
-  <Terminal command="npx dukoi expose --off" />
+  <Terminal command="dukoi expose --off" />
   <p>The app goes back to Wi-Fi only. You can also change it on the phone: open the app and tap the edit icon next to its public link.</p>
 </Section>
 

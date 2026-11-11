@@ -4,10 +4,10 @@ A Telegram bot that replies to messages, running on the phone all day. It asks T
 
 ## The token
 
-Message [@BotFather](https://t.me/BotFather) on Telegram, send `/newbot` and copy the token it gives you. `npx dukoi init telegram-bot` asks for it and saves it on the phone, not in this folder. To change it:
+Message [@BotFather](https://t.me/BotFather) on Telegram, send `/newbot` and copy the token it gives you. `dukoi init telegram-bot` asks for it and saves it on the phone, not in this folder. To change it:
 
 ```bash
-npx dukoi env set TELEGRAM_BOT_TOKEN=123456:ABC...
+dukoi env set TELEGRAM_BOT_TOKEN=123456:ABC...
 ```
 
 ## Make it yours
@@ -15,7 +15,7 @@ npx dukoi env set TELEGRAM_BOT_TOKEN=123456:ABC...
 Edit `reply()` in `bot.js`, then run:
 
 ```bash
-npx dukoi deploy
+dukoi deploy
 ```
 
 `dukoi.json` tells Dukoi the bot opens no port, so it doesn't wait for one.

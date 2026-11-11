@@ -89,7 +89,7 @@ This doc is the decision log. It records what we decided, why we decided it, and
 ### D-102: CLI in TypeScript on npm
 - **Status:** Proposed
 - **Date:** 2026-11-10
-- **Decision:** Publish `dukoi` on npm so `npx dukoi` works.
+- **Decision:** Publish `dukoi` on npm so `dukoi` works.
 - **Why:** Users already have Node, and it shares types with the dashboard.
 - **Trade-off:** Needs Node on the computer. A single binary could come later.
 
@@ -149,7 +149,7 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Date:** 2026-11-11
 - **Decision:** `site/` is a SvelteKit 3 app built with adapter-static: every page is prerendered to plain HTML, with the phone app's v4 design, square corners, Hugeicons solid-rounded copied into the repo and the app's own fonts and illustration.
 - **Why:** Same stack and design tokens as the dashboard, no server to run, and any static host works (Cloudflare Pages, GitHub Pages).
-- **Trade-off:** The page's Get the APK and `npx dukoi` steps only work once the APK and the npm package are published. Hosting is D-112.
+- **Trade-off:** The page's Get the APK and `dukoi` steps only work once the APK and the npm package are published. Hosting is D-112.
 
 ### D-111: The product is called Dukoi
 - **Status:** Decided
@@ -164,6 +164,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Decision:** `site/wrangler.jsonc` serves the static build as Workers static assets on the custom domains `dukoi.com` and `www.dukoi.com`. A small worker (`site/worker.ts`) sends `www.dukoi.com` to `dukoi.com` with a 301. Deploy with `bun run --filter @dukoi/site deploy`.
 - **Why:** The domain is already on Cloudflare, custom domains need no manual DNS or certificates, and the www redirect lives in the repo instead of a dashboard rule.
 - **Trade-off:** Every request runs the worker first, which counts against the Workers request quota (100,000 a day on the free plan).
+
+### D-113: Install the CLI with one line from dukoi.com
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** `curl -fsSL https://dukoi.com/install | sh` (macOS, Linux) and `irm https://dukoi.com/install.ps1 | iex` (Windows) install the CLI as one Bun program per platform, built by `bun build --compile` in `scripts/build-cli.ts`. Everything goes in `~/.dukoi`: `bin/dukoi`, the dashboard and the templates. The script checks the download against `SHA256SUMS`, adds `~/.dukoi/bin` to PATH, never uses sudo, and updates when run again. The archives live in the `dukoi-downloads` R2 bucket, uploaded by `scripts/publish-cli.sh` and served at `dukoi.com/download/` by the site's worker. The docs use plain `dukoi <command>` instead of `npx dukoi`.
+- **Why:** One line works on a computer without Node, so static sites deploy with nothing else installed, and `dukoi` starts at once instead of downloading on every run like `npx`. The repo is private, so GitHub Releases can't serve the downloads, and at 24 to 40 MB they're over the 25 MB limit for static assets.
+- **Trade-off:** We build and publish five archives per release. Node apps still need Node on the computer, because `dukoi deploy` runs `npm install` there (D-108). `dukoi dashboard` runs its server through the CLI's own Bun (`BUN_BE_BUN=1`) instead of Node. The CLI isn't on npm yet, so there's no `npx dukoi`.
 
 ## Open questions
 
