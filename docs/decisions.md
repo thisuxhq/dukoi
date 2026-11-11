@@ -115,11 +115,11 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Trade-off:** The build output must not depend on the computer's OS.
 
 ### D-106: Repo tooling
-- **Status:** Proposed
+- **Status:** Decided
 - **Date:** 2026-11-10
-- **Decision:** pnpm workspaces, Biome and Vitest for JS and TS. Gradle with Kotlin DSL, ktlint and JUnit for Android.
-- **Why:** One tool per job, fast and with little config.
-- **Trade-off:** Contributors used to ESLint or Prettier have to adjust.
+- **Decision:** Bun for installs, workspaces, tests and bundling, plus Biome, for JS and TS. Gradle with Kotlin DSL, ktlint and JUnit for Android.
+- **Why:** One fast tool for installing, testing and bundling, with little config.
+- **Trade-off:** The agent runs on Node, not Bun, on the phone, so its code can't use Bun-only APIs. Contributors used to ESLint or Prettier have to adjust.
 
 ---
 

@@ -1,0 +1,12 @@
+{
+  "name": "@droidhost/shared",
+  "private": true,
+  "type": "module",
+  "description": "Admin API types, request signing and archives, shared by the CLI and the phone agent.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  }
+}

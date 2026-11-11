@@ -119,9 +119,9 @@ Each starter (Hono API, Telegram bot, static site, file storage API and MCP serv
 - One command to set up the repo and one command to run all tests.
 
 ```bash
-pnpm install
-pnpm dev      # CLI and dashboard in watch mode
-pnpm test
+bun install
+bun run cli   # the CLI from source
+bun test
 ```
 
 The Android app builds with one Gradle command, also documented in the repo README.

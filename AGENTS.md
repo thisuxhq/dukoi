@@ -15,12 +15,31 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 
 | Path | What it holds |
 | --- | --- |
+| `android/` | The phone app (Kotlin). Keeps the agent alive, runs setup and approves pairing. |
+| `agent/` | Runs on the phone on bundled Node: admin API, process manager, deploys, logs, tunnels |
+| `cli/` | The `droidhost` command |
+| `shared/` | Admin API types, request signing and archives, used by the agent and the CLI |
+| `starters/` | Apps that deploy with zero edits |
 | `docs/` | Product and engineering docs |
-| `spikes/node-survival/` | Throwaway Android app that proved Node runs and survives on a phone. Results are in its README. |
-| `scripts/fetch-node.sh` | Downloads our prebuilt Node for Android (about 5 seconds). Use this. |
-| `scripts/build-node-android-native.sh` | Builds Node for Android from source. Only when upgrading Node. |
-| `scripts/build-node-android.sh` | The same build with Google's NDK compiler, for x86_64 Linux such as CI |
+| `spikes/` | Throwaway experiments. `node-survival` proved Node runs and survives; `cloudflared` proved public URLs work. |
+| `scripts/` | Build helpers (see below) |
 | `build/` | Local build output, ignored by git |
+
+## Commands
+
+```bash
+bun install                  # once
+bun test                     # all TypeScript tests
+bun run typecheck            # TypeScript in every package
+bun run lint                 # Biome
+bun run cli <command>        # run the CLI from source, e.g. bun run cli pair
+
+scripts/prepare-android.sh   # fetch Node and bundle the agent into the APK
+cd android && ./gradlew assembleDebug
+android run --apks=app/build/outputs/apk/debug/app-debug.apk
+```
+
+We use Bun for installs, tests and bundling, with Bun workspaces. The agent runs on **Node** on the phone (Bun has no Android build), so agent and shared code must stick to Node APIs: no `Bun.*`. `bun run build` bundles the agent and CLI for Node with `bun build --target=node`.
 
 ## Node for Android
 
@@ -34,16 +53,6 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 - `android run` doesn't build. Build with `./gradlew assembleDebug` first.
 - Use `adb` only where `android` has no command, such as `adb shell input` for taps, `kill`, `reboot` and `device_config`. Say why when you do.
 - See `docs/android-cli.md`.
-
-## Running the spike
-
-```bash
-scripts/fetch-node.sh
-cd spikes/node-survival
-scripts/install-node.sh ../../build/node-android/v24.22.2/node
-./gradlew assembleDebug
-android run --apks=app/build/outputs/apk/debug/app-debug.apk
-```
 
 ## How we work
 
