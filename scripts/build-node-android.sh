@@ -30,17 +30,28 @@ if [ "$(uname -s)" = "Darwin" ]; then
     exit 1
   fi
   step "Building inside a Linux container (linux/amd64, because the NDK ships x86_64 Linux tools)"
-  exec docker run --rm --platform linux/amd64 \
+  # The NDK and the build tree live on a Docker volume: a case-sensitive Linux
+  # filesystem (the NDK has files whose names differ only by case) that is
+  # also much faster to compile on than a folder shared with macOS.
+  # Run detached, so the build keeps going if this terminal closes.
+  # Watch it with: docker logs -f droidhost-node-build
+  docker rm -f droidhost-node-build >/dev/null 2>&1 || true
+  docker run -d --name droidhost-node-build --platform linux/amd64 \
+    -v droidhost-node-build:/cache \
     -v "$repo_dir/build:/work/build" \
     -v "$repo_dir/scripts:/work/scripts:ro" \
     -e IN_CONTAINER=1 \
     ubuntu:24.04 \
-    bash /work/scripts/build-node-android.sh "$NODE_VERSION"
+    bash /work/scripts/build-node-android.sh "$NODE_VERSION" >/dev/null
+  echo "Started. Following the log (Ctrl-C stops watching, not the build)."
+  docker logs -f droidhost-node-build || true
+  exit "$(docker wait droidhost-node-build)"
 fi
 
 # ── On Linux: build ─────────────────────────────────────────────────────────
 if [ "${IN_CONTAINER:-}" = "1" ]; then
   work_dir=/work
+  cache_dir=/cache
   step "Installing build tools"
   export DEBIAN_FRONTEND=noninteractive
   apt-get update -qq
@@ -48,12 +59,13 @@ if [ "${IN_CONTAINER:-}" = "1" ]; then
     python3 make g++ curl ca-certificates unzip xz-utils file >/dev/null
 else
   work_dir="$repo_dir"
+  cache_dir="$repo_dir/build"
 fi
 
-src_root="$work_dir/build/node-src"
+src_root="$cache_dir/node-src"
 src_dir="$src_root/node-$NODE_VERSION-linux"   # separate from any macOS attempt
 out_dir="$work_dir/build/node-android/$NODE_VERSION"
-ndk_root="$work_dir/build/ndk"
+ndk_root="$cache_dir/ndk"
 NDK_DIR="${ANDROID_NDK_HOME:-$ndk_root/android-ndk-$NDK_RELEASE}"
 mkdir -p "$src_root" "$out_dir" "$ndk_root"
 
@@ -81,6 +93,15 @@ if [ ! -d "$src_dir" ]; then
   tar xf "$tarball" -C "$src_dir" --strip-components=1
 fi
 cd "$src_dir"
+
+# zlib's Android code path calls android_getCpuFeatures() from the NDK's old
+# cpufeatures helper, which Node's build never links. Android 10+ has the
+# standard Linux getauxval(), so build zlib's Linux path instead.
+if grep -q "'ARMV8_OS_ANDROID'" deps/zlib/zlib.gyp; then
+  step "Patching zlib to detect CPU features the Linux way"
+  sed -i "s/'ARMV8_OS_ANDROID'/'ARMV8_OS_LINUX'/g" deps/zlib/zlib.gyp
+  rm -f config.gypi   # reconfigure so the change takes effect
+fi
 
 if [ ! -f config.gypi ]; then
   step "Configuring for Android arm64, API $ANDROID_API"

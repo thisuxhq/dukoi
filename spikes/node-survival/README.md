@@ -59,13 +59,22 @@ Logs on the phone: `files/logs/events.log` (supervisor) and `files/logs/server.l
 
 ## Results
 
-_Fill in per phone: model, Android version, Node build, and pass or fail with notes for each test._
-
 | Phone | Android | Node build | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| | | | | | | | | | | | |
+| Nothing Phone (3), A024 | 16 (API 36), Nothing OS B4.0 | v24.22.2, native arm64 build | ✅ | ✅ | ✅ 2.9 s | ⚠️ 5.2 s | ✅ | ✅ | not yet | not yet | not yet |
+
+### What we learned (2026-11-11)
+
+1. **Node 24 runs from `nativeLibraryDir` on Android 16.** Shipped as `libnode.so` (89 MB, 64 MB APK). It needs only `libc`, `libm`, `libdl` and `liblog`, which every phone has. SQLite, crypto, Intl, zlib, `dns.lookup` and HTTPS `fetch` all work.
+2. **Crash restart works.** `/crash` came back as a new process in 2.9 s (second crash in a row, so the backoff waited 2 s). SQLite data survived.
+3. **Kills shouldn't count toward the backoff.** `kill -9` came back in 5.2 s, just over the 5 s target, because it was the third failure in a minute and the backoff waited 4 s. A kill by Android isn't the app's fault: restart at once after `SIGKILL`, and keep the backoff for real crashes. Update the process manager design.
+4. **Killing the whole app is handled by Android.** After `kill -9` on the app process, Android recreated the service (`START_STICKY`) in about 2 s. Node died with it, so no orphan held the port, and the server answered at once. `ApplicationExitInfo` logged the reason as "signaled".
+5. **App update restarts the server.** Reinstalling the APK fired `MY_PACKAGE_REPLACED` and the server came back without opening the app.
+6. **Clock quirk to check.** `process.uptime()` and the event log times were about 6 hours off. It doesn't affect survival.
 
 ### Notes
 
 - `WIFI_MODE_FULL_HIGH_PERF` is deprecated on Android 14+. Check whether the Wi-Fi lock still stops sleep there.
 - `ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE` only exists on Android 14+. Older versions start with no type.
+- Reboot (test 7): on a phone with a PIN, apps don't get `BOOT_COMPLETED` until the first unlock. DroidHost phones need either no PIN, or direct boot support (`directBootAware` plus `LOCKED_BOOT_COMPLETED`).
+- Node for Android is built with `scripts/build-node-android-native.sh` (about an hour the first time on an M-series Mac). Build it once per Node version and reuse the binary.
