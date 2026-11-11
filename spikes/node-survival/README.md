@@ -25,7 +25,7 @@ The spike's code isn't reused. What carries over is what we learn, which goes in
 ## Run it
 
 ```bash
-../../scripts/build-node-android.sh            # builds Node 24 from source in a Linux container, about 1 hour
+../../scripts/fetch-node.sh                     # downloads our prebuilt Node 24 (5 seconds)
 scripts/install-node.sh ../../build/node-android/v24.22.2/node
 ./gradlew assembleDebug
 android run --apks=app/build/outputs/apk/debug/app-debug.apk
@@ -77,4 +77,4 @@ Logs on the phone: `files/logs/events.log` (supervisor) and `files/logs/server.l
 
 - `WIFI_MODE_FULL_HIGH_PERF` is deprecated on Android 14+. Check whether the Wi-Fi lock still stops sleep there.
 - `ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE` only exists on Android 14+. Older versions start with no type.
-- Node for Android is built with `scripts/build-node-android-native.sh` (about an hour the first time on an M-series Mac). Build it once per Node version and reuse the binary.
+- Node for Android is built once per Node version with `scripts/build-node-android-native.sh` (about an hour the first time on an M-series Mac) and published as a GitHub Release. App builds use `scripts/fetch-node.sh`, which takes seconds.

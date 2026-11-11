@@ -53,7 +53,9 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 ### Bundled binaries
 
 - **Decided:** Node.js 24 LTS and `cloudflared` ship inside the APK as native libraries. The PRD said Node 22, but Node 22 reaches end of life in April 2027, so we target the current LTS (see D-007).
-- Node.js publishes no Android builds, so we build Node from the official source with the Android NDK: `scripts/build-node-android.sh`.
+- Node.js publishes no Android builds, so we build Node from the official source once per Node version and publish it as a GitHub Release (see D-008).
+  - **Everyday use:** `scripts/fetch-node.sh` downloads it and checks its SHA-256, in seconds.
+  - **New Node version:** `scripts/build-node-android-native.sh` builds it in an arm64 Linux container with Clang 21 and the NDK sysroot (about an hour on an M-series Mac). `scripts/build-node-android.sh` is the same build with Google's own NDK compiler, for x86_64 Linux machines such as CI.
 - They're packaged as `lib*.so` files in `jniLibs/arm64-v8a`, with `extractNativeLibs="true"`, and run from `nativeLibraryDir`.
 - **Why:** Android 10 and newer won't run binaries from app data storage. Native libraries are the allowed way.
 - `npm` runs through the bundled Node (`node npm-cli.js`).
