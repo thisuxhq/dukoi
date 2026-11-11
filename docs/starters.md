@@ -1,44 +1,55 @@
-# Starters
+# Templates
 
-This doc describes the five starter apps and the rules every starter follows.
+This doc describes the five templates (the folders in `starters/`), how people start from one, and the rules every template follows.
 
-```bash
-droidhost init hono-api
-cd hono-api
-droidhost deploy
-```
-
-**The promise:** every starter deploys with **zero edits**.
+**The promise:** every template deploys with **zero edits**, and you change **one file** to make it yours.
 
 ---
 
-## The five starters
+## How people start
 
-| Starter | What it is | Opens a port? | Good for |
-| --- | --- | --- | --- |
-| `hono-api` | A JSON API with a SQLite table and CRUD routes | Yes | Side-project backends, personal APIs |
-| `telegram-bot` | A bot that uses long polling, so it needs no public URL | No (worker) | Alerts, small tools, family bots |
-| `static-site` | Plain HTML, CSS and JS | Yes | Portfolios, landing pages, docs |
-| `file-storage` | Upload, list and download files stored on the phone | Yes | File drop, sharing, backups |
-| `mcp-server` | A Model Context Protocol server over HTTP with one example tool | Yes | AI agents that need always-on tools |
+| From | How | What happens |
+| --- | --- | --- |
+| A computer | `npx droidhost init` (a numbered list) or `npx droidhost init notes-api` | Copies the template into a new folder and, if the computer is paired, deploys it and prints the file to edit |
+| The phone | **Try a template** on the empty Home screen | Deploys the template's archive from the APK, with no computer. The app page then shows the `init` command to get the code |
+
+The CLI ships the template folders next to its bundle (`dist/starters`). The APK ships them packed, as `assets/templates/<id>.tgz`, built by `scripts/pack-templates.ts` the same way `droidhost deploy` packs an app (see `scripts/prepare-android.sh`). The list itself is `TEMPLATES` in `shared/src/api.ts`.
+
+A template app deployed from the phone remembers it (`AppInfo.template`); the next deploy from a computer clears it.
 
 ---
 
-## Rules every starter follows
+## The five templates
+
+| Template | What you see when it's live | The file to edit |
+| --- | --- | --- |
+| `static-site` | A one-page site with your name on it | `index.html` |
+| `notes-api` | A JSON API that lists its routes; notes in SQLite | `server.js` |
+| `file-drop` | An upload page; drop a file, get a link | `server.js` (`MAX_MB`) |
+| `mcp-server` | A JSON page with the command to connect your assistant; tools `save_note` and `list_notes` | `tools.js` |
+| `telegram-bot` | A bot that replies to `/start` and echoes messages | `bot.js` |
+
+### Notes
+
+- **`telegram-bot`** needs `TELEGRAM_BOT_TOKEN`. `init` asks for it, and the phone's sheet has a field for it. Either way it's saved on the phone as a setting (`droidhost env set TELEGRAM_BOT_TOKEN=...`), never in the folder. It uses long polling, so it needs no public URL, and its `droidhost.json` turns the health check off. Without a token it stays up and logs what to do; with a bad one, the deploy fails with Telegram's reason.
+- **`file-drop`** keeps files in `DATA_DIR/files` and sends them with `Content-Security-Policy: sandbox`, so uploaded HTML can't run scripts. Cloudflare's free plan stops public uploads at 100 MB. Anyone who can reach the page can upload; the README says to add a check before making it public.
+- **`mcp-server`** is hand-written, about 60 lines, with no MCP SDK: JSON-RPC over HTTP at `/mcp`, with the `initialize` handshake (protocol 2025-11-25 and earlier), which today's assistants use.
+- **`static-site`** has no `package.json`, so DroidHost serves the folder as it is.
+
+---
+
+## Rules every template follows
 
 1. **No native modules.** Everything installs on a phone with no compiler.
 2. **Hono with `@hono/node-server`** for anything that opens a port.
 3. **`node:sqlite`** (built into Node 24) for data. No ORM.
 4. **Listen on `process.env.PORT`.**
 5. **Store data in `DATA_DIR`**, which DroidHost points at the app's `data/` folder so it survives deploys.
-6. **Read secrets from environment variables** and fail with a clear message if one is missing.
-7. **Readable in five minutes.** One `src/` folder and a short README.
+6. **Read secrets from settings** (environment variables) and say clearly what's missing.
+7. **Readable in five minutes.** A few files at the top level, one of them the file to edit, and a short README.
 8. **A `GET /` or `/health` that returns 200**, so the health check passes.
 
-Environment variables DroidHost sets for every app:
-
-| Variable | Value |
-| --- | --- |
+--- | --- |
 | `PORT` | The app's assigned port |
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
@@ -46,63 +57,23 @@ Environment variables DroidHost sets for every app:
 
 ---
 
-## Starter notes
+Environment variables DroidHost sets for every app, on top of its own settings:
 
-### `hono-api`
-
-```ts
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
-import { DatabaseSync } from 'node:sqlite'
-import { join } from 'node:path'
-
-const db = new DatabaseSync(join(process.env.DATA_DIR ?? '.', 'app.db'))
-db.exec('CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, text TEXT)')
-
-const app = new Hono()
-app.get('/', (c) => c.json({ ok: true }))
-app.get('/notes', (c) => c.json(db.prepare('SELECT * FROM notes').all()))
-app.post('/notes', async (c) => {
-  const { text } = await c.req.json()
-  db.prepare('INSERT INTO notes (text) VALUES (?)').run(text)
-  return c.json({ ok: true }, 201)
-})
-
-serve({ fetch: app.fetch, port: Number(process.env.PORT ?? 3000) })
-```
-
-That's the whole app.
-
-### `telegram-bot`
-
-- Needs `BOT_TOKEN`. Set it with `droidhost env set BOT_TOKEN=...`.
-- Uses long polling, so it works without `droidhost expose`.
-- Deploy with `--no-health-check`, or let the default worker check pass (the process stays up).
-
-### `static-site`
-
-- No `package.json`, so DroidHost serves the folder directly.
-- Add a `package.json` with a `build` script if you use a bundler. The CLI builds on your computer before packing.
-
-### `file-storage`
-
-- Files go to `DATA_DIR/files`.
-- Downloads are sent with `Content-Disposition: attachment`, so uploaded HTML can't run scripts. See [security.md](security.md#apps-and-uploads).
-- Uploads over 100 MB through a tunnel are split into chunks because of Cloudflare's limit. See [networking.md](networking.md#limits).
-- Optional `API_KEY` env var to protect uploads.
-
-### `mcp-server`
-
-- Exposes one example tool, `phone_status`, that returns battery and temperature from DroidHost's local status.
-- Uses the official MCP TypeScript SDK with the Streamable HTTP transport.
-- Expose it with a custom domain and add auth before connecting a remote agent.
+| Variable | Value |
+| --- | --- |
+| `PORT` | The port to listen on |
+| `HOST` | `127.0.0.1` |
+| `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
+| `NODE_ENV` | `production` |
+| `DROIDHOST_APP` | The app's name |
 
 ---
 
-## Adding a starter
+## Adding a template
 
-A new starter must:
+A new template must:
 
 - Deploy with zero edits on all four device lab phones.
 - Follow every rule above.
-- Fill a real gap. Five great starters beat twenty average ones.
+- Fill a real gap. Five great templates beat twenty average ones.
+- Be added to `TEMPLATES` in `shared/src/api.ts` (with the one file to edit), and get a page under `site/src/routes/docs/templates/`.

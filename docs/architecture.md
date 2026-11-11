@@ -150,7 +150,7 @@ droidhost/
 ├── cli/              # droidhost CLI (TypeScript)
 ├── dashboard/        # Web dashboard (SvelteKit 3 server with remote functions)
 ├── shared/           # Admin API types and protocol, shared by agent, cli and dashboard
-├── starters/         # hono-api, telegram-bot, static-site, file-storage, mcp-server
+├── starters/         # the five templates: static-site, notes-api, file-drop, mcp-server, telegram-bot
 ├── scripts/          # Fetch and pack Node + cloudflared into jniLibs
 └── docs/             # You are here
 ```

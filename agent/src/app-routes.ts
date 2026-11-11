@@ -1,5 +1,6 @@
 // Admin API routes for apps. Computers need to be paired; the phone app
 // itself reads and controls apps through the same handlers under /local.
+import type { EnvChange, TemplateDeployRequest } from '@droidhost/shared'
 import type { Agent } from './agent.ts'
 import { HttpError } from './http.ts'
 
@@ -40,6 +41,17 @@ export function appRoutes(agent: Agent): void {
   both('DELETE', '/apps/:name/expose', 'paired', async (ctx) => {
     await agent.domains.remove(ctx.params.name ?? '')
     return agent.tunnels.unexpose(ctx.params.name ?? '')
+  })
+  // Settings, like a bot token. Names come back, values never do.
+  both('GET', '/apps/:name/env', 'paired', (ctx) => apps.envNames(ctx.params.name ?? ''))
+  both('PUT', '/apps/:name/env', 'paired', (ctx) =>
+    apps.setEnv(ctx.params.name ?? '', ctx.json<EnvChange>()),
+  )
+  // Try a template, from the phone app only.
+  r.on('GET', '/local/templates', 'local', () => agent.templates.list())
+  r.on('POST', '/local/templates/:id/deploy', 'local', (ctx) => {
+    const { env } = ctx.body.length ? ctx.json<TemplateDeployRequest>() : {}
+    return agent.templates.deploy(ctx.params.id ?? '', env)
   })
   both('GET', '/domain', 'paired', () => agent.domains.status())
   both('POST', '/domain/login', 'paired', () => agent.domains.startLogin())

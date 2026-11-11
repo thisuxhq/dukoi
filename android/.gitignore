@@ -17,3 +17,4 @@ local.properties
 # Bundled binaries and agent come from scripts/prepare-android.sh
 app/src/main/jniLibs/
 app/src/main/assets/agent/
+app/src/main/assets/templates/

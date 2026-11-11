@@ -109,6 +109,7 @@ beforeAll(async () => {
     nodePath: process.execPath,
     cloudflaredPath: fake,
     cloudflareApi: `http://127.0.0.1:${apiPort}`,
+    templatesDir: '/nonexistent',
     phone: { name: 'test-phone', model: 'Test', android: '16' },
   })
   agent.store.state.apps.push({

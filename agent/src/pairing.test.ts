@@ -13,6 +13,7 @@ const agent = new Agent({
   nodePath: process.execPath,
   cloudflaredPath: null,
   cloudflareApi: 'http://127.0.0.1:9',
+  templatesDir: '/nonexistent',
   phone: { name: 'p', model: 'Test', android: '16' },
 })
 const base = `http://127.0.0.1:${port}`

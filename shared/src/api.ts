@@ -159,6 +159,8 @@ export interface TemplateInfo {
   description: string
   /** The setting it needs before it can run, like TELEGRAM_BOT_TOKEN, else null */
   secret: string | null
+  /** The one file to change to make it yours */
+  edit: string
 }
 
 /** Every template, in the order people see them. The folders live in starters/. */
@@ -168,30 +170,35 @@ export const TEMPLATES: TemplateInfo[] = [
     name: 'Static site',
     description: 'A one-page site with your name on it',
     secret: null,
+    edit: 'index.html',
   },
   {
     id: 'notes-api',
     name: 'Notes API',
     description: 'A small JSON API with a database',
     secret: null,
+    edit: 'server.js',
   },
   {
     id: 'file-drop',
     name: 'File drop',
     description: 'Upload a file, get a link to share',
     secret: null,
+    edit: 'server.js',
   },
   {
     id: 'mcp-server',
     name: 'MCP server',
     description: 'A tool your AI assistant can call',
     secret: null,
+    edit: 'tools.js',
   },
   {
     id: 'telegram-bot',
     name: 'Telegram bot',
     description: 'A bot that replies, always on',
     secret: 'TELEGRAM_BOT_TOKEN',
+    edit: 'bot.js',
   },
 ]
 
