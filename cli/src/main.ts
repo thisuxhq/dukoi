@@ -28,7 +28,8 @@ ${c.bold('Apps')}
   releases [app]       List the last 5 releases
   rollback [app]       Go back to the previous release (--to <id> for another)
   remove [app]         Delete an app from the phone (asks first; --yes to skip)
-  expose [app]         Give an app a public HTTPS URL (--off to remove it)
+  expose [app]         Give an app a public HTTPS URL (--domain api.example.com for
+                       one that never changes, --off to remove it)
 
 ${c.bold('Watching')}
   ps                   All apps: status, CPU, memory, uptime, URL
@@ -46,6 +47,7 @@ ${c.bold('Examples')}
   droidhost pair
   droidhost deploy
   droidhost expose
+  droidhost expose --domain api.example.com
   droidhost rollback my-api
 `
 

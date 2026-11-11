@@ -37,6 +37,8 @@ export class Tunnels {
     if (saved.port === this.agent.config.adminPort) {
       throw new HttpError(400, 'ADMIN_PORT', 'The admin port can never be exposed.')
     }
+    // An app on a custom domain already has a stable public URL.
+    if (saved.domain) return { app: name, publicUrl: `https://${saved.domain}` }
     const binary = this.agent.config.cloudflaredPath
     if (!binary) {
       throw new HttpError(
@@ -117,7 +119,7 @@ export class Tunnels {
   /** Brings back tunnels that were on before the agent restarted. */
   async restore(): Promise<void> {
     for (const saved of this.agent.store.state.apps) {
-      if (saved.exposed) await this.expose(saved.name, false).catch(() => {})
+      if (saved.exposed && !saved.domain) await this.expose(saved.name, false).catch(() => {})
     }
   }
 

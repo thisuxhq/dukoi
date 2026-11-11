@@ -133,7 +133,7 @@ droidhost/
 │       ├── data/            # persists across releases (SQLite files etc.)
 │       ├── env.enc          # secrets, encrypted with a Keystore key
 │       └── logs/            # rotated, 5 MB cap per app
-└── tunnels/                 # cloudflared config and credentials
+└── tunnels/                 # Custom domains: Cloudflare login cert, tunnel credentials, config.yml
 ```
 
 - `data/` is shared across releases, so an app's database survives a redeploy or rollback.

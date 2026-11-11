@@ -154,17 +154,37 @@ private fun Details(app: AppInfo, onAction: (String) -> Unit) {
   val clipboard = LocalClipboardManager.current
   val toast = LocalToast.current
   val context = LocalContext.current
-  // Tap a link to open it; the icon copies it.
+  var editing by remember { mutableStateOf(false) }
+  // Tap a link to open it; the icons copy it or change how it's public.
   Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
-    app.publicUrl?.let { url ->
-      LinkRow("Public", url.removePrefix("https://"), Violet, onOpen = { openInTab(context, url) }) {
-        clipboard.setText(AnnotatedString(url)); toast.show("URL copied")
+    val url = app.publicUrl
+    if (url != null) {
+      LinkRow(
+        "Public",
+        url.removePrefix("https://"),
+        Violet,
+        onOpen = { openInTab(context, url) },
+        onEdit = { editing = true },
+      ) { clipboard.setText(AnnotatedString(url)); toast.show("URL copied") }
+    } else {
+      Row(Modifier.fillMaxWidth().background(Card).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+          Text("Public", style = Styles.Small.copy(fontSize = 12.sp, lineHeight = 16.sp))
+          Text("Off", style = Styles.Log.copy(fontSize = 13.sp, lineHeight = 18.sp, color = Muted))
+        }
+        Text(
+          "Make public",
+          style = Styles.Label.copy(fontSize = 14.sp, fontWeight = Styles.Button.fontWeight),
+          color = Violet,
+          modifier = Modifier.tap { editing = true }.padding(vertical = 6.dp),
+        )
       }
     }
     LinkRow("Wi-Fi", app.localUrl.removePrefix("http://"), com.thisux.droidhost.ui.theme.Ink, onOpen = { openInTab(context, app.localUrl) }) {
       clipboard.setText(AnnotatedString(app.localUrl)); toast.show("URL copied")
     }
   }
+  if (editing) PublicLinkSheet(app) { editing = false }
   Spacer(Modifier.height(12.dp))
   // Numbers only mean something while the app runs.
   val live = app.state == AppState.RUNNING
@@ -187,7 +207,14 @@ private fun Details(app: AppInfo, onAction: (String) -> Unit) {
 }
 
 @Composable
-private fun LinkRow(label: String, value: String, color: Color, onOpen: () -> Unit, onCopy: (() -> Unit)?) {
+private fun LinkRow(
+  label: String,
+  value: String,
+  color: Color,
+  onOpen: () -> Unit,
+  onEdit: (() -> Unit)? = null,
+  onCopy: (() -> Unit)?,
+) {
   Row(Modifier.fillMaxWidth().background(Card).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
     Column(Modifier.weight(1f).tap(onOpen), verticalArrangement = Arrangement.spacedBy(2.dp)) {
       Text(label, style = Styles.Small.copy(fontSize = 12.sp, lineHeight = 16.sp))
@@ -195,6 +222,9 @@ private fun LinkRow(label: String, value: String, color: Color, onOpen: () -> Un
     }
     if (onCopy != null) {
       CopyButton(Muted, 18.dp, 32.dp, onCopy)
+    }
+    if (onEdit != null) {
+      Box(Modifier.size(32.dp).tap(onEdit), contentAlignment = Alignment.Center) { Icon("edit-02", 18.dp, Muted) }
     }
   }
 }
@@ -279,7 +309,7 @@ private fun LogRow(line: LogLine) {
 }
 
 /** Opens a link in an in-app browser tab, in DroidHost's colours. */
-private fun openInTab(context: Context, url: String) {
+internal fun openInTab(context: Context, url: String) {
   val colors = CustomTabColorSchemeParams.Builder().setToolbarColor(Canvas.toArgb()).build()
   val tab = CustomTabsIntent.Builder().setDefaultColorSchemeParams(colors).setShowTitle(true).build()
   runCatching { tab.launchUrl(context, Uri.parse(url)) }

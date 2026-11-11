@@ -137,6 +137,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** The phone needs no npm, registry access or compiler. Native modules are caught on the computer, before upload, with a clear error.
 - **Trade-off:** Uploads are bigger, and packages with platform-specific binaries won't work. Phase 1 doesn't support those anyway.
 
+### D-109: Custom domains through one named tunnel per phone, DNS through the login token
+- **Status:** Decided
+- **Date:** 2026-11-11
+- **Decision:** `droidhost expose --domain` (or the phone app's Public link sheet) connects the phone to the user's own Cloudflare account with `cloudflared tunnel login`. The certificate is saved on the phone. The phone then makes one named tunnel for itself and serves every app's hostname from it. DNS records are created, replaced and deleted through Cloudflare's API with the token inside that certificate, and DroidHost only replaces or deletes records it made (comment "DroidHost").
+- **Why:** The URL never changes across restarts, reinstalls and reboots. The login runs where the person already is (the computer's browser, or an in-app tab on the phone), and the certificate never leaves the phone. Managing DNS through the API means `--off` cleans up after itself and DroidHost never overwrites someone else's record.
+- **Trade-off:** It needs a domain on Cloudflare. Each login creates one API token in the user's account, and Cloudflare allows 50, so a full account has to delete old tokens first. Adding or removing a hostname restarts the phone's tunnel (about 2 seconds for that phone's other public apps).
+
 ## Open questions
 
 | Question | Options | Decides |

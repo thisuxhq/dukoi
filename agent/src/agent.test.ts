@@ -18,6 +18,7 @@ const agent = new Agent({
   adminPort: port,
   nodePath: process.execPath,
   cloudflaredPath: null,
+  cloudflareApi: 'http://127.0.0.1:9',
   phone: { name: 'test-phone', model: 'Test', android: '16' },
 })
 const base = `http://127.0.0.1:${port}`

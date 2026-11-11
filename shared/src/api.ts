@@ -90,6 +90,19 @@ export interface AppInfo {
   memoryMb: number | null
   localUrl: string
   publicUrl: string | null
+  /** Custom domain when the public URL is on one (stable), else null */
+  domain: string | null
+}
+
+/** The phone's link to Cloudflare for custom domains. */
+export interface DomainStatus {
+  /** The phone has a Cloudflare login certificate */
+  loggedIn: boolean
+  /** The domain the login is for, e.g. example.com */
+  zone: string | null
+  /** While logging in: the Cloudflare page to open */
+  loginUrl: string | null
+  domains: { app: string; hostname: string }[]
 }
 
 export interface ReleaseInfo {

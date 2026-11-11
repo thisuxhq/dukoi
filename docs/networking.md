@@ -55,18 +55,29 @@ Cloudflare's `cloudflared-linux-arm64` can't look up names on Android, because i
 
 ## Custom domains (named tunnels)
 
-> Not in this version yet. `droidhost expose --domain` says so and suggests a quick tunnel.
-
 ```bash
-droidhost expose --domain api.example.com
+droidhost expose hono-api --domain api.example.com
 ```
 
-1. The first time, a browser opens so you can log in to **your own** Cloudflare account and pick a domain.
-2. DroidHost creates a named tunnel and a DNS record for the hostname.
-3. Tunnel credentials are stored on the phone.
-4. The URL stays the same across restarts and reboots.
+Or on the phone: open the app, tap the edit icon next to its public link (or **Make public**), and pick **Your domain**.
 
-You need a domain on Cloudflare, which can be on the free plan. Use this for anything real.
+1. The first time, Cloudflare's login opens (in your computer's browser, or in a tab on the phone). Pick your domain and click **Authorize**. The phone gets a certificate for that domain.
+2. The phone makes its own named tunnel, once, and a DNS record for the hostname.
+3. The URL stays the same across restarts, reinstalls and reboots. After a restart it's back within a few seconds.
+
+You need a domain on Cloudflare, which can be on the free plan. Use this for anything real. See D-109.
+
+### How it works
+
+- **One tunnel per phone.** A single `cloudflared` serves every app with a domain, from a config with one rule per hostname (`api.example.com → 127.0.0.1:3000`) and a final 404. It never routes to the admin port.
+- **The certificate stays on the phone**, in DroidHost's private `tunnels/` folder, with the tunnel's credentials.
+- **DNS through Cloudflare's API**, with the token in the certificate. Records DroidHost makes carry the comment `DroidHost`. It replaces or deletes only those, and refuses a name that already points somewhere else.
+- **A domain replaces a quick tunnel** for that app. `droidhost expose --off` (or **Off** on the phone) removes the route and the DNS record.
+- **One domain per phone login.** Names must be under the domain picked at login, for example `*.example.com`.
+
+### If Cloudflare says "Quota limit exceeded"
+
+Cloudflare allows 50 API tokens per account, and each login adds one. Delete tokens you no longer use at **dash.cloudflare.com → My Profile → API Tokens**, then run the command again.
 
 ## Reconnecting
 

@@ -4,6 +4,7 @@ import { type PhoneInfo, PROTOCOL_VERSION } from '@droidhost/shared'
 import { appRoutes } from './app-routes.ts'
 import { Apps } from './apps.ts'
 import { AGENT_VERSION, type Config, paths } from './config.ts'
+import { Domains } from './domains.ts'
 import { Router } from './http.ts'
 import { observeRoutes } from './observe-routes.ts'
 import { pairingRoutes } from './pairing.ts'
@@ -15,6 +16,7 @@ export class Agent {
   readonly router: Router
   readonly apps: Apps
   readonly tunnels: Tunnels
+  readonly domains: Domains
   readonly paths: ReturnType<typeof paths>
   readonly startedAt = new Date()
   private server: Server | null = null
@@ -27,6 +29,7 @@ export class Agent {
     )
     this.apps = new Apps(this)
     this.tunnels = new Tunnels(this)
+    this.domains = new Domains(this)
     this.routes()
   }
 
@@ -63,6 +66,7 @@ export class Agent {
     this.server = this.router.listen(this.config.adminPort)
     await this.apps.restore()
     await this.tunnels.restore()
+    await this.domains.restore()
     console.log(
       `DroidHost agent ${AGENT_VERSION} on port ${this.config.adminPort} (Node ${process.version}, key ${this.store.state.identity.publicKey.slice(0, 8)}…)`,
     )
@@ -70,6 +74,7 @@ export class Agent {
 
   async stop(): Promise<void> {
     await this.tunnels.stopAll()
+    await this.domains.stopAll()
     await this.apps.stopAll()
     await new Promise<void>((resolve) =>
       this.server ? this.server.close(() => resolve()) : resolve(),
