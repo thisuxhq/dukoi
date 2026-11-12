@@ -32,17 +32,21 @@ export DUKOI_KEYSTORE_PASSWORD
 keytool -list -keystore "$key" -storepass:env DUKOI_KEYSTORE_PASSWORD >/dev/null 2>&1 ||
   fail "That password doesn't open $key. Nothing was saved."
 
-# The Cloudflare token, checked with Cloudflare before anything is saved
-read -rsp "Cloudflare API token (hidden): " cf_token
-echo
-[ -n "$cf_token" ] || fail "The token is empty. Nothing was saved."
-curl -fsS -m 20 -H "Authorization: Bearer $cf_token" \
-  https://api.cloudflare.com/client/v4/user/tokens/verify 2>/dev/null | grep -q '"status":"active"' ||
-  fail "Cloudflare didn't accept that token, or it isn't active. Nothing was saved."
-
 read -rp "Cloudflare account ID: " cf_account
 [[ "$cf_account" =~ ^[0-9a-f]{32}$ ]] ||
   fail "An account ID is 32 letters and numbers, like the one wrangler whoami shows. Nothing was saved."
+
+# The Cloudflare token, checked with Cloudflare before anything is saved.
+# A token made under My Profile and one made under the account check in different places.
+read -rsp "Cloudflare API token (hidden): " cf_token
+echo
+[ -n "$cf_token" ] || fail "The token is empty. Nothing was saved."
+token_active() {
+  curl -fsS -m 20 -H "Authorization: Bearer $cf_token" "https://api.cloudflare.com/client/v4/$1/tokens/verify" 2>/dev/null |
+    grep -q '"status":"active"'
+}
+token_active user || token_active "accounts/$cf_account" ||
+  fail "Cloudflare didn't accept that token for this account, or it isn't active. Nothing was saved."
 
 echo
 base64 -i "$key" | gh secret set DUKOI_KEYSTORE_BASE64 --repo "$repo"
