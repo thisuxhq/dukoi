@@ -8,10 +8,6 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 - Three new templates. **Webhook inbox** gives you an address for webhooks and shows each one as it arrives. **Uptime watch** checks your sites every minute and sends a push through ntfy when one goes down. **Cron jobs** runs your code on a schedule and shows how each run went. Start one with `dukoi init`, or from **Try a template** on the phone.
 
-### Changed
-
-- Apps now get the phone's time zone in `TZ`, so times and schedules are local instead of UTC. An app's own `TZ` setting still wins.
-
 ## [0.1.1] - 2026-11-12
 
 ### Changed

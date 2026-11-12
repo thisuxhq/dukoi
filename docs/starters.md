@@ -40,7 +40,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 - **`static-site`** has no `package.json`, so Dukoi serves the folder as it is.
 - **`webhook-inbox`** saves any method on `/hook` and `/hook/*` (last 200, bodies cut at 64 KB) and then calls `handle()`, whose return value is the reply. The page polls every two seconds. It shows headers, which can hold secrets, so the README says not to share the URL. It needs `dukoi expose` to receive webhooks from the internet.
 - **`uptime-watch`** checks each site every minute (10 s timeout, status below 400 is up). A site is down after 2 failed checks in a row, worked out from the saved checks so a restart doesn't alert twice. Alerts go to `https://ntfy.sh/<topic>`: the topic is made up on first run and kept in `DATA_DIR`, or set with `NTFY_TOPIC`. Checks are kept for 7 days.
-- **`cron-jobs`** reads standard 5-part cron schedules (plus `@hourly`, `@daily`, `@weekly`, `@monthly`) with its own 70-line `schedule.js`, so there's no extra package. It wakes at the start of each minute, skips a job that's still running, and keeps the last 50 runs per job. Times use the phone's time zone: the Android app passes `TZ` to the agent, which passes it to every app unless the app sets its own.
+- **`cron-jobs`** reads standard 5-part cron schedules (plus `@hourly`, `@daily`, `@weekly`, `@monthly`) with its own 70-line `schedule.js`, so there's no extra package. It wakes at the start of each minute, skips a job that's still running, and keeps the last 50 runs per job. Times use the phone's time zone, which Node finds on Android by itself.
 
 ---
 
@@ -60,7 +60,6 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
 | `DUKOI_APP` | The app's name |
-| `TZ` | The phone's time zone, like `Asia/Kolkata`, unless the app sets its own |
 
 ---
 
@@ -73,7 +72,6 @@ Environment variables Dukoi sets for every app, on top of its own settings:
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
 | `DUKOI_APP` | The app's name |
-| `TZ` | The phone's time zone, like `Asia/Kolkata`, unless the app sets its own |
 
 ---
 
