@@ -81,10 +81,7 @@ fun DisconnectCloudflareSheet(status: DomainStatus, onDismiss: () -> Unit, onDon
       Spacer(Modifier.height(8.dp))
       Text(impact, style = Styles.Small.copy(fontSize = 15.sp, lineHeight = 22.sp))
       Spacer(Modifier.height(24.dp))
-      Box(
-        Modifier.fillMaxWidth().height(52.dp).background(Crashed, RoundedCornerShape(4.dp)).press(::disconnect),
-        contentAlignment = Alignment.Center,
-      ) { Text(if (busy) "Disconnecting" else "Disconnect", style = Styles.Button, color = Card) }
+      PrimaryButton(if (busy) "Disconnecting" else "Disconnect", color = Crashed, busy = busy, onClick = ::disconnect)
       Spacer(Modifier.height(6.dp))
       Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         QuietButton("Cancel") { if (!busy) close(onDismiss) }

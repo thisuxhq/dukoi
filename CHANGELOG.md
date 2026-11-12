@@ -6,6 +6,10 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [0.1.1] - 2026-11-12
 
+### Changed
+
+- Buttons on the phone that wait on something slow, like Get quick link, Use domain, Disconnect and Deploy, now show three rippling dots beside what they're doing, and ignore taps until it's done.
+
 ### Fixed
 
 - `dukoi` no longer gets killed on start on some Apple Silicon Macs (`zsh: killed dukoi pair`). Bun wrote the macOS binaries with a broken signature, so the build now signs them again and checks them. The installer repairs a 0.1.0 download that's already broken, and stops with a clear error if `dukoi` won't start instead of saying it installed.
