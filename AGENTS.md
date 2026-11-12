@@ -39,7 +39,7 @@ bun run cli <command>        # run the CLI from source, e.g. bun run cli pair
 bun run --filter @dukoi/dashboard build && bun run cli dashboard   # the web dashboard
 bun run --filter @dukoi/site dev        # the landing page; build/ holds the static site after `build`
 bun run --filter @dukoi/site deploy     # publish the site to dukoi.com (needs wrangler login)
-scripts/release.sh 0.3.0 --dry-run   # try a release; merging a new CHANGELOG version to main ships it (docs/releasing.md)
+scripts/release.sh 0.3.0 --dry-run   # try a release locally; merging a PR with a new CHANGELOG version ships it
 
 scripts/prepare-android.sh   # fetch Node and bundle the agent into the APK
 cd android && ./gradlew assembleDebug
@@ -70,6 +70,18 @@ We use Bun for installs, tests and bundling, with Bun workspaces. The agent runs
 - **Plain words.** User-facing text, errors and docs follow `docs/writing-style.md`. Errors say what happened and what to do next.
 - **Safe by default.** The admin API never goes through a tunnel, secrets are never printed, and there are no passwords. See `docs/security.md`.
 - **Docs move with code.** If behaviour changes, update the doc in the same commit.
+- **Every change ships.** Each PR to `main` adds a new version to `CHANGELOG.md`, so merging it releases the app, CLI and site (see below).
+
+## Releasing
+
+Merging a PR that adds a new version to `CHANGELOG.md` releases it: the Release workflow runs `scripts/release.sh` on GitHub (D-116). A merge with no new version releases nothing, so **every PR adds one**:
+
+1. Read the newest `## [x.y.z]` in `CHANGELOG.md` and pick the next version. Patch for fixes, docs and tooling, minor for new features, major for breaking changes.
+2. Add a section above it, `## [0.2.2] - 2026-11-12`, with this PR's notes under `### Added`, `### Changed` or `### Fixed`. Keep `## [Unreleased]` empty above it.
+3. Add the compare link at the bottom (`[0.2.2]: https://github.com/thisuxhq/dukoi/compare/v0.2.1...v0.2.2`) and point `[Unreleased]` at the new tag.
+4. If another PR lands that version first, bump yours again before merging. The workflow skips a version that's already tagged.
+
+Don't edit `shared/src/version.ts`: the release script sets it. `docs/releasing.md` has the details.
 
 ## Icons
 
