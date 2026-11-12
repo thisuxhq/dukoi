@@ -4,6 +4,8 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-12
+
 ### Fixed
 
 - `dukoi` no longer gets killed on start on some Apple Silicon Macs (`zsh: killed dukoi pair`). Bun wrote the macOS binaries with a broken signature, so the build now signs them again and checks them. The installer repairs a 0.1.0 download that's already broken, and stops with a clear error if `dukoi` won't start instead of saying it installed.
@@ -28,5 +30,6 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/commits/main
-[0.1.0]: https://github.com/thisuxhq/dukoi/commits/main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.1.1...main
+[0.1.1]: https://github.com/thisuxhq/dukoi/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/thisuxhq/dukoi/releases/tag/v0.1.0
