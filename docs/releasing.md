@@ -58,7 +58,7 @@ If it fails after the push, fix the problem and run the step that failed by hand
 
 | Thing | Why |
 | --- | --- |
-| A Mac with the Android SDK, Bun and the cached Node and cloudflared builds | Building the APK and CLI |
+| A Mac with the Android SDK, Bun and the cached Node and cloudflared builds | Building the APK and CLI. The macOS binaries need `codesign`, so the CLI only builds on a Mac. |
 | `wrangler login` to the Cloudflare account that owns dukoi.com | Uploading downloads and deploying the site |
 | `gh auth login` with push access to `thisuxhq/dukoi` | Pushing the tag and creating the GitHub release |
 | The release key | Signing the APK |
