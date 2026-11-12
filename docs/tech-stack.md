@@ -114,7 +114,7 @@ The rule for picking tools: **the fewest moving parts that do the job well.**
 
 - **Decided:** Hono with `@hono/node-server`, and Node's built-in `node:sqlite` for data.
 - **Why:** no native modules, so they install on a phone without a compiler.
-- The five starters are Hono API, Telegram bot, static site, file storage API and MCP server.
+- The starters are a static site, a Hono API, file drop, an MCP server, a Telegram bot, a webhook inbox, uptime watch and cron jobs.
 
 ---
 

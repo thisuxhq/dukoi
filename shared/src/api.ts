@@ -200,6 +200,27 @@ export const TEMPLATES: TemplateInfo[] = [
     secret: 'TELEGRAM_BOT_TOKEN',
     edit: 'bot.js',
   },
+  {
+    id: 'webhook-inbox',
+    name: 'Webhook inbox',
+    description: 'See every webhook as it arrives',
+    secret: null,
+    edit: 'handle.js',
+  },
+  {
+    id: 'uptime-watch',
+    name: 'Uptime watch',
+    description: 'Get a ping when a site goes down',
+    secret: null,
+    edit: 'sites.js',
+  },
+  {
+    id: 'cron-jobs',
+    name: 'Cron jobs',
+    description: 'Run code on a schedule',
+    secret: null,
+    edit: 'jobs.js',
+  },
 ]
 
 /** Body of POST /local/templates/:id/deploy */

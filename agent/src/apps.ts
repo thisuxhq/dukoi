@@ -331,6 +331,8 @@ export class Apps {
 
   private spec(rt: AppRuntime, dir: string, manifest: ReleaseManifest, port: number): ProcessSpec {
     const env: Record<string, string> = {
+      // The phone's time zone, so schedules and times are local. An app's own TZ setting wins.
+      ...(process.env.TZ ? { TZ: process.env.TZ } : {}),
       ...rt.saved.env,
       PORT: String(port),
       HOST: '127.0.0.1',

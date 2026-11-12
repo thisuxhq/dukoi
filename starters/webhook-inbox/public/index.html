@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Webhook inbox</title>
+    <style>
+      body { margin: 0; background: #f1f0f4; color: #16161a; font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
+      h1 { margin: 0 0 8px; font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; }
+      p { margin: 0; color: #6e6d78; }
+      code, pre, .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 14px; }
+      .address { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; padding: 6px 6px 6px 16px; background: #16161a; color: #fff; border-radius: 4px; }
+      .address code { overflow-wrap: anywhere; }
+      .address button { flex-shrink: 0; height: 36px; padding: 0 14px; border: 0; border-radius: 4px; background: #2a2a31; color: #fff; font: 500 14px system-ui, sans-serif; cursor: pointer; }
+      ul { display: flex; flex-direction: column; gap: 1px; margin: 32px 0 0; padding: 0; list-style: none; background: #ecebf0; }
+      li { background: #fff; }
+      .row { display: flex; align-items: center; gap: 16px; width: 100%; padding: 14px 16px; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+      .method { width: 56px; flex-shrink: 0; color: #7b3ff2; font-weight: 600; font-size: 13px; }
+      .path { flex-grow: 1; overflow-wrap: anywhere; }
+      .when { flex-shrink: 0; color: #6e6d78; font-size: 13px; }
+      .detail { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 20px 88px; }
+      .detail h2 { margin: 0; color: #6e6d78; font-size: 13px; font-weight: 500; }
+      .detail pre { margin: 0; padding: 14px 16px; background: #f7f6f9; font-size: 13px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .headers { display: grid; grid-template-columns: max-content 1fr; gap: 2px 16px; font-size: 13px; line-height: 20px; }
+      .headers dt { color: #6e6d78; }
+      .headers dd { margin: 0; overflow-wrap: anywhere; }
+      .empty { margin-top: 32px; padding: 40px 24px; background: #fff; text-align: center; }
+      .empty pre { display: inline-block; margin: 12px 0 0; text-align: left; color: #16161a; white-space: pre-wrap; overflow-wrap: anywhere; }
+      @media (max-width: 560px) { main { padding: 48px 16px; } .detail { padding-left: 16px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Webhook inbox</h1>
+      <p>Send any request to this address. It shows up here as it arrives.</p>
+      <div class="address">
+        <code id="address"></code>
+        <button id="copy" type="button">Copy</button>
+      </div>
+      <div id="empty" class="empty" hidden>
+        <p>Nothing yet. Try it:</p>
+        <pre id="example"></pre>
+      </div>
+      <ul id="list" hidden></ul>
+    </main>
+    <script>
+      const address = `${location.origin}/hook`
+      document.getElementById('address').textContent = address
+      document.getElementById('example').textContent =
+        `curl -d '{"hello":"phone"}' -H 'content-type: application/json' ${address}`
+      const copy = document.getElementById('copy')
+      copy.onclick = () => navigator.clipboard.writeText(address).then(() => (copy.textContent = 'Copied'))
+
+      const list = document.getElementById('list')
+      const empty = document.getElementById('empty')
+      let open = null
+      let latest = null
+
+      function ago(iso) {
+        const s = Math.round((Date.now() - new Date(iso)) / 1000)
+        if (s < 10) return 'just now'
+        if (s < 60) return `${s} s ago`
+        if (s < 3600) return `${Math.floor(s / 60)} min ago`
+        if (s < 86400) return `${Math.floor(s / 3600)} h ago`
+        return new Date(iso).toLocaleString()
+      }
+
+      function pretty(body) {
+        try { return JSON.stringify(JSON.parse(body), null, 2) } catch { return body }
+      }
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag)
+        if (className) node.className = className
+        if (text !== undefined) node.textContent = text
+        return node
+      }
+
+      function render(requests) {
+        empty.hidden = requests.length > 0
+        list.hidden = requests.length === 0
+        // A new request opens itself, so you see it the moment it lands.
+        if (requests[0] && requests[0].id !== latest) open = latest = requests[0].id
+        list.replaceChildren(...requests.map((r) => {
+          const item = el('li')
+          const row = el('button', 'row')
+          row.append(el('span', 'method mono', r.method), el('span', 'path mono', r.path), el('span', 'when', ago(r.received_at)))
+          row.onclick = () => { open = open === r.id ? null : r.id; render(requests) }
+          item.append(row)
+          if (open === r.id) {
+            const detail = el('div', 'detail')
+            detail.append(el('h2', '', 'Body'), el('pre', 'mono', r.body ? pretty(r.body) : '(empty)'), el('h2', '', 'Headers'))
+            const headers = el('dl', 'headers mono')
+            for (const [name, value] of Object.entries(r.headers)) headers.append(el('dt', '', name), el('dd', '', value))
+            detail.append(headers)
+            item.append(detail)
+          }
+          return item
+        }))
+      }
+
+      // Draw when something new arrives, and once a minute so "4 min ago" stays true.
+      // Drawing less often keeps text you're selecting selected.
+      let shown = null
+      let drawnAt = 0
+      async function refresh() {
+        const res = await fetch('/requests').catch(() => null)
+        if (res?.ok) {
+          const requests = await res.json()
+          const key = requests.map((r) => r.id).join()
+          if (key !== shown || Date.now() - drawnAt > 60000) {
+            render(requests)
+            shown = key
+            drawnAt = Date.now()
+          }
+        }
+        setTimeout(refresh, 2000)
+      }
+      refresh()
+    </script>
+  </body>
+</html>

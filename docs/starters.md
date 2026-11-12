@@ -1,6 +1,6 @@
 # Templates
 
-This doc describes the five templates (the folders in `starters/`), how people start from one, and the rules every template follows.
+This doc describes the eight templates (the folders in `starters/`), how people start from one, and the rules every template follows.
 
 **The promise:** every template deploys with **zero edits**, and you change **one file** to make it yours.
 
@@ -19,7 +19,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 
 ---
 
-## The five templates
+## The eight templates
 
 | Template | What you see when it's live | The file to edit |
 | --- | --- | --- |
@@ -28,6 +28,9 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 | `file-drop` | An upload page; drop a file, get a link | `server.js` (`MAX_MB`) |
 | `mcp-server` | A JSON page with the command to connect your assistant; tools `save_note` and `list_notes` | `tools.js` |
 | `telegram-bot` | A bot that replies to `/start` and echoes messages | `bot.js` |
+| `webhook-inbox` | A page that shows every request to `/hook` as it arrives | `handle.js` |
+| `uptime-watch` | A status page for a few sites, checked every minute, with push alerts | `sites.js` |
+| `cron-jobs` | A page of scheduled jobs with their next run and last result | `jobs.js` |
 
 ### Notes
 
@@ -35,6 +38,9 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 - **`file-drop`** keeps files in `DATA_DIR/files` and sends them with `Content-Security-Policy: sandbox`, so uploaded HTML can't run scripts. Cloudflare's free plan stops public uploads at 100 MB. Anyone who can reach the page can upload; the README says to add a check before making it public.
 - **`mcp-server`** is hand-written, about 60 lines, with no MCP SDK: JSON-RPC over HTTP at `/mcp`, with the `initialize` handshake (protocol 2025-11-25 and earlier), which today's assistants use.
 - **`static-site`** has no `package.json`, so Dukoi serves the folder as it is.
+- **`webhook-inbox`** saves any method on `/hook` and `/hook/*` (last 200, bodies cut at 64 KB) and then calls `handle()`, whose return value is the reply. The page polls every two seconds. It shows headers, which can hold secrets, so the README says not to share the URL. It needs `dukoi expose` to receive webhooks from the internet.
+- **`uptime-watch`** checks each site every minute (10 s timeout, status below 400 is up). A site is down after 2 failed checks in a row, worked out from the saved checks so a restart doesn't alert twice. Alerts go to `https://ntfy.sh/<topic>`: the topic is made up on first run and kept in `DATA_DIR`, or set with `NTFY_TOPIC`. Checks are kept for 7 days.
+- **`cron-jobs`** reads standard 5-part cron schedules (plus `@hourly`, `@daily`, `@weekly`, `@monthly`) with its own 70-line `schedule.js`, so there's no extra package. It wakes at the start of each minute, skips a job that's still running, and keeps the last 50 runs per job. Times use the phone's time zone: the Android app passes `TZ` to the agent, which passes it to every app unless the app sets its own.
 
 ---
 
@@ -54,6 +60,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
 | `DUKOI_APP` | The app's name |
+| `TZ` | The phone's time zone, like `Asia/Kolkata`, unless the app sets its own |
 
 ---
 
@@ -66,6 +73,7 @@ Environment variables Dukoi sets for every app, on top of its own settings:
 | `DATA_DIR` | Absolute path to the app's persistent `data/` folder |
 | `NODE_ENV` | `production` |
 | `DUKOI_APP` | The app's name |
+| `TZ` | The phone's time zone, like `Asia/Kolkata`, unless the app sets its own |
 
 ---
 

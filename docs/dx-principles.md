@@ -94,7 +94,7 @@ A stack trace is never the whole message. Add `--verbose` if you want one.
 
 ### Starters that deploy unchanged
 
-Each starter (Hono API, Telegram bot, static site, file storage API and MCP server) deploys with **zero edits**. Each one is small enough to read in five minutes and uses no native modules.
+Each starter (see [starters.md](starters.md)) deploys with **zero edits**. Each one is small enough to read in five minutes and uses no native modules.
 
 ### Fast feedback
 

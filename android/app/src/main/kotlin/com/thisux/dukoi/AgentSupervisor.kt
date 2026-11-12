@@ -87,6 +87,8 @@ object AgentSupervisor {
         put("DUKOI_PHONE_NAME", phoneName())
         put("DUKOI_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
         put("DUKOI_ANDROID", Build.VERSION.RELEASE)
+        // Node on Android can't find the time zone by itself and falls back to UTC.
+        put("TZ", java.util.TimeZone.getDefault().id)
         templates?.let { put("DUKOI_TEMPLATES", it.absolutePath) }
         put("HOME", home.absolutePath)
         put("TMPDIR", context.cacheDir.absolutePath)

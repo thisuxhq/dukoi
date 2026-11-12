@@ -43,8 +43,10 @@ import androidx.compose.ui.unit.sp
 import com.thisux.dukoi.AppInfo
 import com.thisux.dukoi.Phone
 import com.thisux.dukoi.TemplateInfo
+import com.thisux.dukoi.ui.theme.Amber
 import com.thisux.dukoi.ui.theme.Blue
 import com.thisux.dukoi.ui.theme.Body
+import com.thisux.dukoi.ui.theme.Butter
 import com.thisux.dukoi.ui.theme.Border
 import com.thisux.dukoi.ui.theme.Canvas
 import com.thisux.dukoi.ui.theme.Card
@@ -61,7 +63,11 @@ import com.thisux.dukoi.ui.theme.Pink
 import com.thisux.dukoi.ui.theme.Rose
 import com.thisux.dukoi.ui.theme.Running
 import com.thisux.dukoi.ui.theme.Sky
+import com.thisux.dukoi.ui.theme.Slate
+import com.thisux.dukoi.ui.theme.SlateInk
 import com.thisux.dukoi.ui.theme.Styles
+import com.thisux.dukoi.ui.theme.Teal
+import com.thisux.dukoi.ui.theme.TealInk
 import com.thisux.dukoi.ui.theme.Violet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,6 +82,9 @@ private fun look(id: String) = when (id) {
   "file-drop" -> Look("folder-01", Peach, Orange, listOf("An upload page on your Wi-Fi", "A link to share each file", "Files saved on this phone"))
   "mcp-server" -> Look("mcp-server", Rose, Pink, listOf("A link your AI assistant can use", "One example tool to call", "Running all day on this phone"))
   "telegram-bot" -> Look("telegram", Sky, Blue, listOf("A bot that answers on Telegram", "No public link needed", "Running all day on this phone"))
+  "webhook-inbox" -> Look("webhook", Teal, TealInk, listOf("An address to send webhooks to", "Each one shown as it arrives", "Saved on this phone"))
+  "uptime-watch" -> Look("activity-03", Butter, Amber, listOf("Your sites checked every minute", "A push when one goes down", "Running all day on this phone"))
+  "cron-jobs" -> Look("clock-01", Slate, SlateInk, listOf("Code that runs on a schedule", "How each run went, on a page", "Running all day on this phone"))
   else -> Look("api", Lilac, Violet, listOf("A link that works on your Wi-Fi"))
 }
 
