@@ -11,6 +11,7 @@ export const sections: { title: string; pages: DocPage[] }[] = [
       { slug: '', title: 'Quick start' },
       { slug: 'phone-setup', title: 'Set up the phone' },
       { slug: 'pairing', title: 'Pair a computer' },
+      { slug: 'ai-agents', title: 'AI agents' },
     ],
   },
   {

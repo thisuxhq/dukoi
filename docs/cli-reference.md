@@ -9,7 +9,7 @@ curl -fsSL https://dukoi.com/install | sh        # macOS and Linux
 irm https://dukoi.com/install.ps1 | iex          # Windows, in PowerShell
 ```
 
-It puts everything in `~/.dukoi` and the command in `~/.dukoi/bin`, which it adds to your PATH.
+It puts everything in `~/.dukoi` and the command in `~/.dukoi/bin`, which it adds to your PATH. Then it runs `dukoi skill`, so the coding agents on your computer know how to use Dukoi.
 
 ---
 
@@ -177,6 +177,36 @@ See [networking.md](networking.md).
 | `dukoi status` | Phone health: memory, storage, load, agent version and uptime |
 | `dukoi dashboard` | Opens the web dashboard on `127.0.0.1:7071` (or the next free port). Only this computer can reach it. `--no-open` skips the browser. |
 | `dukoi alerts` | Sets up crash, kill, overheat and power-cut alerts by email or Telegram |
+
+---
+
+## AI agents
+
+### `dukoi skill`
+
+Installs the Dukoi skill for the coding agents on this computer, so they know what runs on the phone and every command (D-117). The install script runs it, so you only need it after installing a new agent.
+
+```
+$ dukoi skill
+✓ Taught Claude Code and Codex to use Dukoi
+```
+
+It copies `skills/dukoi/SKILL.md` into the skills folder of each agent whose home folder exists:
+
+| Agent | Looks for | Installs to |
+| --- | --- | --- |
+| Claude Code | `~/.claude` | `~/.claude/skills/dukoi` |
+| Codex, and any agent that reads `~/.agents` | `~/.codex` or `~/.agents` | `~/.agents/skills/dukoi` |
+| Cursor | `~/.cursor` | `~/.cursor/skills/dukoi` |
+| Gemini CLI | `~/.gemini` | `~/.gemini/skills/dukoi` |
+| OpenCode | `~/.config/opencode` | `~/.config/opencode/skills/dukoi` |
+
+| Flag | Meaning |
+| --- | --- |
+| `--off` | Remove the skill from every agent. |
+| `--quiet` | Print one line, or nothing if no agent is found. The install script uses this. |
+
+The same skill is on [skills.sh](https://skills.sh): `npx skills add thisuxhq/dukoi`. The site serves it at `dukoi.com/skill.md` for agents that read the web.
 
 ---
 

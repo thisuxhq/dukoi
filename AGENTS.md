@@ -23,6 +23,7 @@ This file is for AI coding agents and people working in this repo. `CLAUDE.md` i
 | `site/` | The landing page and the user guide at `/docs` on dukoi.com: a static SvelteKit 3 site (D-110) served by Cloudflare Workers (D-112). The build also writes a `.md` twin of every page, `llms.txt` and `llms-full.txt` for AI agents (`site/scripts/markdown.ts`) |
 | `shared/` | Admin API types, request signing and archives, used by the agent, CLI and dashboard |
 | `starters/` | Apps that deploy with zero edits |
+| `skills/` | The `dukoi` agent skill: `dukoi skill` installs it, skills.sh lists it (D-117). Update it when a command or an app rule changes |
 | `docs/` | Product and engineering docs |
 | `spikes/` | Throwaway experiments. `node-survival` proved Node runs and survives; `cloudflared` proved public URLs work. |
 | `scripts/` | Build helpers (see below) |

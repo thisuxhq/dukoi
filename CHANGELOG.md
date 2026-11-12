@@ -4,6 +4,12 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-12
+
+### Added
+
+- The Dukoi skill for coding agents. Installing the CLI now teaches Claude Code, Codex, Cursor, Gemini CLI and OpenCode what runs on the phone and every command, so "build a bot and deploy it to my phone" works the first time. `dukoi skill` adds it to an agent you install later, and `npx skills add thisuxhq/dukoi` adds it without the CLI. A new [AI agents](https://dukoi.com/docs/ai-agents) page explains it, and the skill is also at dukoi.com/skill.md.
+
 ## [0.2.1] - 2026-11-12
 
 ### Fixed
@@ -47,7 +53,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.2.1...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.3.0...main
+[0.3.0]: https://github.com/thisuxhq/dukoi/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/thisuxhq/dukoi/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/thisuxhq/dukoi/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/thisuxhq/dukoi/compare/v0.1.0...v0.1.1
