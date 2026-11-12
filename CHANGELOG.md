@@ -4,6 +4,8 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-12
+
 ### Added
 
 - Three new templates. **Webhook inbox** gives you an address for webhooks and shows each one as it arrives. **Uptime watch** checks your sites every minute and sends a push through ntfy when one goes down. **Cron jobs** runs your code on a schedule and shows how each run went. Start one with `dukoi init`, or from **Try a template** on the phone.
@@ -38,6 +40,7 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.1.1...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.2.0...main
+[0.2.0]: https://github.com/thisuxhq/dukoi/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/thisuxhq/dukoi/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/thisuxhq/dukoi/releases/tag/v0.1.0
