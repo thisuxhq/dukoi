@@ -196,7 +196,8 @@ export class Domains {
     }
     await this.runner?.stop()
     this.runner = null
-    if (cert && tunnel) await this.run(['delete', '-f', tunnel.id]).catch(() => {})
+    if (cert && tunnel)
+      await this.run(['delete', '-f', tunnel.id], 'delete the tunnel').catch(() => {})
     delete this.agent.store.state.tunnel
     this.agent.store.save()
     rmSync(join(this.dir, '.cloudflared'), { recursive: true, force: true })
@@ -283,7 +284,7 @@ export class Domains {
     if (saved && existsSync(this.credentials(saved.id))) return saved.id
     const phone = this.agent.config.phone.name.replace(/[^a-z0-9-]/gi, '-').toLowerCase()
     const name = `dukoi-${phone}-${randomBytes(2).toString('hex')}`
-    const out = await this.run(['create', name])
+    const out = await this.run(['create', name], 'create the tunnel for your domains')
     const id = out.match(CREATED)?.[1]
     if (!id) {
       throw new HttpError(
@@ -373,25 +374,29 @@ export class Domains {
     return json.result as T
   }
 
-  /** Runs a one-off `cloudflared tunnel …` command and returns its output. */
-  private run(args: string[]): Promise<string> {
+  /**
+   * Runs a one-off `cloudflared tunnel …` command and returns its output. If it
+   * fails, the error says what it was doing and the hint carries cloudflared's own reason.
+   */
+  private run(args: string[], doing: string): Promise<string> {
     return new Promise((resolve, reject) => {
       execFile(
         this.binary(),
         ['tunnel', '--no-autoupdate', ...args],
         { cwd: this.dir, env: this.env(), timeout: 60_000 },
         (err, stdout, stderr) => {
-          const out = `${stdout}${stderr}`
-          if (err)
-            reject(
-              new HttpError(
-                502,
-                'CLOUDFLARED',
-                'cloudflared failed.',
-                out.trim().split('\n').pop(),
-              ),
-            )
-          else resolve(out)
+          if (!err) return resolve(`${stdout}${stderr}`)
+          const reason = `${stdout}${stderr}`.trim().split('\n').pop()?.trim()
+          reject(
+            new HttpError(
+              502,
+              'CLOUDFLARED',
+              `Cloudflare couldn’t ${doing}.`,
+              err.killed
+                ? 'It took longer than a minute. Check the phone has internet, then try again.'
+                : reason || undefined,
+            ),
+          )
         },
       )
     })

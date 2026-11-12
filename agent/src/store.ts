@@ -14,6 +14,8 @@ export interface SavedApp {
   wanted: boolean
   /** true = has a quick-tunnel public URL; survives restarts */
   exposed?: boolean
+  /** The quick tunnel's URL, kept so a tunnel that outlived an agent restart keeps it */
+  publicUrl?: string
   /** Custom domain, e.g. api.example.com, served by the phone's named tunnel */
   domain?: string
   /** Settings passed to the app as environment variables, like TELEGRAM_BOT_TOKEN */

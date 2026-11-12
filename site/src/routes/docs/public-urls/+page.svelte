@@ -38,7 +38,7 @@ Asking Cloudflare for a public URL…
   Public  https://shy-river-42.trycloudflare.com`}
   />
   <p>It takes a few seconds and needs no account. The phone opens an outbound tunnel to Cloudflare, so it works behind CGNAT and home routers that block incoming connections.</p>
-  <p>Quick links are good for demos, testing and webhooks you can update. The URL changes whenever the tunnel restarts, and <code>dukoi ps</code> always shows the current one.</p>
+  <p>Quick links are good for demos, testing and webhooks you can update. The URL stays the same if the Dukoi agent restarts. It changes if the tunnel itself restarts, for example after the phone reboots, and <code>dukoi ps</code> always shows the current one.</p>
 </Section>
 
 <Section id="off" title="Turn it off">
