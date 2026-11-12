@@ -14,7 +14,7 @@ import { templates } from '#lib/templates.js'
 <Section id="pick-one" title="Pick one">
   <div class="grid gap-3 md:grid-cols-2">
     {#each templates as t, i (t.id)}
-      <TemplateCard template={t} wide={i === templates.length - 1} />
+      <TemplateCard template={t} wide={templates.length % 2 === 1 && i === templates.length - 1} />
     {/each}
   </div>
 </Section>
@@ -30,7 +30,10 @@ Pick a template:
   3  file-drop      Upload a file, get a link to share
   4  mcp-server     A tool your AI assistant can call
   5  telegram-bot   A bot that replies, always on
-Number (1-5): 2
+  6  webhook-inbox  See every webhook as it arrives
+  7  uptime-watch   Get a ping when a site goes down
+  8  cron-jobs      Run code on a schedule
+Number (1-8): 2
 ✓ Created notes-api/
 ✓ Installed dependencies
 ✓ Packed notes-api (1.9 MB)

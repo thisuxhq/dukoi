@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uptime watch</title>
+    <style>
+      body { margin: 0; background: #f1f0f4; color: #16161a; font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
+      h1 { margin: 0 0 8px; font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; }
+      h2 { margin: 40px 0 12px; font-size: 20px; font-weight: 600; }
+      p { margin: 0; color: #6e6d78; }
+      code, .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+      a { color: #7b3ff2; font-weight: 600; }
+      ul { display: flex; flex-direction: column; gap: 1px; margin: 32px 0 0; padding: 0; list-style: none; background: #ecebf0; }
+      li { display: flex; align-items: center; gap: 20px; padding: 16px; background: #fff; }
+      .site { display: flex; flex-direction: column; gap: 2px; flex-grow: 1; min-width: 0; }
+      .name { font-size: 17px; font-weight: 600; }
+      .url { color: #6e6d78; font-size: 13px; overflow-wrap: anywhere; }
+      .bars { display: flex; gap: 2px; flex-shrink: 0; }
+      .bars i { width: 4px; height: 24px; background: #ecebf0; }
+      .bars i.up { background: #2fa866; }
+      .bars i.fail { background: #d93a3a; }
+      .state { width: 120px; flex-shrink: 0; text-align: right; color: #6e6d78; font-size: 14px; }
+      .state.down { color: #c42e2e; font-weight: 600; }
+      .topic { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 6px 6px 6px 16px; background: #16161a; color: #fff; border-radius: 4px; font-size: 14px; }
+      .topic button { flex-shrink: 0; height: 36px; padding: 0 14px; border: 0; border-radius: 4px; background: #2a2a31; color: #fff; font: 500 14px system-ui, sans-serif; cursor: pointer; }
+      @media (max-width: 640px) {
+        main { padding: 48px 16px; }
+        li { flex-wrap: wrap; gap: 12px; }
+        .site { flex-basis: 100%; }
+        .state { width: auto; flex-grow: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 id="headline">Checking your sites</h1>
+      <p id="checked">The first check takes a few seconds.</p>
+      <ul id="sites"></ul>
+      <h2>Get alerts on your phone</h2>
+      <p>Install the free <a href="https://ntfy.sh" target="_blank" rel="noreferrer">ntfy</a> app and subscribe to this topic. You hear about it when a site goes down and when it’s back.</p>
+      <div class="topic">
+        <code id="topic"></code>
+        <button id="copy" type="button">Copy</button>
+      </div>
+    </main>
+    <script>
+      const minutes = (iso) => Math.max(1, Math.round((Date.now() - new Date(iso)) / 60000))
+
+      function ago(iso) {
+        const s = Math.round((Date.now() - new Date(iso)) / 1000)
+        return s < 60 ? `${s} seconds ago` : `${Math.round(s / 60)} min ago`
+      }
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag)
+        if (className) node.className = className
+        if (text !== undefined) node.textContent = text
+        return node
+      }
+
+      function render({ topic, every, sites }) {
+        document.getElementById('topic').textContent = topic
+        const copy = document.getElementById('copy')
+        copy.onclick = () => navigator.clipboard.writeText(topic).then(() => (copy.textContent = 'Copied'))
+
+        const down = sites.filter((s) => s.down).length
+        const checked = sites.some((s) => s.checks.length)
+        document.getElementById('headline').textContent = !checked
+          ? 'Checking your sites'
+          : down === 0
+            ? sites.length === 1 ? 'Your site is up' : `All ${sites.length} sites are up`
+            : down === 1 ? '1 site is down' : `${down} sites are down`
+        const last = sites.flatMap((s) => s.checks.map((c) => c.checked_at)).sort().pop()
+        if (last) document.getElementById('checked').textContent =
+          `Checked every ${every === 60 ? 'minute' : `${every} seconds`} from this phone. Last check ${ago(last)}.`
+
+        document.getElementById('sites').replaceChildren(...sites.map((site) => {
+          const item = el('li')
+          const about = el('div', 'site')
+          about.append(el('span', 'name', site.name), el('span', 'url mono', site.url))
+
+          // Thirty slots, oldest on the left. Empty slots are checks that haven't happened yet.
+          const bars = el('div', 'bars')
+          const slots = Array(30 - site.checks.length).fill(null).concat(site.checks)
+          for (const c of slots) {
+            const bar = el('i', c ? (c.ok ? 'up' : 'fail') : '')
+            if (c) bar.title = `${new Date(c.checked_at).toLocaleTimeString()}: ${c.ok ? `${c.ms} ms` : c.problem}`
+            bars.append(bar)
+          }
+
+          const latest = site.checks.at(-1)
+          const state = site.down
+            ? el('span', 'state down', `Down ${minutes(site.since)} min`)
+            : el('span', 'state', !latest ? 'Checking' : latest.ok ? `${latest.ms} ms` : latest.problem)
+          if (site.down && latest) state.title = latest.problem
+          item.append(about, bars, state)
+          return item
+        }))
+      }
+
+      async function refresh() {
+        const res = await fetch('/status').catch(() => null)
+        if (res?.ok) render(await res.json())
+        setTimeout(refresh, 15000)
+      }
+      refresh()
+    </script>
+  </body>
+</html>

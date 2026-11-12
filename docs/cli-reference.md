@@ -105,7 +105,7 @@ $ dukoi init notes-api
   Make it yours: edit notes-api/server.js, then run dukoi deploy
 ```
 
-Templates: `static-site`, `notes-api`, `file-drop`, `mcp-server`, `telegram-bot`. A template that needs a setting, like the bot's token, asks for it and saves it on the phone. If the computer isn't paired yet, it only makes the folder and says to pair. See [starters.md](starters.md).
+Templates: `static-site`, `notes-api`, `file-drop`, `mcp-server`, `telegram-bot`, `webhook-inbox`, `uptime-watch`, `cron-jobs`. A template that needs a setting, like the bot's token, asks for it and saves it on the phone. If the computer isn't paired yet, it only makes the folder and says to pair. See [starters.md](starters.md).
 
 ### `dukoi releases [app]`
 

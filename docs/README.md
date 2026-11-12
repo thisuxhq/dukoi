@@ -32,7 +32,7 @@ The source of truth for scope is the [Dukoi PRD](https://claude.ai/artifact/AFJq
 | Doc | Read it to learn |
 | --- | --- |
 | [cli-reference.md](cli-reference.md) | Every `dukoi` command and flag |
-| [starters.md](starters.md) | The five starters and the rules they follow |
+| [starters.md](starters.md) | The templates and the rules they follow |
 | [device-lab.md](device-lab.md) | Test phones, acceptance checks and benchmarks |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Repo setup, making a change and the PR checklist |
 | [releasing.md](releasing.md) | Versions, the release key and `scripts/release.sh` |

@@ -22,6 +22,9 @@ export const sections: { title: string; pages: DocPage[] }[] = [
       { slug: 'templates/file-drop', title: 'File drop' },
       { slug: 'templates/mcp-server', title: 'MCP server' },
       { slug: 'templates/telegram-bot', title: 'Telegram bot' },
+      { slug: 'templates/webhook-inbox', title: 'Webhook inbox' },
+      { slug: 'templates/uptime-watch', title: 'Uptime watch' },
+      { slug: 'templates/cron-jobs', title: 'Cron jobs' },
     ],
   },
   {

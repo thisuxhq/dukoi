@@ -1,4 +1,4 @@
-// The five templates, as the site shows them. Same ids, names and descriptions
+// The templates, as the site shows them. Same ids, names and descriptions
 // as TEMPLATES in shared/src/api.ts (kept here so the static site stays browser-only).
 export interface SiteTemplate {
   id: string
@@ -51,6 +51,30 @@ export const templates: SiteTemplate[] = [
     icon: 'telegram',
     tint: 'bg-sky',
     ink: 'text-blue',
+  },
+  {
+    id: 'webhook-inbox',
+    name: 'Webhook inbox',
+    description: 'See every webhook as it arrives',
+    icon: 'webhook',
+    tint: 'bg-teal',
+    ink: 'text-teal-ink',
+  },
+  {
+    id: 'uptime-watch',
+    name: 'Uptime watch',
+    description: 'Get a ping when a site goes down',
+    icon: 'activity-03',
+    tint: 'bg-butter',
+    ink: 'text-amber',
+  },
+  {
+    id: 'cron-jobs',
+    name: 'Cron jobs',
+    description: 'Run code on a schedule',
+    icon: 'clock-01',
+    tint: 'bg-slate',
+    ink: 'text-slate-ink',
   },
 ]
 

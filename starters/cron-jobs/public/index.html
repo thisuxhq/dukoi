@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cron jobs</title>
+    <style>
+      body { margin: 0; background: #f1f0f4; color: #16161a; font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
+      h1 { margin: 0 0 8px; font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; }
+      p { margin: 0; color: #6e6d78; }
+      code, pre, .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+      ul { display: flex; flex-direction: column; gap: 1px; margin: 32px 0 0; padding: 0; list-style: none; background: #ecebf0; }
+      li { display: flex; flex-direction: column; gap: 12px; padding: 16px; background: #fff; }
+      .head { display: flex; align-items: center; gap: 20px; }
+      .job, .result { display: flex; flex-direction: column; gap: 2px; }
+      .job { flex-grow: 1; min-width: 0; }
+      .name { font-size: 17px; font-weight: 600; }
+      .when { color: #6e6d78; font-size: 13px; }
+      .next { margin-left: 12px; }
+      .result { flex-shrink: 0; align-items: flex-end; text-align: right; }
+      .worked { color: #1f8a50; font-size: 14px; font-weight: 600; }
+      .failed { color: #c42e2e; font-size: 14px; font-weight: 600; }
+      .waiting { color: #6e6d78; font-size: 14px; }
+      pre { margin: 0; padding: 14px 16px; background: #f7f6f9; font-size: 13px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow: auto; }
+      button { align-self: flex-start; height: 36px; padding: 0 14px; border: 1px solid #dad9e0; border-radius: 4px; background: #fff; color: #16161a; font: 500 14px system-ui, sans-serif; cursor: pointer; }
+      button:disabled { color: #6e6d78; cursor: default; }
+      @media (max-width: 560px) { main { padding: 48px 16px; } .head { flex-wrap: wrap; gap: 8px; } .result { align-items: flex-start; text-align: left; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Cron jobs</h1>
+      <p>Your jobs run on this phone, even with your computer off. Edit them in <code>jobs.js</code>.</p>
+      <ul id="jobs"></ul>
+    </main>
+    <script>
+      function ago(iso) {
+        const s = Math.round((Date.now() - new Date(iso)) / 1000)
+        if (s < 60) return 'just now'
+        if (s < 3600) return `${Math.floor(s / 60)} min ago`
+        if (s < 86400) return `${Math.floor(s / 3600)} h ago`
+        return new Date(iso).toLocaleDateString()
+      }
+
+      function at(iso) {
+        const date = new Date(iso)
+        const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        return date.toDateString() === new Date().toDateString() ? time : `${date.toLocaleDateString([], { weekday: 'short' })} ${time}`
+      }
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag)
+        if (className) node.className = className
+        if (text !== undefined) node.textContent = text
+        return node
+      }
+
+      function render({ jobs }) {
+        document.getElementById('jobs').replaceChildren(...jobs.map((job) => {
+          const item = el('li')
+          const head = el('div', 'head')
+          const about = el('div', 'job')
+          const when = el('span', 'when')
+          when.append(el('code', '', job.schedule))
+          if (job.next) when.append(el('span', 'next', `Next run ${at(job.next)}`))
+          about.append(el('span', 'name', job.name), when)
+          const result = el('div', 'result')
+          if (job.running) result.append(el('span', 'waiting', 'Running'))
+          else if (!job.last) result.append(el('span', 'waiting', 'Not run yet'))
+          else result.append(
+            el('span', job.last.ok ? 'worked' : 'failed', job.last.ok ? 'Worked' : 'Failed'),
+            el('span', 'when', `${ago(job.last.started_at)}, took ${job.last.ms < 1000 ? `${job.last.ms} ms` : `${(job.last.ms / 1000).toFixed(1)} s`}`),
+          )
+          head.append(about, result)
+          item.append(head)
+          if (job.last?.output) item.append(el('pre', '', job.last.output))
+          const button = el('button', '', job.running ? 'Running' : 'Run now')
+          button.disabled = job.running
+          button.onclick = async () => {
+            button.disabled = true
+            button.textContent = 'Running'
+            await fetch(`/jobs/${job.id}/run`, { method: 'POST' })
+            setTimeout(refresh, 500)
+          }
+          item.append(button)
+          return item
+        }))
+      }
+
+      // Draw when something changed, and once a minute so "2 min ago" stays true.
+      // Drawing less often keeps buttons and selected text where they are.
+      let timer
+      let shown = null
+      let drawnAt = 0
+      async function refresh() {
+        clearTimeout(timer)
+        const res = await fetch('/jobs').catch(() => null)
+        if (res?.ok) {
+          const data = await res.json()
+          const key = JSON.stringify(data)
+          if (key !== shown || Date.now() - drawnAt > 60000) {
+            render(data)
+            shown = key
+            drawnAt = Date.now()
+          }
+        }
+        timer = setTimeout(refresh, 5000)
+      }
+      refresh()
+    </script>
+  </body>
+</html>

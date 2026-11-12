@@ -194,7 +194,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
     <h2 class={sectionTitle}>Templates that deploy with zero edits</h2>
     <p class="hidden text-[17px] leading-[26px] text-muted lg:block">Pick one, and it’s live on your phone in under a minute.</p>
   </div>
-  <ul class="flex flex-col gap-px bg-divider md:grid md:grid-cols-2 md:gap-3 md:bg-transparent lg:grid-cols-5 lg:gap-4">
+  <ul class="flex flex-col gap-px bg-divider md:grid md:grid-cols-2 md:gap-3 md:bg-transparent lg:grid-cols-4 lg:gap-4">
     {#each templates as t (t.id)}
       <li class="flex">
         <a href="/docs/templates/{t.id}" class="group flex flex-1 items-center gap-3.5 bg-card px-[18px] py-4 lg:flex-col lg:items-start lg:p-6">

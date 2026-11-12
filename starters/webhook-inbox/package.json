@@ -1,0 +1,15 @@
+{
+  "name": "webhook-inbox",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "See every webhook as it arrives. Deploys to a Dukoi phone with no edits.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.6",
+    "hono": "4.13.17"
+  }
+}
