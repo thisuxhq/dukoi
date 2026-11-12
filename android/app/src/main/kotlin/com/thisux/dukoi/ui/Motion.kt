@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -52,6 +55,8 @@ import com.thisux.dukoi.ui.theme.LogError
 import com.thisux.dukoi.ui.theme.LogLive
 import com.thisux.dukoi.ui.theme.Styles
 import kotlinx.coroutines.delay
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlinx.coroutines.launch
 
 // Motion rules (Emil Kowalski's): every animation has a job, UI motion stays under
@@ -106,6 +111,33 @@ fun breathing(on: Boolean = true): Float {
   val t = rememberInfiniteTransition(label = "breathing")
   val alpha by t.animateFloat(1f, 0.35f, infiniteRepeatable(tween(1000), RepeatMode.Reverse), label = "alpha")
   return alpha
+}
+
+/**
+ * Three dots that ripple left to right while a button waits on something slow, like
+ * Cloudflare. Each dot lifts and brightens in turn, so it reads as work going on, not
+ * a frozen label. The phase is read while drawing, so it never recomposes the button.
+ */
+@Composable
+fun LoadingDots(color: Color, dot: Dp = 5.dp) {
+  val phase = rememberInfiniteTransition(label = "dots")
+    .animateFloat(0f, 1f, infiniteRepeatable(tween(1100, easing = LinearEasing)), label = "phase")
+  val lift = with(LocalDensity.current) { 3.dp.toPx() }
+  Row(horizontalArrangement = Arrangement.spacedBy(dot * 0.8f), verticalAlignment = Alignment.CenterVertically) {
+    repeat(3) { i ->
+      Box(
+        Modifier.size(dot)
+          .graphicsLayer {
+            // One smooth rise and fall per dot, each a little after the last, then a pause.
+            val x = ((phase.value - i * 0.16f) % 1f + 1f) % 1f
+            val bump = if (x < 0.5f) (1f - cos(x * 4f * PI.toFloat())) / 2f else 0f
+            alpha = 0.35f + 0.65f * bump
+            translationY = -lift * bump
+          }
+          .background(color, CircleShape),
+      )
+    }
+  }
 }
 
 /** Text that rolls when its value changes (4% → 6%), so a change reads as a change. */

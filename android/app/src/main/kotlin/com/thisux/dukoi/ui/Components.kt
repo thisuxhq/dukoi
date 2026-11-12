@@ -1,6 +1,11 @@
 package com.thisux.dukoi.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -66,12 +71,37 @@ fun Modifier.press(onClick: () -> Unit): Modifier = composed {
 }
 private val ButtonShape = RoundedCornerShape(4.dp)
 
+/**
+ * The main action. While [busy], the label rolls to say what's happening, three dots
+ * ripple after it, and taps do nothing until the work ends.
+ */
 @Composable
-fun PrimaryButton(label: String, modifier: Modifier = Modifier, height: Dp = 52.dp, onClick: () -> Unit) {
+fun PrimaryButton(
+  label: String,
+  modifier: Modifier = Modifier,
+  height: Dp = 52.dp,
+  color: Color = Violet,
+  busy: Boolean = false,
+  onClick: () -> Unit,
+) {
   Box(
-    modifier.fillMaxWidth().height(height).background(Violet, ButtonShape).press(onClick),
+    modifier.fillMaxWidth().height(height).background(color, ButtonShape).then(if (busy) Modifier else Modifier.press(onClick)),
     contentAlignment = Alignment.Center,
-  ) { Text(label, style = Styles.Button, color = Card) }
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      RollingText(label, Styles.Button, Card)
+      AnimatedVisibility(
+        visible = busy,
+        enter = expandHorizontally(tween(Durations.SMALL, easing = EaseOut)) + fadeIn(tween(Durations.SMALL, easing = EaseOut)),
+        exit = shrinkHorizontally(tween(140, easing = EaseOut)) + fadeOut(tween(100)),
+      ) {
+        Row {
+          Spacer(Modifier.width(10.dp))
+          LoadingDots(Card)
+        }
+      }
+    }
+  }
 }
 
 @Composable

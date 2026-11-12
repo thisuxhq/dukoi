@@ -200,8 +200,7 @@ fun PublicLinkSheet(app: AppInfo, onDismiss: () -> Unit) {
         picked == Mode.QUICK -> "Get quick link"
         else -> "Use domain"
       }
-      PrimaryButton(label) {
-        if (busy != null) return@PrimaryButton
+      PrimaryButton(label, busy = busy != null) {
         when {
           picked == current && picked != Mode.DOMAIN -> close()
           picked == Mode.OFF -> goOff()

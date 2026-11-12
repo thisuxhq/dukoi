@@ -192,8 +192,9 @@ private fun TemplateSheet(template: TemplateInfo, onDismiss: () -> Unit, onDeplo
       }
       Spacer(Modifier.height(20.dp))
       PrimaryButton(
-        if (busy) "Deploying…" else "Deploy",
+        if (busy) "Deploying" else "Deploy",
         Modifier.graphicsLayer { alpha = if (ready) 1f else 0.4f },
+        busy = busy,
         onClick = ::deploy,
       )
       Spacer(Modifier.height(12.dp))
