@@ -27,7 +27,7 @@ jobs:
     outputs:
       version: ${{ steps.find.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - id: find
@@ -56,7 +56,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       DUKOI_KEYSTORE_PASSWORD: ${{ secrets.DUKOI_KEYSTORE_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -77,7 +77,7 @@ jobs:
         with:
           bun-version: 1.4.0
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
