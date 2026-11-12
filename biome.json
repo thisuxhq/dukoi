@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!android", "!spikes", "!**/*.md", "!**/*.svg"]
+    "includes": ["**", "!android", "!spikes", "!**/*.md", "!**/*.svg", "!**/.claude"]
   },
   "formatter": {
     "indentStyle": "space",
