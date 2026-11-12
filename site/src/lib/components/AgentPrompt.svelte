@@ -24,6 +24,8 @@ const prompt = () => `Set up Dukoi so I can host my apps on my old Android phone
    and what to change.
 5. If I want a public URL, run dukoi expose.
 
+Before writing app code, read ${location.origin}/skill.md: what runs
+on the phone, every command and what each error means.
 Add --json to any command for output you can parse.
 Docs: ${location.origin}/llms.txt`
 

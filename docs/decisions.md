@@ -193,6 +193,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** Releasing needed a laptop with the key, the Android SDK, `wrangler login` and someone to type the password. Now the changelog PR is the release: merge it and the rest happens. The workflow calls the same script as a laptop release, so there's still one way to release.
 - **Trade-off:** The release key lives in GitHub secrets as well as the password manager, so anyone who can change workflows on `main` could use it. macOS runners cost more minutes than Linux, but the macOS CLI binaries need `codesign`. If a release fails after the tag is pushed, rerunning the workflow does nothing, because the tag exists. Finish it by hand with the steps in `docs/releasing.md`.
 
+### D-117: One agent skill, installed with the CLI and listed on skills.sh
+- **Status:** Decided
+- **Date:** 2026-11-12
+- **Decision:** `skills/dukoi/SKILL.md` teaches coding agents what runs on the phone, the rules for an app that deploys first time, every command and its error codes. The CLI archive ships it in `~/.dukoi/skills`, and the install scripts run `dukoi skill --quiet`, which copies it into the skills folder of each agent whose home folder exists (Claude Code, Codex, Cursor, Gemini CLI, OpenCode, and `~/.agents`). `dukoi skill --off` removes it. The same file is installable from the public repo with `npx skills add thisuxhq/dukoi`, which is how it gets listed on skills.sh, and the site serves it at `dukoi.com/skill.md`.
+- **Why:** People increasingly ask an agent to build the app. An agent that knows to listen on `PORT`, keep data in `DATA_DIR` and avoid native modules gets a working URL on the first deploy instead of three. Installing it with the CLI means nobody has to know skills exist, and the skill always matches the CLI version.
+- **Trade-off:** The installer writes into other tools' folders without asking. It only touches agents that are already installed, only the `dukoi` folder, and never fails the install. Copies don't update themselves: running the install line again does. The list of agent folders is ours to keep up to date.
+
 ## Open questions
 
 | Question | Options | Decides |

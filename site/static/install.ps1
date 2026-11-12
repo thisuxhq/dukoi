@@ -5,6 +5,7 @@
 # Puts the CLI, the dashboard and the templates in ~\.dukoi, checks the
 # download against SHA256SUMS and adds ~\.dukoi\bin to your PATH. No admin
 # needed. Run it again to update. Built by scripts/build-cli.ts (D-113).
+# Then installs the Dukoi skill for the coding agents it finds (D-117).
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
@@ -36,7 +37,7 @@ try {
 
   # Replace only what the archive holds, so anything else in ~\.dukoi stays
   New-Item -ItemType Directory -Force -Path $Dir | Out-Null
-  foreach ($Part in 'bin', 'dashboard', 'starters') {
+  foreach ($Part in 'bin', 'dashboard', 'starters', 'skills') {
     Remove-Item -Recurse -Force (Join-Path $Dir $Part) -ErrorAction SilentlyContinue
   }
   Expand-Archive (Join-Path $Tmp $File) -DestinationPath $Dir -Force
@@ -48,6 +49,11 @@ finally {
 $Bin = Join-Path $Dir 'bin'
 $Version = ((& (Join-Path $Bin 'dukoi.exe') --version) -split ' ')[1]
 Write-Host "✓ Installed dukoi $Version in $Dir"
+
+# Teach the coding agents on this computer to use Dukoi. Never fails the install.
+if (Test-Path (Join-Path $Dir 'skills')) {
+  try { & (Join-Path $Bin 'dukoi.exe') skill --quiet 2>$null } catch {}
+}
 
 # Add ~\.dukoi\bin to the user's PATH, once
 $UserPath = [Environment]::GetEnvironmentVariable('Path', 'User')

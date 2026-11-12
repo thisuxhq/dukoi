@@ -6,6 +6,7 @@
 # Puts the CLI, the dashboard and the templates in ~/.dukoi, checks the
 # download against SHA256SUMS and adds ~/.dukoi/bin to your PATH. Never uses
 # sudo. Run it again to update. Built by scripts/build-cli.ts (D-113).
+# Then installs the Dukoi skill for the coding agents it finds (D-117).
 set -eu
 
 BASE="${DUKOI_DOWNLOAD:-https://dukoi.com/download}"
@@ -59,8 +60,10 @@ mkdir -p "$tmp/new"
 tar -xzf "$tmp/$file" -C "$tmp/new"
 # Replace only what the archive holds, so anything else in ~/.dukoi stays
 mkdir -p "$DIR"
-rm -rf "$DIR/bin" "$DIR/dashboard" "$DIR/starters"
+rm -rf "$DIR/bin" "$DIR/dashboard" "$DIR/starters" "$DIR/skills"
 mv "$tmp/new/bin" "$tmp/new/dashboard" "$tmp/new/starters" "$DIR/"
+# Releases before 0.3.0 have no skills folder
+if [ -d "$tmp/new/skills" ]; then mv "$tmp/new/skills" "$DIR/"; fi
 
 # Dukoi 0.1.0 shipped with a broken signature, and Apple Silicon Macs kill a
 # program whose signature doesn't match. Sign it again on this Mac if so.
@@ -75,6 +78,11 @@ version="$("$DIR/bin/dukoi" --version 2>/dev/null)" ||
 version="$(printf '%s' "$version" | cut -d' ' -f2)"
 short="$(printf '%s' "$DIR" | sed "s|^$HOME|~|")"
 printf '✓ Installed dukoi %s in %s\n' "$version" "$short"
+
+# Teach the coding agents on this computer to use Dukoi. Never fails the install.
+if [ -d "$DIR/skills" ]; then
+  "$DIR/bin/dukoi" skill --quiet 2>/dev/null || true
+fi
 
 # Add ~/.dukoi/bin to PATH in the shell's startup file, once
 case ":$PATH:" in

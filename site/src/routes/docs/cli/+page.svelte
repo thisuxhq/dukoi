@@ -53,6 +53,16 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
     ],
   },
   {
+    id: 'agents',
+    title: 'AI agents',
+    rows: [
+      [
+        'skill',
+        'Teach the coding agents on this computer (Claude Code, Codex, Cursor, Gemini CLI, OpenCode) to use Dukoi. The installer runs it for you. `--off` removes it.',
+      ],
+    ],
+  },
+  {
     id: 'options',
     title: 'Options for every command',
     rows: [

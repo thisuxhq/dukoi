@@ -10,9 +10,10 @@ export default defineConfig({
     sveltekit({
       adapter: adapter(),
       prerender: {
-        // The .md twins are written after the build by scripts/markdown.ts.
+        // The .md twins, llms.txt and skill.md are written after the build by
+        // scripts/markdown.ts.
         handleHttpError: ({ path, message }) => {
-          if (path.endsWith('.md')) return
+          if (path.endsWith('.md') || path.endsWith('.txt')) return
           throw new Error(message)
         },
       },

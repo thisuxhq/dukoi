@@ -4,6 +4,7 @@
 //   bin/dukoi        the CLI as one Bun program (dukoi.exe on Windows)
 //   dashboard/       the dashboard's server, run by `dukoi dashboard`
 //   starters/        the templates for `dukoi init`
+//   skills/          the agent skill that `dukoi skill` installs
 //
 // Usage: bun scripts/build-cli.ts
 // Output: build/release/dukoi-<os>-<arch>.tar.gz (.zip for Windows) and SHA256SUMS
@@ -57,6 +58,8 @@ for (const { name, target } of PLATFORMS) {
     recursive: true,
     filter: (src) => !src.includes('node_modules'),
   })
+
+  cpSync(join(repo, 'skills'), join(stage, 'skills'), { recursive: true })
 
   const archive = `dukoi-${name}.${windows ? 'zip' : 'tar.gz'}`
   if (windows) await $`zip -qr ${join(out, archive)} .`.cwd(stage)

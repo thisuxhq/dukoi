@@ -2,13 +2,15 @@
 // (/docs/deploy.html → /docs/deploy.md), then writes llms.txt and
 // llms-full.txt (https://llmstxt.org). The Markdown comes from the built HTML,
 // so it can't drift from the pages.
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import TurndownService from 'turndown'
 import { href, markdownPath as mdPath, sections } from '../src/lib/docs.ts'
 import { REPO } from '../src/lib/links.ts'
 
 const BUILD = join(import.meta.dirname, '..', 'build')
+// The agent skill that `dukoi skill` installs, served as dukoi.com/skill.md
+const SKILL = join(import.meta.dirname, '..', '..', 'skills', 'dukoi', 'SKILL.md')
 
 const turndown = new TurndownService({
   headingStyle: 'atx',
@@ -138,6 +140,7 @@ writeFileSync(
     '## Optional',
     '',
     `- [Home](/index.md): ${lead(home) || 'What Dukoi is'}`,
+    '- [Agent skill](/skill.md): the rules for apps that deploy first time, every command and its error codes',
     `- [Source code](${REPO}): the phone app, agent, CLI and dashboard`,
     '',
   ].join('\n'),
@@ -148,4 +151,6 @@ writeFileSync(
   `# Dukoi docs\n\n${docs.map((d) => pages.get(d.path) ?? '').join('\n---\n\n')}`,
 )
 
-console.log(`Wrote ${pages.size} Markdown pages, llms.txt and llms-full.txt`)
+copyFileSync(SKILL, join(BUILD, 'skill.md'))
+
+console.log(`Wrote ${pages.size} Markdown pages, llms.txt, llms-full.txt and skill.md`)
