@@ -64,7 +64,7 @@ If it fails after the push, rerunning the workflow does nothing, because the tag
 
 ## What the workflow needs
 
-Four repository secrets, under **Settings → Secrets and variables → Actions**:
+Four repository secrets. `scripts/set-release-secrets.sh` saves all four: it asks for the key's password and a Cloudflare token without showing them, checks both work, then saves them with `gh`. Run it again to replace them. They live under **Settings → Secrets and variables → Actions**:
 
 | Secret | What it is |
 | --- | --- |
