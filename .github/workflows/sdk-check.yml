@@ -1,0 +1,22 @@
+# Temporary: checks the release job's SDK step on a macOS runner. Removed before merging.
+name: SDK check
+on:
+  push:
+    branches: [claude/fix-release-sdk]
+jobs:
+  sdk:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install Android SDK 37 and xz
+        run: |
+          command -v xz >/dev/null || brew install xz
+          sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$sdkmanager" --licenses >/dev/null
+          "$sdkmanager" "platforms;android-37.0" >/dev/null
+      - name: Compile the app against it
+        run: cd android && ./gradlew compileReleaseKotlin -q
