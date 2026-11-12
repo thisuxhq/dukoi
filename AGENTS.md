@@ -39,7 +39,7 @@ bun run cli <command>        # run the CLI from source, e.g. bun run cli pair
 bun run --filter @dukoi/dashboard build && bun run cli dashboard   # the web dashboard
 bun run --filter @dukoi/site dev        # the landing page; build/ holds the static site after `build`
 bun run --filter @dukoi/site deploy     # publish the site to dukoi.com (needs wrangler login)
-scripts/release.sh 0.2.0 --dry-run   # build a release; drop --dry-run to ship it (docs/releasing.md)
+scripts/release.sh 0.3.0 --dry-run   # try a release; merging a new CHANGELOG version to main ships it (docs/releasing.md)
 
 scripts/prepare-android.sh   # fetch Node and bundle the agent into the APK
 cd android && ./gradlew assembleDebug

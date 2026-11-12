@@ -1,6 +1,6 @@
 # Releasing
 
-This doc explains how a new version of Dukoi gets from `main` to people's phones and computers. One command does it: `scripts/release.sh`.
+This doc explains how a new version of Dukoi gets from `main` to people's phones and computers. Merging a changelog PR with a new version starts it: the Release workflow runs `scripts/release.sh` on GitHub (D-116).
 
 ---
 
@@ -27,18 +27,26 @@ Node.js and cloudflared for Android aren't part of a release. They're rebuilt on
 
 ## Release a version
 
-1. **Write the changelog.** In `CHANGELOG.md`, move the notes under `## [Unreleased]` into a new `## [0.2.0] - 2026-12-01` section. Merge that to `main`.
-2. **Get the latest main.** `git checkout main && git pull`, with nothing uncommitted.
-3. **Try it first.** This builds everything and publishes nothing:
+1. **Write the changelog.** In `CHANGELOG.md`, move the notes under `## [Unreleased]` into a new `## [0.3.0] - 2026-12-01` section, and open a PR.
+2. **Merge it.** The [Release workflow](../.github/workflows/release.yml) sees a version with no tag and runs `scripts/release.sh 0.3.0` on a macOS runner. Watch it in the repo's **Actions** tab.
+
+A push to `main` that doesn't add a new version releases nothing. To start a release by hand, for example after adding the secrets, open **Actions → Release → Run workflow**.
+
+### From a laptop
+
+The same script still works on a Mac, if GitHub is down or you're fixing a release:
+
+1. `git checkout main && git pull`, with nothing uncommitted.
+2. Try it first. This builds everything and publishes nothing:
 
    ```bash
-   scripts/release.sh 0.2.0 --dry-run
+   scripts/release.sh 0.3.0 --dry-run
    ```
 
-4. **Release:**
+3. Release:
 
    ```bash
-   DUKOI_KEYSTORE=~/keys/dukoi-release.jks DUKOI_KEYSTORE_PASSWORD=... scripts/release.sh 0.2.0
+   DUKOI_KEYSTORE=~/keys/dukoi-release.jks DUKOI_KEYSTORE_PASSWORD=... scripts/release.sh 0.3.0
    ```
 
 The script stops at the first problem and says what to fix. In order, it:
@@ -52,9 +60,22 @@ The script stops at the first problem and says what to fix. In order, it:
 7. Deploys dukoi.com.
 8. Creates the GitHub release with the changelog notes and the APK.
 
-If it fails after the push, fix the problem and run the step that failed by hand. Each is one command: `scripts/publish-release.sh`, `bun run --filter @dukoi/site deploy`, or `gh release create`.
+If it fails after the push, rerunning the workflow does nothing, because the tag exists. Fix the problem and run the step that failed by hand, from a laptop. Each is one command: `scripts/publish-release.sh`, `bun run --filter @dukoi/site deploy`, or `gh release create`.
 
-## What you need
+## What the workflow needs
+
+Four repository secrets, under **Settings → Secrets and variables → Actions**:
+
+| Secret | What it is |
+| --- | --- |
+| `DUKOI_KEYSTORE_BASE64` | The release key, as text: `base64 -i ~/keys/dukoi-release.jks \| pbcopy` |
+| `DUKOI_KEYSTORE_PASSWORD` | The key's password |
+| `CLOUDFLARE_API_TOKEN` | A token with **Workers Scripts: Edit**, **Workers R2 Storage: Edit** and, for the dukoi.com zone, **Workers Routes: Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | The account that owns dukoi.com |
+
+`gh` uses the workflow's own token to download Node and cloudflared, push the tag and create the GitHub release. The workflow checks the secrets first and names any that are missing.
+
+## What a laptop release needs
 
 | Thing | Why |
 | --- | --- |
@@ -85,5 +106,4 @@ Phones running a debug build from `./gradlew assembleDebug` are signed with a di
 
 ## Later
 
-- Run the release from GitHub Actions instead of a laptop, with the key and the Cloudflare token as secrets.
 - Tell people when a new version is out: the CLI could check `dukoi.com/download/SHA256SUMS`, and the phone app could do the same.

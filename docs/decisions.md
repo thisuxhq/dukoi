@@ -184,7 +184,14 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Date:** 2026-11-11
 - **Decision:** `scripts/release.sh <version>` releases everything at one version, read from `shared/src/version.ts`. It runs the checks, builds a signed APK and the CLI archives, tags `v<version>` on `main`, uploads the downloads to R2 in `<version>/` and `latest/`, deploys dukoi.com and creates the GitHub release. The APK is served at `dukoi.com/download/dukoi.apk`. Every admin API answer carries the phone's `PROTOCOL_VERSION`, and the CLI says which side to update when they differ. See `docs/releasing.md`.
 - **Why:** One version means `dukoi --version` and the phone app always match. The repo is private, so GitHub Releases can't be the public download, and dukoi.com already serves the CLI. One command makes a release hard to get half right.
-- **Trade-off:** Releases run on a laptop that has the release key, the Android SDK and the Cloudflare login, until we move them to GitHub Actions. Losing the release key would stop every phone from updating.
+- **Trade-off:** Releases run on a laptop that has the release key, the Android SDK and the Cloudflare login, until we move them to GitHub Actions (D-116). Losing the release key would stop every phone from updating.
+
+### D-116: Merging a new changelog version to main releases it
+- **Status:** Decided
+- **Date:** 2026-11-12
+- **Decision:** `.github/workflows/release.yml` runs on every push to `main` that changes `CHANGELOG.md`. It reads the newest `## [x.y.z]` section, and if `vx.y.z` isn't tagged yet, it runs `scripts/release.sh x.y.z` on a macOS runner. The release key, its password and a Cloudflare API token are repository secrets. It can also be started by hand from the Actions tab.
+- **Why:** Releasing needed a laptop with the key, the Android SDK, `wrangler login` and someone to type the password. Now the changelog PR is the release: merge it and the rest happens. The workflow calls the same script as a laptop release, so there's still one way to release.
+- **Trade-off:** The release key lives in GitHub secrets as well as the password manager, so anyone who can change workflows on `main` could use it. macOS runners cost more minutes than Linux, but the macOS CLI binaries need `codesign`. If a release fails after the tag is pushed, rerunning the workflow does nothing, because the tag exists. Finish it by hand with the steps in `docs/releasing.md`.
 
 ## Open questions
 
