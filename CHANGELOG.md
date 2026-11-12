@@ -4,11 +4,11 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-12
+
 ### Changed
 
 - Buttons on the phone that wait on something slow, like Get quick link, Use domain, Disconnect and Deploy, now show three rippling dots beside what they're doing, and ignore taps until it's done.
-
-## [0.1.1] - 2026-11-12
 
 ### Fixed
 
