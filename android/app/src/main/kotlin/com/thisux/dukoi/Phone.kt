@@ -130,7 +130,12 @@ object Phone {
   private fun outcome(reply: JSONObject?): Outcome = when {
     reply == null -> Outcome(null, UNREACHABLE, null)
     reply.has("app") -> Outcome(reply.optStringOrNull("publicUrl"), null, null)
-    else -> Outcome(null, reply.optString("message", "Something went wrong."), reply.optStringOrNull("code"))
+    else -> {
+      // The hint holds the reason, such as cloudflared's own error line. Show it with the message.
+      val message = reply.optString("message", "Something went wrong.")
+      val hint = reply.optStringOrNull("hint")?.takeIf { '\n' !in it }
+      Outcome(null, if (hint != null) "$message $hint" else message, reply.optStringOrNull("code"))
+    }
   }
 
   private fun parseDomain(o: JSONObject) =

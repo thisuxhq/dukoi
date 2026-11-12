@@ -1,6 +1,6 @@
 // Runs one app process and keeps it alive.
 import { type ChildProcess, spawn } from 'node:child_process'
-import { readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { closeSync, openSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import type { AppState } from '@dukoi/shared'
 import type { LogFile } from './log-file.ts'
 import { CRASH_LOOP_AFTER, describeExit, type Exit, nextRestart } from './restart-policy.ts'
@@ -10,6 +10,12 @@ export interface ProcessSpec {
   args: string[]
   cwd: string
   env: Record<string, string>
+  /**
+   * Write the output to this file instead of the log, and start the process in
+   * its own group. With no pipe back to the agent, it keeps running if the agent
+   * dies, so cloudflared keeps its quick link.
+   */
+  output?: string
 }
 
 export class AppProcess {
@@ -70,11 +76,14 @@ export class AppProcess {
   private spawn(): void {
     this.restartTimer = null
     this.state = this.restarts > 0 ? 'restarting' : 'starting'
+    const out = this.spec.output ? openSync(this.spec.output, 'a') : null
     const child = spawn(this.spec.command, this.spec.args, {
       cwd: this.spec.cwd,
       env: this.spec.env,
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: out === null ? ['ignore', 'pipe', 'pipe'] : ['ignore', out, out],
+      detached: out !== null,
     })
+    if (out !== null) closeSync(out)
     this.child = child
     const startedAt = Date.now()
     this.startedAt = new Date(startedAt)

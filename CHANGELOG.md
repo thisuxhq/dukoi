@@ -4,6 +4,11 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+### Fixed
+
+- A quick link keeps its URL when the Dukoi agent restarts. Before, every restart asked Cloudflare for a new link and left the old tunnel running, which used up Cloudflare's limits faster.
+- When a custom domain can't be set up, the phone now shows Cloudflare's reason, not just "cloudflared failed".
+
 ## [0.2.0] - 2026-11-12
 
 ### Added
