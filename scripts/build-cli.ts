@@ -20,6 +20,12 @@ const PLATFORMS = [
   { name: 'windows-x64', target: 'bun-windows-x64' },
 ]
 
+// Only a Mac has codesign, which the macOS binaries need
+if (process.platform !== 'darwin') {
+  console.error('✗ Build the CLI on a Mac, so the macOS binaries can be signed.')
+  process.exit(1)
+}
+
 const repo = join(import.meta.dir, '..')
 const out = join(repo, 'build', 'release')
 rmSync(out, { recursive: true, force: true })
@@ -35,6 +41,14 @@ for (const { name, target } of PLATFORMS) {
   const exe = join(stage, 'bin', windows ? 'dukoi.exe' : 'dukoi')
 
   await $`bun build ${join(repo, 'cli/src/main.ts')} --compile --target=${target} --outfile=${exe}`.quiet()
+
+  // Bun writes macOS binaries with a broken ad-hoc signature, and Apple Silicon
+  // Macs kill a program whose signature doesn't match ("zsh: killed"). Sign it
+  // again and check it, so a broken binary never ships.
+  if (name.startsWith('darwin')) {
+    await $`codesign --force --sign - --identifier com.dukoi.cli ${exe}`.quiet()
+    await $`codesign --verify --strict ${exe}`.quiet()
+  }
 
   cpSync(join(repo, 'dashboard/build'), join(stage, 'dashboard'), { recursive: true })
   // The dashboard's files are ES modules

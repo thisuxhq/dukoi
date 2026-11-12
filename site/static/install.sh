@@ -62,7 +62,17 @@ mkdir -p "$DIR"
 rm -rf "$DIR/bin" "$DIR/dashboard" "$DIR/starters"
 mv "$tmp/new/bin" "$tmp/new/dashboard" "$tmp/new/starters" "$DIR/"
 
-version="$("$DIR/bin/dukoi" --version | cut -d' ' -f2)"
+# Dukoi 0.1.0 shipped with a broken signature, and Apple Silicon Macs kill a
+# program whose signature doesn't match. Sign it again on this Mac if so.
+if [ "$os" = darwin ] && command -v codesign >/dev/null &&
+  ! codesign --verify --strict "$DIR/bin/dukoi" 2>/dev/null; then
+  codesign --force --sign - --identifier com.dukoi.cli "$DIR/bin/dukoi" 2>/dev/null || true
+fi
+
+# Check it starts. Run it on its own: in a pipe, a crash would go unnoticed.
+version="$("$DIR/bin/dukoi" --version 2>/dev/null)" ||
+  fail "dukoi was installed in $DIR but won't start. Please report it at https://github.com/thisuxhq/dukoi/issues"
+version="$(printf '%s' "$version" | cut -d' ' -f2)"
 short="$(printf '%s' "$DIR" | sed "s|^$HOME|~|")"
 printf '✓ Installed dukoi %s in %s\n' "$version" "$short"
 

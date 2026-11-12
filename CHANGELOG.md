@@ -4,6 +4,10 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+### Fixed
+
+- `dukoi` no longer gets killed on start on some Apple Silicon Macs (`zsh: killed dukoi pair`). Bun wrote the macOS binaries with a broken signature, so the build now signs them again and checks them. The installer repairs a 0.1.0 download that's already broken, and stops with a clear error if `dukoi` won't start instead of saying it installed.
+
 ## [0.1.0] - 2026-11-11
 
 The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https://dukoi.com/download/dukoi.apk) and the CLI with `curl -fsSL https://dukoi.com/install | sh`.
