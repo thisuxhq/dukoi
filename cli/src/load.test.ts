@@ -6,6 +6,7 @@ import { answers, percentiles, runLoad } from './load.ts'
 let hits = 0
 const server = createServer((req, res) => {
   hits++
+  if (req.url === '/hang') return // never answers
   if (req.url === '/fail') res.writeHead(500)
   res.end('{"ok":true}')
 }).listen(0, '127.0.0.1')
@@ -27,7 +28,9 @@ test('load runs for the time asked and counts every request', async () => {
   hits = 0
   const result = await runLoad({ url: `${base}/notes`, connections: 4, seconds: 1 })
   expect(result.errors).toBe(0)
-  expect(result.requests).toBe(hits)
+  // Requests still in flight at the deadline are dropped: at most one per connection.
+  expect(result.requests).toBeLessThanOrEqual(hits)
+  expect(result.requests).toBeGreaterThanOrEqual(hits - 4)
   expect(result.rps).toBeGreaterThan(100)
   expect(result.p99Ms).toBeGreaterThanOrEqual(result.p50Ms)
 })
@@ -52,4 +55,20 @@ test('a pinned address skips the computer’s DNS', async () => {
   const result = await runLoad({ url, address: '127.0.0.1', connections: 2, seconds: 0.3 })
   expect(result.errors).toBe(0)
   expect(result.rps).toBeGreaterThan(0)
+})
+
+test('a run ends on time even when the server never answers', async () => {
+  const t0 = performance.now()
+  const result = await runLoad({ url: `${base}/hang`, connections: 3, seconds: 0.5 })
+  expect(performance.now() - t0).toBeLessThan(2000)
+  // Cut off at the deadline: neither answered nor failed.
+  expect(result.requests).toBe(0)
+})
+
+test('stopping ends a run straight away', async () => {
+  const stop = new AbortController()
+  setTimeout(() => stop.abort(), 200)
+  const t0 = performance.now()
+  await runLoad({ url: `${base}/hang`, connections: 3, seconds: 30, signal: stop.signal })
+  expect(performance.now() - t0).toBeLessThan(2000)
 })

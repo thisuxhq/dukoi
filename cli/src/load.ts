@@ -43,32 +43,62 @@ export async function runLoad(opts: LoadOptions): Promise<LoadResult> {
   const end = start + opts.seconds * 1000
   const stopped = () => performance.now() >= end || opts.signal?.aborted === true
 
+  // Requests still waiting, so the run can end on time even if one never answers.
+  const inFlight = new Set<() => void>()
+  const REQUEST_TIMEOUT_MS = 10_000
+
+  /** One request: true if it answered OK, false if it failed, null if the run ended first. */
   const once = () =>
-    new Promise<boolean>((resolve) => {
+    new Promise<boolean | null>((resolve) => {
       const t0 = performance.now()
-      const req = send(url, { agent, method: 'GET', timeout: 10_000 }, (res) => {
+      let done = false
+      const settle = (result: boolean | null) => {
+        if (done) return
+        done = true
+        clearTimeout(timer)
+        inFlight.delete(cut)
+        resolve(result)
+      }
+      const req = send(url, { agent, method: 'GET' }, (res) => {
         res.resume()
         res.on('end', () => {
           const ok = (res.statusCode ?? 0) < 400
-          if (ok) times.push(performance.now() - t0)
-          resolve(ok)
+          if (ok && !done) times.push(performance.now() - t0)
+          settle(ok)
         })
-        res.on('error', () => resolve(false))
+        res.on('error', () => settle(false))
       })
-      req.on('timeout', () => req.destroy(new Error('timed out')))
-      req.on('error', () => resolve(false))
+      // Our own timer: a socket's timeout event doesn't always fire.
+      const timer = setTimeout(() => {
+        req.destroy()
+        settle(false)
+      }, REQUEST_TIMEOUT_MS)
+      const cut = () => {
+        req.destroy()
+        settle(null)
+      }
+      inFlight.add(cut)
+      req.on('error', () => settle(false))
       req.end()
     })
 
   const worker = async () => {
     while (!stopped()) {
-      if (!(await once())) {
+      const ok = await once()
+      if (ok === false) {
         errors++
         // Don't spin when the phone is down: a refused connection fails at once.
         await new Promise((r) => setTimeout(r, 50))
       }
     }
   }
+
+  // When time is up (or the user stops), drop whatever is still waiting.
+  const finish = () => {
+    for (const cut of [...inFlight]) cut()
+  }
+  const deadline = setTimeout(finish, Math.max(0, end - performance.now()))
+  opts.signal?.addEventListener('abort', finish, { once: true })
 
   const ticker = opts.onTick
     ? setInterval(
@@ -79,11 +109,13 @@ export async function runLoad(opts: LoadOptions): Promise<LoadResult> {
   try {
     await Promise.all(Array.from({ length: opts.connections }, worker))
   } finally {
+    clearTimeout(deadline)
+    opts.signal?.removeEventListener('abort', finish)
     if (ticker) clearInterval(ticker)
     agent.destroy()
   }
 
-  const elapsedMs = performance.now() - start
+  const elapsedMs = Math.min(performance.now(), end) - start
   const cpu = process.cpuUsage(cpuStart)
   const requests = times.length + errors
   return {
