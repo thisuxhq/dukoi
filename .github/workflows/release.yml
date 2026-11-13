@@ -23,11 +23,11 @@ permissions:
 jobs:
   version:
     name: Find the new version
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     outputs:
       version: ${{ steps.find.outputs.version }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
       - id: find
@@ -48,7 +48,7 @@ jobs:
     needs: version
     if: needs.version.outputs.version != ''
     # macOS, because the macOS CLI binaries need codesign
-    runs-on: macos-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204-arm
     timeout-minutes: 60
     env:
       GH_TOKEN: ${{ github.token }}
