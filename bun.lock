@@ -54,6 +54,7 @@
       "name": "@dukoi/site",
       "version": "0.0.1",
       "devDependencies": {
+        "@dukoi/shared": "workspace:*",
         "@sveltejs/adapter-static": "^4.0.0",
         "@sveltejs/kit": "^3.0.0",
         "@sveltejs/vite-plugin-svelte": "^7.2.0",

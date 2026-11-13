@@ -15,6 +15,8 @@ export interface Target {
 export interface CallOptions {
   method?: string
   body?: unknown
+  /** Send this text as the body exactly, instead of JSON.stringify(body) */
+  rawBody?: string
   /** Sign with this computer's key (needed for everything but /info and /pair) */
   signed?: boolean
   timeoutMs?: number
@@ -22,7 +24,7 @@ export interface CallOptions {
 
 export async function call<T>(target: Target, path: string, opts: CallOptions = {}): Promise<T> {
   const method = opts.method ?? 'GET'
-  const body = opts.body === undefined ? '' : JSON.stringify(opts.body)
+  const body = opts.rawBody ?? (opts.body === undefined ? '' : JSON.stringify(opts.body))
   const headers: Record<string, string> = { 'content-type': 'application/json' }
   let nonce: string
   if (opts.signed ?? true) {

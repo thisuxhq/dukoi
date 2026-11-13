@@ -50,6 +50,10 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
       ],
       ['status', 'Phone health: memory, storage, load, uptime and address.'],
       ['dashboard', 'Open the web dashboard on this computer. `--no-open` skips the browser.'],
+      [
+        'bench',
+        'How fast is this phone? About 13 minutes. `--quick` skips the hot test, `--share` adds it to dukoi.com/bench.',
+      ],
     ],
   },
   {

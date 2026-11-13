@@ -35,6 +35,10 @@ export interface PhoneStatus {
   name: string
   model: string
   android: string
+  /** Build.MANUFACTURER, e.g. "Google". Null from phones before 0.4.0. */
+  maker?: string | null
+  /** Build.SOC_MODEL, e.g. "Tensor G4". Null before Android 12 or when the phone doesn't say. */
+  chip?: string | null
   agentVersion: string
   nodeVersion: string
   agentUptimeSeconds: number
@@ -241,3 +245,67 @@ export interface EnvNames {
 
 /** Setting names apps can use: letters, numbers and underscores */
 export const ENV_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]{0,63}$/
+
+// ── Benchmarks ───────────────────────────────────────────────────────────
+
+/** The phone's battery, as the phone app last saw it. */
+export interface BatteryNow {
+  level: number | null
+  temperatureC: number | null
+  pluggedIn: boolean
+  /** When the phone app read it */
+  at: string
+}
+
+/** GET /bench/sample?app=<name>: read every few seconds while `dukoi bench` runs. */
+export interface BenchSample {
+  /** Null when the phone app doesn't report it (before 0.4.0) */
+  battery: BatteryNow | null
+  /** The bench app's CPU (100 = one core) and memory, null if it isn't running */
+  app: { cpuPercent: number | null; memoryMb: number | null } | null
+  memory: { totalMb: number; freeMb: number }
+}
+
+/** One setting's numbers: on Wi-Fi, through the tunnel, or hot. */
+export interface BenchNumbers {
+  rps: number
+  p50Ms: number
+  p99Ms: number
+  /** 0 to 1 */
+  errorRate: number
+  requests: number
+  /** Peak CPU of the bench app while measuring (100 = one core) */
+  cpuPercent: number | null
+  /** Battery temperature at the end */
+  batteryC: number | null
+}
+
+/** What `dukoi bench` measured. `--share` sends this to dukoi.com. */
+export interface BenchResult {
+  version: 1
+  phone: {
+    maker: string | null
+    model: string
+    chip: string | null
+    ramGb: number
+    android: string
+    cores: number
+  }
+  versions: { dukoi: string; node: string }
+  load: { connections: number; seconds: number }
+  wifi: BenchNumbers
+  tunnel: BenchNumbers | null
+  hot: BenchNumbers | null
+  otherAppsRunning: number
+  /** The computer was the bottleneck, so the numbers say more about it than the phone */
+  limitedByComputer: boolean
+}
+
+/** POST /bench/sign: the phone's signature over a result, so dukoi.com knows which phone ran it. */
+export interface BenchSignature {
+  phoneKey: string
+  signature: string
+}
+
+/** The text the phone signs for a result. dukoi.com checks the same text. */
+export const benchSignedText = (resultSha256: string) => `dukoi-bench-v1\n${resultSha256}`

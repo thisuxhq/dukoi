@@ -176,6 +176,7 @@ See [networking.md](networking.md).
 | `dukoi logs [app]` | Streams live logs. Use `--lines 200` for history and `--no-follow` to print and exit. |
 | `dukoi status` | Phone health: memory, storage, load, agent version and uptime |
 | `dukoi dashboard` | Opens the web dashboard on `127.0.0.1:7071` (or the next free port). Only this computer can reach it. `--no-open` skips the browser. |
+| `dukoi bench` | Deploys `dukoi-bench`, measures it on Wi-Fi, through a quick tunnel and after 10 minutes of load, then removes it. About 13 minutes. `--quick` skips the hot test. `--share` sends the result to dukoi.com/bench. See [benchmarks.md](benchmarks.md). |
 | `dukoi alerts` | Sets up crash, kill, overheat and power-cut alerts by email or Telegram |
 
 ---

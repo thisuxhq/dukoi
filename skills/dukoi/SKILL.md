@@ -124,6 +124,7 @@ The app defaults to the one in the current folder, and the phone to the only or 
 | `dukoi rollback [app]` | Back to the previous release in about a second. `--to <id>` for another |
 | `dukoi remove [app] --yes` | Delete the app, its data and its settings. Ask the user first |
 | `dukoi dashboard` | The web dashboard on this computer |
+| `dukoi bench --quick --json` | How fast the phone is: requests a second and p99 on Wi-Fi and through a tunnel. About 3 minutes; without `--quick`, 13. `--share` publishes it to dukoi.com/bench, so ask first |
 | `dukoi skill` | Install or update this skill for the coding agents on this computer |
 
 ## Templates

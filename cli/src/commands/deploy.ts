@@ -18,19 +18,23 @@ export interface DeployOptions {
   json: boolean
   /** Lines to end with instead of the logs and public URL tips (init uses this) */
   next?: string[]
+  /** Print nothing, not even JSON (bench uses this) */
+  quiet?: boolean
 }
 
 export async function deploy(opts: DeployOptions): Promise<DeployResult> {
-  const step = (msg: string) => !opts.json && ok(msg)
+  const silent = opts.json || opts.quiet === true
+  const step = (msg: string) => !silent && ok(msg)
   const app = readAppFolder(opts.folder, { name: opts.name, noHealthCheck: opts.noHealthCheck })
   const phone = pickPhone(opts.device)
   const t0 = Date.now()
 
-  const upload = packApp(app, step, opts.json)
+  const upload = packApp(app, step, silent)
   const result = await send(phone, app.name, upload)
   step(`Uploaded to ${phone.name}`)
   step(`Started and healthy (release ${result.release})`)
 
+  if (opts.quiet) return result
   if (opts.json) {
     console.log(JSON.stringify({ ok: true, ...result, totalMs: Date.now() - t0 }))
     return result

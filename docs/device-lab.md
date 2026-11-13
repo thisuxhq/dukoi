@@ -73,7 +73,7 @@ Each phone runs the same `hono-api` under [`oha`](https://github.com/hatoo/oha) 
 oha -z 60s -c 50 http://<phone-ip>:3000/
 ```
 
-Record requests per second, p50 and p99 latency, error rate and the phone's temperature. Results go on the README's benchmark page.
+Record requests per second, p50 and p99 latency, error rate and the phone's temperature. Once the landing section is built, they go in `site/src/lib/bench.ts`. [benchmarks.md](benchmarks.md) has the plan to turn this into `dukoi bench`, so anyone can run it.
 
 ### Expected performance
 

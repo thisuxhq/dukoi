@@ -3,6 +3,7 @@ import type { Server } from 'node:http'
 import { type PhoneInfo, PROTOCOL_VERSION } from '@dukoi/shared'
 import { appRoutes } from './app-routes.ts'
 import { Apps } from './apps.ts'
+import { benchRoutes } from './bench-routes.ts'
 import { AGENT_VERSION, type Config, paths } from './config.ts'
 import { Domains } from './domains.ts'
 import { Router } from './http.ts'
@@ -63,6 +64,7 @@ export class Agent {
     pairingRoutes(this)
     appRoutes(this)
     observeRoutes(this)
+    benchRoutes(this)
   }
 
   async start(): Promise<void> {

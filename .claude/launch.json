@@ -15,6 +15,22 @@
         "--strictPort"
       ],
       "port": 5179
+    },
+    {
+      "name": "site-worker",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--prefix",
+        "site",
+        "wrangler",
+        "dev",
+        "--config",
+        "site/wrangler.jsonc",
+        "--port",
+        "8787",
+        "--local"
+      ],
+      "port": 8787
     }
   ]
 }
