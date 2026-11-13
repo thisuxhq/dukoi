@@ -135,6 +135,5 @@ To keep the stack small, these are left out on purpose. Each one returns in a la
 
 - Docker or containers
 - Python, Go and Rust runtimes
-- Postgres and Redis
 - A hosted relay or hosted dashboard
 - Phone hardware APIs (SMS, camera and so on)

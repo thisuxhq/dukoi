@@ -40,6 +40,26 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
     ],
   },
   {
+    id: 'databases',
+    title: 'Databases',
+    rows: [
+      ['db', 'Your Redis and Postgres databases, with their URLs masked.'],
+      [
+        'db create <kind>',
+        'Make a Redis or Postgres on the phone. `--app web,worker` gives those apps the URL, `--wifi` lets your computer connect too.',
+      ],
+      [
+        'db connect <db> <app>',
+        'Give an app `REDIS_URL` or `DATABASE_URL`. It restarts once. `db disconnect` takes it away.',
+      ],
+      ['db url [db]', 'The full URL, password and all. `--wifi` for the one your computer uses.'],
+      ['db wifi [db]', 'Let devices on your Wi-Fi connect. `--off` to stop.'],
+      ['db password [db]', 'Make a new password. Connected apps get it.'],
+      ['db logs [db]', 'A database’s log, like `logs`.'],
+      ['db remove <db>', 'Delete it and its data. Asks first; `--yes` to skip.'],
+    ],
+  },
+  {
     id: 'watching',
     title: 'Watching',
     rows: [

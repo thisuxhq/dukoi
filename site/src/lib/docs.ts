@@ -40,6 +40,7 @@ export const sections: { title: string; pages: DocPage[] }[] = [
   {
     title: 'Run',
     pages: [
+      { slug: 'databases', title: 'Databases' },
       { slug: 'logs', title: 'Logs' },
       { slug: 'dashboard', title: 'Dashboard' },
       { slug: 'battery-care', title: 'Battery care' },

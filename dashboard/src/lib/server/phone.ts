@@ -36,14 +36,14 @@ export function fail(err: unknown): never {
   error(400, problem(err))
 }
 
-/** Follows an app's log: yields the new lines from each chunk the phone sends. */
-export async function* followLog(
-  app: string,
+/** Follows a log (an app's or a database's): yields the new lines from each chunk the phone sends. */
+export async function* followLogAt(
+  logPath: string,
   lines: number,
   signal: AbortSignal,
 ): AsyncGenerator<string[]> {
   const p = phone()
-  const path = `/apps/${encodeURIComponent(app)}/logs?lines=${lines}&follow=1`
+  const path = `${logPath}?lines=${lines}&follow=1`
   let res: Response
   try {
     res = await fetch(`http://${p.host}:${p.port}${path}`, {

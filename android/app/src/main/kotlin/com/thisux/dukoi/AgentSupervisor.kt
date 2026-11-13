@@ -72,6 +72,8 @@ object AgentSupervisor {
     }
     // Templates are optional: without them the phone just doesn't offer Try a template.
     val templates = runCatching { installTemplates(context) }.getOrNull()
+    // Postgres is optional too: without it the phone just can't make Postgres databases.
+    val postgres = runCatching { installPostgres(context) }.getOrNull()
     val home = home(context).apply { mkdirs() }
     val log = logFile(context)
     var crashes = 0
@@ -88,6 +90,9 @@ object AgentSupervisor {
         put("DUKOI_HOME", home.absolutePath)
         File(context.applicationInfo.nativeLibraryDir, "libcloudflared.so").takeIf { it.exists() }
           ?.let { put("DUKOI_CLOUDFLARED", it.absolutePath) }
+        File(context.applicationInfo.nativeLibraryDir, "libvalkey.so").takeIf { it.exists() }
+          ?.let { put("DUKOI_VALKEY", it.absolutePath) }
+        postgres?.let { put("DUKOI_POSTGRES", it.absolutePath) }
         put("DUKOI_PHONE_NAME", phoneName())
         put("DUKOI_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
         put("DUKOI_ANDROID", Build.VERSION.RELEASE)
@@ -151,6 +156,30 @@ object AgentSupervisor {
     // A template dropped from this build shouldn't be offered any more.
     dir.listFiles()?.filter { it.name !in names }?.forEach { it.delete() }
     return dir
+  }
+
+  /**
+   * Copies Postgres (assets/postgres: postgres.mjs and PGlite's .wasm and .data
+   * files, about 16 MB) out of the APK. Only after an install or update, so a
+   * normal start doesn't read 16 MB. Returns postgres.mjs, or null if this
+   * build has no Postgres.
+   */
+  private fun installPostgres(context: Context): File? {
+    val names = context.assets.list("postgres").orEmpty()
+    if ("postgres.mjs" !in names) return null
+    val dir = File(context.filesDir, "postgres").apply { mkdirs() }
+    val stamp = File(dir, ".installed")
+    val build = context.packageManager.getPackageInfo(context.packageName, 0).lastUpdateTime.toString()
+    if (stamp.exists() && stamp.readText() == build && names.all { File(dir, it).exists() }) {
+      return File(dir, "postgres.mjs")
+    }
+    for (name in names) {
+      val tmp = File(dir, "$name.tmp")
+      context.assets.open("postgres/$name").use { input -> tmp.outputStream().use { input.copyTo(it) } }
+      tmp.renameTo(File(dir, name))
+    }
+    stamp.writeText(build)
+    return File(dir, "postgres.mjs")
   }
 
   fun agentHash(context: Context): String = runCatching {

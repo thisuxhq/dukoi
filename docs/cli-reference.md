@@ -154,6 +154,28 @@ Settings are saved on the phone and passed to the app as environment variables. 
 
 ---
 
+## Databases
+
+### `dukoi db`
+
+```bash
+dukoi db                              # your databases, URLs masked
+dukoi db create redis --app my-api    # or postgres; --app takes a comma list
+dukoi db create postgres --name shop --wifi
+dukoi db url [db] [--wifi]            # the full URL, password and all
+dukoi db connect <db> <app>           # gives the app REDIS_URL or DATABASE_URL
+dukoi db disconnect <db> <app>
+dukoi db wifi [db] [--off]            # let devices on your Wi-Fi connect
+dukoi db password [db]                # a new password; connected apps get it
+dukoi db logs [db]                    # like dukoi logs
+dukoi db start|stop|restart [db]
+dukoi db remove <db> [--yes]          # deletes its data
+```
+
+Redis runs Valkey and Postgres runs PGlite, on the phone next to the apps. Each database has a password. Connecting an app sets its `REDIS_URL` or `DATABASE_URL` setting and restarts it once. Where `[db]` is optional, the only database is used. `dukoi db url` prints just the URL, so `psql "$(dukoi db url postgres --wifi)"` works. See [databases.md](databases.md).
+
+---
+
 ## Public URLs
 
 ### `dukoi expose [app]`

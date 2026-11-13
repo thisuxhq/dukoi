@@ -4,6 +4,18 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-13
+
+### Added
+
+- Redis and Postgres on the phone. Make one from the dashboard's new **Templates** page or with `dukoi db create redis --app my-api`, and the apps you pick get `REDIS_URL` or `DATABASE_URL` and restart. Redis is [Valkey](https://valkey.io) 9.1 and Postgres is [PGlite](https://pglite.dev) (Postgres 18). Every database has its own password, and data survives restarts and reboots. Tick **Also reachable on Wi-Fi** (or `dukoi db wifi`) to connect from your computer. Postgres uses about 400 MB of memory. Update the phone app to get it. A new [Databases](https://dukoi.com/docs/databases) page explains it.
+- The dashboard has **Apps** and **Templates** tabs. Templates lists the databases and the eight app templates; pick one and it's on the phone in seconds. Each database has its own page with its URL, the apps using it and its logs.
+- `dukoi db` lists, connects, opens to Wi-Fi, makes new passwords for and removes databases. See `dukoi --help`.
+
+### Fixed
+
+- Buttons in the dashboard work again. The server assumed `https` and turned away every action, like Restart and Roll back, as cross-site.
+
 ## [0.5.0] - 2026-11-13
 
 ### Added
@@ -89,7 +101,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.5.0...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.6.0...main
+[0.6.0]: https://github.com/thisuxhq/dukoi/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/thisuxhq/dukoi/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/thisuxhq/dukoi/compare/v0.4.1...v0.4.3
 [0.4.1]: https://github.com/thisuxhq/dukoi/compare/v0.4.0...v0.4.1

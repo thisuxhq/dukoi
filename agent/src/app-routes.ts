@@ -47,9 +47,9 @@ export function appRoutes(agent: Agent): void {
   both('PUT', '/apps/:name/env', 'paired', (ctx) =>
     apps.setEnv(ctx.params.name ?? '', ctx.json<EnvChange>()),
   )
-  // Try a template, from the phone app only.
-  r.on('GET', '/local/templates', 'local', () => agent.templates.list())
-  r.on('POST', '/local/templates/:id/deploy', 'local', (ctx) => {
+  // Templates on the phone: the phone app and the dashboard's Templates page.
+  both('GET', '/templates', 'paired', () => agent.templates.list())
+  both('POST', '/templates/:id/deploy', 'paired', (ctx) => {
     const { env } = ctx.body.length ? ctx.json<TemplateDeployRequest>() : {}
     return agent.templates.deploy(ctx.params.id ?? '', env)
   })
@@ -63,6 +63,7 @@ export function appRoutes(agent: Agent): void {
   r.on('DELETE', '/apps/:name', 'paired', async (ctx) => {
     await agent.domains.remove(ctx.params.name ?? '')
     await agent.tunnels.unexpose(ctx.params.name ?? '')
+    agent.databases.forgetApp(ctx.params.name ?? '')
     return apps.remove(ctx.params.name ?? '')
   })
 }

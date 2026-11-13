@@ -108,6 +108,8 @@ beforeAll(async () => {
     adminPort: port,
     nodePath: process.execPath,
     cloudflaredPath: fake,
+    valkeyPath: null,
+    postgresScript: null,
     cloudflareApi: `http://127.0.0.1:${apiPort}`,
     templatesDir: '/nonexistent',
     phone: { name: 'test-phone', model: 'Test', android: '16' },

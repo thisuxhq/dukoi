@@ -24,6 +24,7 @@ The source of truth for scope is the [Dukoi PRD](https://claude.ai/artifact/AFJq
 | [deploy-and-releases.md](deploy-and-releases.md) | The deploy pipeline, releases, rollback and native modules |
 | [process-management.md](process-management.md) | App states, auto-restart, watchdog, limits and phone protection |
 | [networking.md](networking.md) | Local URLs, quick tunnels, custom domains and limits |
+| [databases.md](databases.md) | Redis (Valkey) and Postgres (PGlite) on the phone, passwords and Wi-Fi access |
 | [observability.md](observability.md) | Logs, metrics, alerts and opt-in telemetry |
 | [security.md](security.md) | Pairing, keys, secrets, the threat model and stated limits |
 

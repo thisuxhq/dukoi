@@ -12,6 +12,10 @@ export interface Config {
   nodePath: string
   /** cloudflared binary for public URLs, if bundled */
   cloudflaredPath: string | null
+  /** valkey-server binary for Redis databases, if bundled */
+  valkeyPath: string | null
+  /** postgres.mjs (PGlite) for Postgres databases, if bundled */
+  postgresScript: string | null
   /** Cloudflare's API, for DNS records of custom domains (overridden in tests) */
   cloudflareApi: string
   /** Template archives (<id>.tgz) the phone app copies out of the APK */
@@ -26,6 +30,8 @@ export function loadConfig(env = process.env): Config {
     adminPort: Number(env.DUKOI_ADMIN_PORT ?? ADMIN_PORT),
     nodePath: process.execPath,
     cloudflaredPath: env.DUKOI_CLOUDFLARED ?? null,
+    valkeyPath: env.DUKOI_VALKEY ?? null,
+    postgresScript: env.DUKOI_POSTGRES ?? null,
     cloudflareApi: env.DUKOI_CLOUDFLARE_API ?? 'https://api.cloudflare.com/client/v4',
     templatesDir: env.DUKOI_TEMPLATES ?? join(home, 'templates'),
     phone: {
@@ -44,6 +50,7 @@ export const paths = (home: string) => ({
   app: (name: string) => join(home, 'apps', name),
   logs: (name: string) => join(home, 'apps', name, 'logs'),
   pid: (name: string) => join(home, 'apps', name, 'app.pid'),
+  databases: join(home, 'databases'),
   /** Written by the phone app whenever Android reports a battery change */
   battery: join(home, 'battery.json'),
 })

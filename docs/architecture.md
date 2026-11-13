@@ -134,10 +134,13 @@ dukoi/
 │       ├── data/            # persists across releases (SQLite files etc.)
 │       ├── env.enc          # secrets, encrypted with a Keystore key
 │       └── logs/            # rotated, 5 MB cap per app
+├── databases/
+│   └── redis/               # one folder per database: data/, logs/, run/ (docs/databases.md)
 └── tunnels/                 # Custom domains: Cloudflare login cert, tunnel credentials, config.yml
 ```
 
 - `data/` is shared across releases, so an app's database survives a redeploy or rollback.
+- Redis and Postgres databases live beside the apps, not inside one, so several apps can share one. See [databases.md](databases.md).
 - Shared storage is off by default. Turning it on needs an explicit setting and the "All files access" permission.
 
 ---

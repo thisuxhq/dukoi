@@ -232,6 +232,88 @@ export interface TemplateDeployRequest {
   env?: Record<string, string>
 }
 
+// ── Databases ─────────────────────────────────────────────────────────────
+
+/** Redis is Valkey underneath (BSD licence, same protocol). Postgres is PGlite. */
+export type DatabaseKind = 'redis' | 'postgres'
+
+export interface DatabaseKindInfo {
+  id: DatabaseKind
+  name: string
+  description: string
+  /** The setting connected apps get, holding the connection URL */
+  envName: string
+  /** What runs it, shown in small print */
+  engine: string
+  /** The first port tried for a new one */
+  firstPort: number
+}
+
+export const DATABASE_KINDS: DatabaseKindInfo[] = [
+  {
+    id: 'redis',
+    name: 'Redis',
+    description: 'Fast keys, caches, queues and sessions',
+    envName: 'REDIS_URL',
+    engine: 'Valkey 9.1',
+    firstPort: 6380,
+  },
+  {
+    id: 'postgres',
+    name: 'Postgres',
+    description: 'Real SQL, powered by PGlite',
+    envName: 'DATABASE_URL',
+    engine: 'PGlite 0.5 (Postgres 18)',
+    firstPort: 5433,
+  },
+]
+
+export interface DatabaseInfo {
+  name: string
+  kind: DatabaseKind
+  state: AppState
+  port: number
+  pid: number | null
+  restarts: number
+  lastExit: string | null
+  startedAt: string | null
+  cpuPercent: number | null
+  memoryMb: number | null
+  /** For apps on the phone. Has the password in it. */
+  url: string
+  /** For other devices on the Wi-Fi when that's on, else null. Has the password in it. */
+  wifiUrl: string | null
+  /** Apps that get the connection URL as a setting */
+  apps: string[]
+  /** REDIS_URL or DATABASE_URL */
+  envName: string
+}
+
+/** Which kinds this phone can run (its build has the files for them). */
+export interface DatabaseKindStatus extends DatabaseKindInfo {
+  available: boolean
+}
+
+/** Body of POST /databases */
+export interface DatabaseCreate {
+  kind: DatabaseKind
+  /** Defaults to the kind, like "redis", or "redis-2" if that's taken */
+  name?: string
+  /** Apps to give the connection URL to */
+  apps?: string[]
+  /** Also reachable from other devices on the Wi-Fi */
+  wifi?: boolean
+}
+
+/** Body of PATCH /databases/:name. Each field is optional. */
+export interface DatabaseChange {
+  wifi?: boolean
+  /** Make a new password. Connected apps get the new URL and restart. */
+  newPassword?: boolean
+  connect?: string[]
+  disconnect?: string[]
+}
+
 /** Body of PUT /apps/:name/env. Values are never sent back, only names. */
 export interface EnvChange {
   set?: Record<string, string>

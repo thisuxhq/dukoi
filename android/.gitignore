@@ -18,3 +18,4 @@ local.properties
 app/src/main/jniLibs/
 app/src/main/assets/agent/
 app/src/main/assets/templates/
+app/src/main/assets/postgres/

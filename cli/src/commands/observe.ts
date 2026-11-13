@@ -1,11 +1,11 @@
 // dukoi ps, logs and status
 import { type AppInfo, type PhoneStatus, signRequest } from '@dukoi/shared'
 import { call, pickPhone, unreachable } from '../client.ts'
-import { computerKey } from '../config.ts'
+import { computerKey, type SavedPhone } from '../config.ts'
 import { CliError, c, info, table } from '../output.ts'
 import { appName } from './apps.ts'
 
-const STATE_COLOUR: Record<AppInfo['state'], (s: string) => string> = {
+export const STATE_COLOUR: Record<AppInfo['state'], (s: string) => string> = {
   running: c.green,
   starting: c.yellow,
   restarting: c.yellow,
@@ -45,22 +45,33 @@ export interface LogOptions {
 
 export async function logs(opts: LogOptions): Promise<void> {
   const name = appName(opts.app)
-  const phone = pickPhone(opts.device)
-  const base = `/apps/${encodeURIComponent(name)}/logs?lines=${opts.lines}`
+  await printLogs(pickPhone(opts.device), `/apps/${encodeURIComponent(name)}/logs`, opts, {
+    app: name,
+  })
+}
+
+/** Recent lines from an app's or a database's log, then live ones when following. */
+export async function printLogs(
+  phone: SavedPhone,
+  path: string,
+  opts: { lines: number; follow: boolean; json: boolean },
+  label: Record<string, string>,
+): Promise<void> {
+  const base = `${path}?lines=${opts.lines}`
 
   if (!opts.follow || opts.json) {
     const { lines } = await call<{ lines: string[] }>(phone, base)
-    if (opts.json) return void console.log(JSON.stringify({ ok: true, app: name, lines }))
+    if (opts.json) return void console.log(JSON.stringify({ ok: true, ...label, lines }))
     for (const l of lines) info(colourLine(l))
     return
   }
 
   // Follow: a long-lived signed request; lines arrive as they're written.
-  const path = `${base}&follow=1`
+  const followPath = `${base}&follow=1`
   let res: Response
   try {
-    res = await fetch(`http://${phone.host}:${phone.port}${path}`, {
-      headers: signRequest({ method: 'GET', path, body: '' }, computerKey()),
+    res = await fetch(`http://${phone.host}:${phone.port}${followPath}`, {
+      headers: signRequest({ method: 'GET', path: followPath, body: '' }, computerKey()),
     })
   } catch (err) {
     throw unreachable(phone, err)
@@ -120,7 +131,7 @@ export async function status(device: string | undefined, json: boolean): Promise
   )
 }
 
-function ago(iso: string): string {
+export function ago(iso: string): string {
   return duration(Math.round((Date.now() - Date.parse(iso)) / 1000))
 }
 

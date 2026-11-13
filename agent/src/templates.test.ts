@@ -21,6 +21,8 @@ const agent = new Agent({
   adminPort: port,
   nodePath: process.execPath,
   cloudflaredPath: null,
+  valkeyPath: null,
+  postgresScript: null,
   cloudflareApi: 'http://127.0.0.1:9',
   templatesDir,
   phone: { name: 'test-phone', model: 'Test', android: '16' },
@@ -79,8 +81,8 @@ test('the phone lists only the templates it has archives for', async () => {
   const list = (await (await fetch(`${base}/local/templates`)).json()) as TemplateInfo[]
   expect(list.map((t) => t.id)).toEqual(['notes-api', 'telegram-bot'])
   expect(list[1]?.secret).toBe('TELEGRAM_BOT_TOKEN')
-  // Computers can't reach it.
-  expect((await fetch(`${base}/templates`)).status).toBe(404)
+  // Paired computers can too (the dashboard), but only with a signed request.
+  expect((await fetch(`${base}/templates`)).status).toBe(401)
 })
 
 test('Try a template deploys it and remembers where it came from', async () => {

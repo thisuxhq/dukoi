@@ -12,7 +12,7 @@ This doc explains how Dukoi keeps the phone and its apps safe, and what it does 
 | --- | --- |
 | Control of the phone | Anyone with admin access can run code on it. |
 | App secrets | API keys and tokens in environment variables. |
-| App data | SQLite files and uploads on the phone. |
+| App data | SQLite files, Redis and Postgres databases, and uploads on the phone. |
 | The owner's personal data | Many "spare" phones still hold photos, accounts and SIMs. |
 
 ## Who we defend against
@@ -60,6 +60,14 @@ This doc explains how Dukoi keeps the phone and its apps safe, and what it does 
 - Each app has its own folder, `data/` directory, environment and port.
 - The file-drop template sends uploads with `Content-Security-Policy: sandbox`, so uploaded HTML or SVG opens but its scripts never run on your domain.
 - App settings (`dukoi env`) are passed to the app as environment variables. The API returns their names, never their values.
+
+## Databases
+
+- Every Redis and Postgres database has its own password, made by the agent, because any Android app on the phone can reach `127.0.0.1` (D-122).
+- Redis keeps its password in a config file only the Dukoi app can read, not on the command line. Postgres checks the password before PGlite sees the connection; PGlite itself never listens.
+- Databases listen on `127.0.0.1` unless Wi-Fi access is turned on, and never go through a tunnel.
+- Connection URLs, password included, go only to paired computers over signed requests, and to connected apps as settings. The CLI and dashboard show them masked; `dukoi db url` and the copy buttons give the full URL on purpose.
+- Over Wi-Fi the password crosses the network in plain text, as Redis `AUTH` and Postgres's plain password do. The docs say to turn Wi-Fi access on only on a trusted network.
 
 ## Audit log
 
