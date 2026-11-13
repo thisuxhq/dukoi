@@ -200,6 +200,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** People increasingly ask an agent to build the app. An agent that knows to listen on `PORT`, keep data in `DATA_DIR` and avoid native modules gets a working URL on the first deploy instead of three. Installing it with the CLI means nobody has to know skills exist, and the skill always matches the CLI version.
 - **Trade-off:** The installer writes into other tools' folders without asking. It only touches agents that are already installed, only the `dukoi` folder, and never fails the install. Copies don't update themselves: running the install line again does. The list of agent folders is ours to keep up to date.
 
+### D-118: Benchmarks from `dukoi bench`, grouped by phone model on dukoi.com
+- **Status:** Proposed
+- **Date:** 2026-11-13
+- **Decision:** `dukoi bench` deploys a fixed bench app and measures it on Wi-Fi, through the tunnel and after 10 minutes of load, with a load generator built into the CLI. With `--share`, the phone signs the result and sends it to `POST /api/bench` on the dukoi.com Worker, stored in D1 and shown as medians by phone model on `/bench`. The landing page shows only lab numbers, kept in the repo. See `docs/benchmarks.md`.
+- **Why:** "A phone as a server" sounds like a toy until people see a real number. Anyone can repeat a run with one command, so the numbers are hard to doubt, and a page per model answers "is my phone good enough?"
+- **Trade-off:** It's the first time dukoi.com stores data people send, so we run a database and handle fake results with medians and limits. Results depend on home internet as much as the phone. Mission.md says not to chase benchmark bragging, so these numbers build trust and never become a goal.
+
 ## Open questions
 
 | Question | Options | Decides |
