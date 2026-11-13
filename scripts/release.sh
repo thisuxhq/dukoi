@@ -66,7 +66,8 @@ step "Building the CLI"
 bun scripts/build-cli.ts
 cp "$apk" build/release/dukoi.apk
 (cd build/release && shasum -a 256 dukoi-*.tar.gz dukoi-*.zip dukoi.apk >SHA256SUMS)
-echo "✓ build/release holds the APK, five CLI archives and SHA256SUMS"
+echo "$version" >build/release/VERSION
+echo "✓ build/release holds the APK, five CLI archives, SHA256SUMS and VERSION"
 
 if [ -n "$dry_run" ]; then
   printf '\n✓ Dry run of %s done. Nothing was committed, pushed or published.\n' "$tag"

@@ -67,6 +67,16 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
     ],
   },
   {
+    id: 'computer',
+    title: 'This computer',
+    rows: [
+      [
+        'update',
+        'Update the dukoi command to the latest release. The dashboard, templates and agent skill update with it. The phone app updates separately, from dukoi.com/download/dukoi.apk.',
+      ],
+    ],
+  },
+  {
     id: 'options',
     title: 'Options for every command',
     rows: [
@@ -84,7 +94,7 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
   lead="Every command and flag the CLI has today. Commands that take an app use the one in the current folder when you leave it out."
 />
 
-<p class="pb-10">Install it with <code>curl -fsSL https://dukoi.com/install | sh</code> on macOS and Linux, or <code>irm https://dukoi.com/install.ps1 | iex</code> in PowerShell on Windows. Run the same line again to update.</p>
+<p class="pb-10">Install it with <code>curl -fsSL https://dukoi.com/install | sh</code> on macOS and Linux, or <code>irm https://dukoi.com/install.ps1 | iex</code> in PowerShell on Windows. Run <code>dukoi update</code> to update it later.</p>
 
 {#each groups as group (group.id)}
   <Section id={group.id} title={group.title}>

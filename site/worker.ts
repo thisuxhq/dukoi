@@ -19,6 +19,7 @@ const SCRIPTS: Record<string, string> = {
 const CONTENT_TYPES: Record<string, string> = {
   apk: 'application/vnd.android.package-archive',
   SHA256SUMS: 'text/plain; charset=utf-8',
+  VERSION: 'text/plain; charset=utf-8',
 }
 
 export default {

@@ -5,7 +5,7 @@
 #
 # Puts the CLI, the dashboard and the templates in ~/.dukoi, checks the
 # download against SHA256SUMS and adds ~/.dukoi/bin to your PATH. Never uses
-# sudo. Run it again to update. Built by scripts/build-cli.ts (D-113).
+# sudo. Run it again, or `dukoi update`, to update. Built by scripts/build-cli.ts (D-113).
 # Then installs the Dukoi skill for the coding agents it finds (D-117).
 set -eu
 
@@ -55,6 +55,10 @@ else
 fi
 [ -n "$expected" ] && [ "$expected" = "$actual" ] ||
   fail "The download doesn't match its checksum, so nothing was installed. Try again."
+
+# Updating, not installing for the first time
+fresh=yes
+if [ -d "$DIR/bin" ]; then fresh=no; fi
 
 mkdir -p "$tmp/new"
 tar -xzf "$tmp/$file" -C "$tmp/new"
@@ -113,4 +117,4 @@ if [ "$on_path" = no ]; then
   printf '  Open a new terminal, or run: %s\n' "$line"
 fi
 
-printf '\n  Next: dukoi pair\n'
+if [ "$fresh" = yes ]; then printf '\n  Next: dukoi pair\n'; fi

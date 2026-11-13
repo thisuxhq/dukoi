@@ -4,6 +4,16 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-13
+
+### Added
+
+- `dukoi update` updates the CLI, the dashboard, the templates and the agent skill to the latest release, on macOS, Linux and Windows. When the phone app is newer than the CLI, the error now says to run it.
+
+### Changed
+
+- Running the install script again to update no longer ends with "Next: dukoi pair".
+
 ## [0.4.3] - 2026-11-13
 
 ### Fixed
@@ -79,7 +89,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.4.3...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.5.0...main
+[0.5.0]: https://github.com/thisuxhq/dukoi/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/thisuxhq/dukoi/compare/v0.4.1...v0.4.3
 [0.4.1]: https://github.com/thisuxhq/dukoi/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/thisuxhq/dukoi/compare/v0.3.0...v0.4.0

@@ -81,7 +81,7 @@ export function checkProtocol(phone: number): void {
     throw new CliError(
       'CLI_OUTDATED',
       'The Dukoi app on the phone is newer than this CLI.',
-      'Update the CLI: curl -fsSL https://dukoi.com/install | sh',
+      'Run `dukoi update`, then try again.',
     )
   }
   if (phone < PROTOCOL_VERSION) {

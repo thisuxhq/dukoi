@@ -126,6 +126,7 @@ The app defaults to the one in the current folder, and the phone to the only or 
 | `dukoi dashboard` | The web dashboard on this computer |
 | `dukoi bench --quick --json` | How fast the phone is: requests a second and p99 on Wi-Fi and through a tunnel. About 3 minutes; without `--quick`, 13. `--share` publishes it to dukoi.com/bench, so ask first |
 | `dukoi skill` | Install or update this skill for the coding agents on this computer |
+| `dukoi update` | Update the CLI, its dashboard, templates and this skill to the latest release. Use it when an error says `CLI_OUTDATED` |
 
 ## Templates
 
