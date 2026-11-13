@@ -1,6 +1,8 @@
 // Sends www.dukoi.com to dukoi.com, serves the CLI install scripts and
-// downloads, and serves everything else from the static build.
-interface Env {
+// downloads and the benchmark API, and serves everything else from the static build.
+import { type BenchEnv, handleBench } from './bench-api.ts'
+
+interface Env extends BenchEnv {
   ASSETS: { fetch(request: Request | string): Promise<Response> }
   DOWNLOADS: {
     get(key: string): Promise<{ body: ReadableStream; size: number; httpEtag: string } | null>
@@ -26,6 +28,10 @@ export default {
       url.hostname = 'dukoi.com'
       return Response.redirect(url.toString(), 301)
     }
+
+    // dukoi bench --share, and the numbers dukoi.com/bench shows
+    if (url.pathname === '/api/bench' || url.pathname.startsWith('/api/bench/'))
+      return handleBench(request, env, url)
 
     const script = SCRIPTS[url.pathname]
     if (script) {

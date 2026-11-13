@@ -13,6 +13,17 @@
   },
   // The APK and the standalone CLI, too big for static assets. scripts/publish-release.sh fills it.
   "r2_buckets": [{ "binding": "DOWNLOADS", "bucket_name": "dukoi-downloads" }],
+  // Runs shared with `dukoi bench --share` (bench-api.ts). Tables: migrations/.
+  "d1_databases": [
+    {
+      "binding": "BENCH",
+      "database_name": "dukoi-bench",
+      "database_id": "d1d233c9-9a26-402e-b6cc-bbe00d0cbf7b",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Public keys of the lab phones, comma separated. Their runs get the Lab badge.
+  "vars": { "LAB_PHONES": "" },
   "routes": [
     { "pattern": "dukoi.com", "custom_domain": true },
     { "pattern": "www.dukoi.com", "custom_domain": true }

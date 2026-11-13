@@ -102,7 +102,7 @@ async function ask(name: string): Promise<string | null> {
 }
 
 /** The template folders: in ~/.dukoi, next to the bundled CLI, or in the repo when running from source. */
-function source(id: string): string {
+export function source(id: string): string {
   const candidates = [
     installedPath('starters', id),
     fileURLToPath(new URL(`./starters/${id}`, import.meta.url)),

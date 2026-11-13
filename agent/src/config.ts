@@ -16,7 +16,7 @@ export interface Config {
   cloudflareApi: string
   /** Template archives (<id>.tgz) the phone app copies out of the APK */
   templatesDir: string
-  phone: { name: string; model: string; android: string }
+  phone: { name: string; model: string; android: string; maker?: string; chip?: string }
 }
 
 export function loadConfig(env = process.env): Config {
@@ -32,6 +32,8 @@ export function loadConfig(env = process.env): Config {
       name: env.DUKOI_PHONE_NAME ?? 'phone',
       model: env.DUKOI_PHONE_MODEL ?? 'unknown',
       android: env.DUKOI_ANDROID ?? 'unknown',
+      maker: env.DUKOI_PHONE_MAKER,
+      chip: env.DUKOI_PHONE_CHIP,
     },
   }
 }
@@ -42,4 +44,6 @@ export const paths = (home: string) => ({
   app: (name: string) => join(home, 'apps', name),
   logs: (name: string) => join(home, 'apps', name, 'logs'),
   pid: (name: string) => join(home, 'apps', name, 'app.pid'),
+  /** Written by the phone app whenever Android reports a battery change */
+  battery: join(home, 'battery.json'),
 })

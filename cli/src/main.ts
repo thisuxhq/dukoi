@@ -2,6 +2,7 @@
 import { parseArgs } from 'node:util'
 import { DUKOI_VERSION, PROTOCOL_VERSION } from '@dukoi/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
+import { bench } from './commands/bench.ts'
 import { dashboard } from './commands/dashboard.ts'
 import { deploy } from './commands/deploy.ts'
 import { env } from './commands/env.ts'
@@ -41,6 +42,8 @@ ${c.bold('Watching')}
   logs [app]           Recent lines, then live (--lines 200, --no-follow)
   status               Phone health: memory, storage, uptime
   dashboard            Open the web dashboard on this computer (--no-open to skip the browser)
+  bench                How fast is this phone? About 13 minutes (--quick for 3, --share to
+                       compare it with other phones on dukoi.com/bench)
 
 ${c.bold('AI agents')}
   skill                Teach Claude Code, Codex, Cursor and other coding agents on this
@@ -79,6 +82,8 @@ async function main(argv: string[]): Promise<void> {
       'no-follow': { type: 'boolean', default: false },
       'no-open': { type: 'boolean', default: false },
       quiet: { type: 'boolean', default: false },
+      quick: { type: 'boolean', default: false },
+      share: { type: 'boolean', default: false },
       yes: { type: 'boolean', default: false },
       'no-health-check': { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
@@ -139,6 +144,14 @@ async function main(argv: string[]): Promise<void> {
         device: values.device,
         json,
       })
+    case 'bench':
+      await bench({
+        device: values.device,
+        quick: values.quick ?? false,
+        share: values.share ?? false,
+        json,
+      })
+      return
     case 'dashboard':
       return dashboard({ device: values.device, open: !(values['no-open'] ?? false) })
     case 'skill':

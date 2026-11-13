@@ -42,6 +42,10 @@ object AgentSupervisor {
   private var thread: Thread? = null
 
   fun home(context: Context) = File(context.filesDir, "dukoi")
+
+  /** The chip, for benchmarks. Android 12 and up say it; older phones don't. */
+  private fun chip(): String? =
+    if (Build.VERSION.SDK_INT >= 31) Build.SOC_MODEL.takeIf { it.isNotBlank() && it != Build.UNKNOWN } else null
   fun logFile(context: Context) = File(home(context), "agent.log")
 
   @Synchronized
@@ -87,6 +91,8 @@ object AgentSupervisor {
         put("DUKOI_PHONE_NAME", phoneName())
         put("DUKOI_PHONE_MODEL", "${Build.MANUFACTURER} ${Build.MODEL}")
         put("DUKOI_ANDROID", Build.VERSION.RELEASE)
+        put("DUKOI_PHONE_MAKER", Build.MANUFACTURER.replaceFirstChar { it.uppercase() })
+        chip()?.let { put("DUKOI_PHONE_CHIP", it) }
         templates?.let { put("DUKOI_TEMPLATES", it.absolutePath) }
         put("HOME", home.absolutePath)
         put("TMPDIR", context.cacheDir.absolutePath)

@@ -51,6 +51,8 @@ export function observeRoutes(agent: Agent): void {
       name: info.name,
       model: info.model,
       android: info.android,
+      maker: agent.config.phone.maker ?? null,
+      chip: agent.config.phone.chip ?? null,
       agentVersion: info.agentVersion,
       nodeVersion: info.nodeVersion,
       agentUptimeSeconds: Math.round((Date.now() - agent.startedAt.getTime()) / 1000),

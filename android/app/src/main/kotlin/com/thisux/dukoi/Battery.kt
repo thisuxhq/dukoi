@@ -75,6 +75,16 @@ object Battery {
     file.writeText((kept + line).joinToString("") { "${it.at},${it.level},${if (it.plugged) 1 else 0},${it.tempC ?: ""}\n" })
   }
 
+  /** The reading as JSON for the agent (agent/src/bench-routes.ts reads it). */
+  fun writeNow(file: File, r: BatteryReading) {
+    file.parentFile?.mkdirs()
+    val tmp = File(file.parentFile, "${file.name}.tmp")
+    tmp.writeText(
+      """{"level":${r.level ?: "null"},"temperatureC":${r.temperatureC ?: "null"},"pluggedIn":${r.pluggedIn},"at":"${Instant.now()}"}""",
+    )
+    tmp.renameTo(file)
+  }
+
   fun care(context: Context): BatteryCare {
     val now = read(context)
     val week = samples(context)

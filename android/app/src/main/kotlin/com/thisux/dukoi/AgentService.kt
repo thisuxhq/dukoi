@@ -5,8 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
@@ -30,6 +32,7 @@ class AgentService : Service() {
   private var nsdListener: NsdManager.RegistrationListener? = null
   private var pairingWatcher: Thread? = null
   private var batteryWatcher: Thread? = null
+  private var batteryReceiver: BroadcastReceiver? = null
 
   override fun onCreate() {
     super.onCreate()
@@ -45,6 +48,7 @@ class AgentService : Service() {
     AgentSupervisor.start(this)
     watchPairing()
     watchBattery()
+    shareBattery()
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
@@ -52,6 +56,7 @@ class AgentService : Service() {
   override fun onDestroy() {
     pairingWatcher?.interrupt()
     batteryWatcher?.interrupt()
+    batteryReceiver?.let { runCatching { unregisterReceiver(it) } }
     AgentSupervisor.stop()
     runCatching { nsdListener?.let { nsd?.unregisterService(it) } }
     wakeLock?.takeIf { it.isHeld }?.release()
@@ -92,6 +97,22 @@ class AgentService : Service() {
         try { Thread.sleep(Battery.SAMPLE_MS) } catch (_: InterruptedException) { break }
       }
     }, "battery-watcher").apply { isDaemon = true; start() }
+  }
+
+  /**
+   * Writes the battery to the agent's folder whenever Android reports a change,
+   * so `dukoi bench` can read the temperature. Node can't ask Android itself.
+   */
+  private fun shareBattery() {
+    val file = java.io.File(AgentSupervisor.home(this), "battery.json")
+    val receiver = object : BroadcastReceiver() {
+      override fun onReceive(context: Context, intent: Intent) {
+        runCatching { Battery.writeNow(file, Battery.read(context)) }
+      }
+    }
+    // The battery broadcast is sticky, so this also writes the current reading straight away.
+    ContextCompat.registerReceiver(this, receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED)
+    batteryReceiver = receiver
   }
 
   /** mDNS: lets the CLI find this phone on the same Wi-Fi. */

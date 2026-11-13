@@ -4,11 +4,13 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
-## [0.3.1] - 2026-11-13
+## [0.4.0] - 2026-11-13
 
 ### Added
 
-- A plan for benchmarks in `docs/benchmarks.md`: a `dukoi bench` command that measures your phone, a way to share the result, and pages on dukoi.com that compare phone models. Nothing changes in the app or CLI yet.
+- `dukoi bench` measures how fast your phone is. It deploys a small notes API, loads it with 50 connections over Wi-Fi, through a quick link and again after 10 minutes, then removes it and prints requests a second, p99 latency and the battery temperature. `--quick` takes about 3 minutes instead of 13. Nothing to install, but update the phone app too: the temperature and `--share` need it.
+- `dukoi bench --share` adds your result to [dukoi.com/bench](https://dukoi.com/bench), which compares phone models by the median of everyone's runs. The phone signs the result, and nothing personal is sent. A new [Benchmark your phone](https://dukoi.com/docs/bench) page explains it.
+- `dukoi status --json` now includes the phone's maker and chip.
 
 ## [0.3.0] - 2026-11-12
 
@@ -59,8 +61,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.3.1...main
-[0.3.1]: https://github.com/thisuxhq/dukoi/compare/v0.3.0...v0.3.1
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.4.0...main
+[0.4.0]: https://github.com/thisuxhq/dukoi/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/thisuxhq/dukoi/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/thisuxhq/dukoi/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/thisuxhq/dukoi/compare/v0.1.1...v0.2.0

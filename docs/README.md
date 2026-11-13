@@ -34,7 +34,7 @@ The source of truth for scope is the [Dukoi PRD](https://claude.ai/artifact/AFJq
 | [cli-reference.md](cli-reference.md) | Every `dukoi` command and flag |
 | [starters.md](starters.md) | The templates and the rules they follow |
 | [device-lab.md](device-lab.md) | Test phones, acceptance checks and benchmarks |
-| [benchmarks.md](benchmarks.md) | The plan for `dukoi bench`, the shared results API and the benchmark pages |
+| [benchmarks.md](benchmarks.md) | How `dukoi bench` measures a phone, the shared results API and the `/bench` page |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Repo setup, making a change and the PR checklist |
 | [releasing.md](releasing.md) | Versions, the release key and `scripts/release.sh` |
 | [android-cli.md](android-cli.md) | How we build, run and test the phone app with `android` |
