@@ -204,7 +204,7 @@ The user guide has a page on `dukoi bench` at `/docs/bench`.
 ## What's left
 
 1. **Run it on the lab phones** with the new app, and check the numbers against `oha` on each one.
-2. **Add the lab phones' keys** to `LAB_PHONES`.
+2. **Add the other lab phones' keys** to `LAB_PHONES`. a024 (Nothing A024) is in.
 3. **The landing section**, with those lab numbers in `site/src/lib/bench.ts`.
 4. **Swap the example output** on `/docs/bench` for a real lab run.
 

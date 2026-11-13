@@ -23,7 +23,8 @@
     }
   ],
   // Public keys of the lab phones, comma separated. Their runs get the Lab badge.
-  "vars": { "LAB_PHONES": "" },
+  // a024: Nothing A024 (Phone (3)), Android 16
+  "vars": { "LAB_PHONES": "QjFwV0tLii5fCL_UHLMcgiJaW5f7WDcw2MGf2-I2IR0" },
   "routes": [
     { "pattern": "dukoi.com", "custom_domain": true },
     { "pattern": "www.dukoi.com", "custom_domain": true }

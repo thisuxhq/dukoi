@@ -4,6 +4,16 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-13
+
+### Fixed
+
+- Each `dukoi bench` test now ends on time. A request that never got an answer could keep a test waiting, so every request now has its own 10-second limit, and anything still waiting when time is up is dropped and not counted.
+
+### Changed
+
+- Our first lab phone, a Nothing Phone (3), is now on [dukoi.com/bench](https://dukoi.com/bench) with the Lab badge.
+
 ## [0.4.0] - 2026-11-13
 
 ### Added
@@ -61,7 +71,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.4.0...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.4.1...main
+[0.4.1]: https://github.com/thisuxhq/dukoi/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/thisuxhq/dukoi/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/thisuxhq/dukoi/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/thisuxhq/dukoi/compare/v0.2.0...v0.2.1
