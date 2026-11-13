@@ -38,7 +38,10 @@ export async function dashboard(opts: DashboardOptions): Promise<void> {
     },
     stdio: ['ignore', 'ignore', 'inherit'],
   })
-  const stop = () => server.kill()
+  // Stop at once. A polite stop waits for open tabs to hang up, because their
+  // live updates never finish, and under Bun that wait has no time limit. The
+  // server keeps nothing, so there's nothing to lose.
+  const stop = () => server.kill('SIGKILL')
   process.on('SIGINT', stop)
   process.on('SIGTERM', stop)
 
