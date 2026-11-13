@@ -53,6 +53,7 @@ const rows = $derived(
 )
 const top = $derived(Math.max(1, ...rows.map((m) => numbers(m)?.rps ?? 0)))
 const fmt = (n: number) => n.toLocaleString('en-US')
+const count = (n: number, word: string) => `${fmt(n)} ${word}${n === 1 ? '' : 's'}`
 const ms = (n: number) => (n < 10 ? n.toFixed(1) : String(Math.round(n)))
 const hot = (c: number | null | undefined) => typeof c === 'number' && c >= 44
 </script>
@@ -67,7 +68,7 @@ const hot = (c: number | null | undefined) => typeof c === 'number' && c >= 44
     How fast is your old phone?
   </h1>
   <p class="max-w-[720px] text-[17px] leading-[26px] text-muted lg:text-[19px] lg:leading-[30px]">
-    {#if totals.runs}{fmt(totals.phones)} phones, {fmt(totals.runs)} runs.{/if}
+    {#if totals.runs}{count(totals.phones, 'phone')}, {count(totals.runs, 'run')}.{/if}
     Each run is the same notes API under 50 connections for 60 seconds. Lab phones are ones we test on every release.
   </p>
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">

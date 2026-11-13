@@ -9,6 +9,7 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 ### Fixed
 
 - Each `dukoi bench` test now ends on time. A request that never got an answer could keep a test waiting, so every request now has its own 10-second limit, and anything still waiting when time is up is dropped and not counted.
+- dukoi.com/bench says "1 phone, 1 run", not "1 phones, 1 runs".
 
 ### Changed
 
