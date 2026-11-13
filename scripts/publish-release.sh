@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Uploads build/release (the APK, the CLI archives and SHA256SUMS) to the
+# Uploads build/release (the APK, the CLI archives, SHA256SUMS and VERSION) to the
 # dukoi-downloads R2 bucket, where dukoi.com/download serves them. Keeps a copy
 # per version in <version>/, and latest/ is what new installs get.
 #
@@ -24,8 +24,9 @@ put() {
 
 version="$(grep -o "DUKOI_VERSION = '[^']*'" "$repo_dir/shared/src/version.ts" | cut -d"'" -f2)"
 cd "$repo_dir/site"
-# SHA256SUMS goes last, so a new checksum never points at an old file
-for file in "$dir"/dukoi-* "$dir"/dukoi.apk "$dir/SHA256SUMS"; do
+# SHA256SUMS goes after the files it checks, so a new checksum never points at an
+# old file. VERSION goes last: `dukoi update` reads it, then installs (D-119).
+for file in "$dir"/dukoi-* "$dir"/dukoi.apk "$dir/SHA256SUMS" "$dir/VERSION"; do
   [ -f "$file" ] || continue
   name="$(basename "$file")"
   for key in "$version/$name" "latest/$name"; do

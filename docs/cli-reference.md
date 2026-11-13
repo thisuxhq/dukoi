@@ -2,7 +2,7 @@
 
 This doc lists every `dukoi` command for phase 1: what it does, its flags and what it prints.
 
-Install it with one line (D-113). Run the same line again to update.
+Install it with one line (D-113). Run `dukoi update` to update it later.
 
 ```bash
 curl -fsSL https://dukoi.com/install | sh        # macOS and Linux
@@ -208,6 +208,23 @@ It copies `skills/dukoi/SKILL.md` into the skills folder of each agent whose hom
 | `--quiet` | Print one line, or nothing if no agent is found. The install script uses this. |
 
 The same skill is on [skills.sh](https://skills.sh): `npx skills add thisuxhq/dukoi`. The site serves it at `dukoi.com/skill.md` for agents that read the web.
+
+---
+
+## This computer
+
+### `dukoi update`
+
+Updates the `dukoi` command to the latest release (D-119). It reads the latest version from `dukoi.com/download/VERSION`, and if it's newer, runs the install script again, so the dashboard, the templates and the agent skill update too.
+
+```
+$ dukoi update
+→ Updating dukoi 0.4.1 to 0.5.0
+→ Downloading dukoi-darwin-arm64.tar.gz
+✓ Installed dukoi 0.5.0 in ~/.dukoi
+```
+
+It only updates this computer. To update the phone, install the new app from `dukoi.com/download/dukoi.apk`. A copy run from source (`bun run cli`) can't update itself: use `git pull`.
 
 ---
 

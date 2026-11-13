@@ -11,6 +11,7 @@ import { init } from './commands/init.ts'
 import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { skill } from './commands/skill.ts'
+import { update } from './commands/update.ts'
 import { CliError, c, printError } from './output.ts'
 
 const HELP = `${c.bold('dukoi')} — deploy real apps to old Android phones
@@ -48,6 +49,9 @@ ${c.bold('Watching')}
 ${c.bold('AI agents')}
   skill                Teach Claude Code, Codex, Cursor and other coding agents on this
                        computer to use Dukoi (--off to remove it)
+
+${c.bold('This computer')}
+  update               Update the dukoi command to the latest release
 
 ${c.bold('Options')}
   --device <name>      Which phone (default: the last one used)
@@ -156,6 +160,8 @@ async function main(argv: string[]): Promise<void> {
       return dashboard({ device: values.device, open: !(values['no-open'] ?? false) })
     case 'skill':
       return skill({ off: values.off ?? false, quiet: values.quiet ?? false, json })
+    case 'update':
+      return update({ json })
     case 'releases':
       return releases(arg, values.device, json)
     case 'remove':

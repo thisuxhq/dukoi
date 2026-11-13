@@ -101,7 +101,7 @@ Phones running a debug build from `./gradlew assembleDebug` are signed with a di
 
 ## After a release
 
-- Open `https://dukoi.com/download/dukoi.apk` and run `curl -fsSL https://dukoi.com/install | sh`, and check `dukoi --version` shows the new version.
+- Open `https://dukoi.com/download/dukoi.apk` and run `curl -fsSL https://dukoi.com/install | sh`, and check `dukoi --version` shows the new version. `https://dukoi.com/download/VERSION` should show it too, and `dukoi update` on an older CLI should install it.
 - Add a fresh `## [Unreleased]` section to `CHANGELOG.md` if the script left none.
 
 ## Later

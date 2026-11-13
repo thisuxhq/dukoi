@@ -4,7 +4,7 @@
 #
 # Puts the CLI, the dashboard and the templates in ~\.dukoi, checks the
 # download against SHA256SUMS and adds ~\.dukoi\bin to your PATH. No admin
-# needed. Run it again to update. Built by scripts/build-cli.ts (D-113).
+# needed. Run it again, or `dukoi update`, to update. Built by scripts/build-cli.ts (D-113).
 # Then installs the Dukoi skill for the coding agents it finds (D-117).
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -35,6 +35,9 @@ try {
     return
   }
 
+  # Updating, not installing for the first time
+  $Fresh = -not (Test-Path (Join-Path $Dir 'bin'))
+
   # Replace only what the archive holds, so anything else in ~\.dukoi stays
   New-Item -ItemType Directory -Force -Path $Dir | Out-Null
   foreach ($Part in 'bin', 'dashboard', 'starters', 'skills') {
@@ -64,5 +67,7 @@ if (($UserPath -split ';') -notcontains $Bin) {
   Write-Host "  Added $Bin to your PATH. Open a new terminal to use it everywhere."
 }
 
-Write-Host ''
-Write-Host '  Next: dukoi pair'
+if ($Fresh) {
+  Write-Host ''
+  Write-Host '  Next: dukoi pair'
+}

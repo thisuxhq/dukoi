@@ -207,6 +207,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** "A phone as a server" sounds like a toy until people see a real number. Anyone can repeat a run with one command, so the numbers are hard to doubt, and a page per model answers "is my phone good enough?"
 - **Trade-off:** It's the first time dukoi.com stores data people send, so we run a database and handle fake results with medians and limits. Results depend on home internet as much as the phone. Mission.md says not to chase benchmark bragging, so these numbers build trust and never become a goal.
 
+### D-119: `dukoi update` runs the install script again
+- **Status:** Decided
+- **Date:** 2026-11-13
+- **Decision:** `dukoi update` reads the latest version from `dukoi.com/download/VERSION`, which `scripts/release.sh` writes and `scripts/publish-release.sh` uploads last. If it's newer than the running CLI, it downloads the install script for this platform and runs it with `DUKOI_INSTALL` set to the folder the CLI runs from. On Windows it first moves the running `dukoi.exe` to `~/.dukoi/dukoi-old.exe`, because Windows can't replace a running program, and deletes it on the next update. A CLI not installed by the script, such as `bun run cli`, refuses. The `CLI_OUTDATED` error now says to run it.
+- **Why:** "Run the install line again" is hard to remember and differs on Windows. Reusing the install script keeps one path for checksums, the dashboard, the templates and the agent skill, so an update can't install anything a fresh install wouldn't.
+- **Trade-off:** It downloads and runs a script from dukoi.com, as the first install did, so it trusts the site the same way. It only updates the computer: the phone app still needs a new APK. CLIs before 0.5.0 don't have the command, so they update with the install line once.
+
 ## Open questions
 
 | Question | Options | Decides |
