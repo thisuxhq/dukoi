@@ -5,6 +5,8 @@ import { appRoutes } from './app-routes.ts'
 import { Apps } from './apps.ts'
 import { benchRoutes } from './bench-routes.ts'
 import { AGENT_VERSION, type Config, paths } from './config.ts'
+import { databaseRoutes } from './database-routes.ts'
+import { Databases } from './databases.ts'
 import { Domains } from './domains.ts'
 import { Router } from './http.ts'
 import { observeRoutes } from './observe-routes.ts'
@@ -20,6 +22,7 @@ export class Agent {
   readonly tunnels: Tunnels
   readonly domains: Domains
   readonly templates: Templates
+  readonly databases: Databases
   readonly paths: ReturnType<typeof paths>
   readonly startedAt = new Date()
   private server: Server | null = null
@@ -34,6 +37,7 @@ export class Agent {
     this.tunnels = new Tunnels(this)
     this.domains = new Domains(this)
     this.templates = new Templates(this)
+    this.databases = new Databases(this)
     this.routes()
   }
 
@@ -63,12 +67,15 @@ export class Agent {
 
     pairingRoutes(this)
     appRoutes(this)
+    databaseRoutes(this)
     observeRoutes(this)
     benchRoutes(this)
   }
 
   async start(): Promise<void> {
     this.server = this.router.listen(this.config.adminPort)
+    // Databases first, so apps that use them find them up.
+    await this.databases.restore()
     await this.apps.restore()
     await this.tunnels.restore()
     await this.domains.restore()
@@ -81,6 +88,7 @@ export class Agent {
     await this.tunnels.stopAll()
     await this.domains.stopAll()
     await this.apps.stopAll()
+    await this.databases.stopAll()
     await new Promise<void>((resolve) =>
       this.server ? this.server.close(() => resolve()) : resolve(),
     )

@@ -214,6 +214,27 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** "Run the install line again" is hard to remember and differs on Windows. Reusing the install script keeps one path for checksums, the dashboard, the templates and the agent skill, so an update can't install anything a fresh install wouldn't.
 - **Trade-off:** It downloads and runs a script from dukoi.com, as the first install did, so it trusts the site the same way. It only updates the computer: the phone app still needs a new APK. CLIs before 0.5.0 don't have the command, so they update with the install line once.
 
+### D-120: Redis on the phone is Valkey
+- **Status:** Decided
+- **Date:** 2026-11-13
+- **Decision:** "Redis" in Dukoi runs Valkey 9.1, built for Android arm64 with the NDK (`scripts/build-valkey-android.sh`), published as the `valkey-9.1.3-android-arm64` GitHub Release and shipped in the APK as `libvalkey.so`. The UI calls it Redis and says it's Valkey in small print. Apps get `REDIS_URL`.
+- **Why:** Redis 8 is AGPL/SSPL. Shipping it inside the APK means publishing its source next to ours and carrying those licences. Valkey is BSD, made from Redis 7.2 by the Linux Foundation, and speaks the same protocol, so every Redis client and command people know works.
+- **Trade-off:** We don't get features only in Redis 8. Android's C library has no `pthread_cancel`, so our build stubs it; Valkey only needs it for crash reports and extra I/O threads, which we leave off.
+
+### D-121: Postgres on the phone is PGlite behind a password check
+- **Status:** Decided
+- **Date:** 2026-11-13
+- **Decision:** "Postgres" runs PGlite (Postgres 18 in WebAssembly) on the Node we already ship, as `postgres.mjs`. PGlite has no logins, so `postgres.mjs` asks for the password with Postgres's own plain-password exchange before handing a connection to PGlite's handler. PGlite's socket server never listens itself. Apps get `DATABASE_URL`.
+- **Why:** Native Postgres needs System V shared memory, which Android doesn't have, and patching it is a long build to maintain. PGlite needs no native build and real Postgres clients (`pg`, `psql`) connect to it. Several connections work at once; PGlite runs their queries one at a time.
+- **Trade-off:** About 400 MB of memory while running, and one query at a time, so it suits small apps, not heavy write loads. Its first start takes several seconds on an old phone. We use PGlite's connection handler without its listener, so the version is pinned and a test covers it.
+
+### D-122: Every database has a password, and Wi-Fi access is off by default
+- **Status:** Decided
+- **Date:** 2026-11-13
+- **Decision:** The agent makes a password for every database, even one only the phone's apps use. Connected apps get the full URL as a setting. Turning on Wi-Fi access makes the database listen on every address with the same password. Databases never go through a tunnel. See `docs/databases.md`.
+- **Why:** Every Android app on the phone can reach `127.0.0.1`, so a database without a password isn't private. Off by default keeps Safe by default; on is one tick for people who want to reach it from their laptop.
+- **Trade-off:** Passwords cross the Wi-Fi in plain text, as Redis `AUTH` and Postgres's plain password do. The dashboard and the Wi-Fi option say to use it on a trusted network.
+
 ## Open questions
 
 | Question | Options | Decides |

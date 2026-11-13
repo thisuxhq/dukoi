@@ -1,6 +1,6 @@
 ---
 name: dukoi
-description: Build and deploy apps to an Android phone with the Dukoi CLI (`dukoi`). Use when the user wants to host, deploy, run or expose an app, API, bot, website, webhook, cron job or MCP server on their phone, mentions Dukoi or `dukoi deploy`, or asks for a live URL without a cloud server. Covers what runs on the phone, how to write an app that deploys first time, and every command.
+description: Build and deploy apps to an Android phone with the Dukoi CLI (`dukoi`). Use when the user wants to host, deploy, run or expose an app, API, bot, website, webhook, cron job, MCP server, Redis or Postgres database on their phone, mentions Dukoi or `dukoi deploy`, or asks for a live URL without a cloud server. Covers what runs on the phone, how to write an app that deploys first time, and every command.
 ---
 
 # Dukoi
@@ -47,6 +47,20 @@ The phone has Node.js 24 and nothing else: no Python, Bun, Deno, Docker, shell s
 8. **Workers that open no port** (bots, queue consumers, cron) need `"healthCheck": false` in `dukoi.json`. They count as healthy if they're still running after 3 seconds.
 
 Good defaults, which the templates use: [Hono](https://hono.dev) with `@hono/node-server` for HTTP, `node:sqlite` for data and no ORM. They're small and fast on a phone.
+
+### Redis and Postgres
+
+When an app needs Redis or Postgres, make one on the phone instead of using SQLite or a cloud database:
+
+```bash
+dukoi db create redis --app my-api --json      # my-api gets REDIS_URL and restarts
+dukoi db create postgres --app my-api --json   # my-api gets DATABASE_URL and restarts
+```
+
+- Read `process.env.REDIS_URL` or `process.env.DATABASE_URL`. Use pure JavaScript clients: `redis` or `ioredis`, and `pg` or `postgres`. No native drivers.
+- Deploy the app first, then connect it (`--app` and `dukoi db connect` need the app to exist). Until then the variable is missing, so start without it and log what to run.
+- Redis is Valkey 9.1, which speaks the Redis protocol. Postgres is PGlite (Postgres 18): several connections work, but queries run one at a time, so keep pools small (`max: 3`). It uses about 400 MB of memory.
+- Each database has a password, already in the URL. Never print the URL; `dukoi db url` shows it if the user asks.
 
 A minimal app:
 
@@ -123,6 +137,11 @@ The app defaults to the one in the current folder, and the phone to the only or 
 | `dukoi releases [app]` | The last 5 releases |
 | `dukoi rollback [app]` | Back to the previous release in about a second. `--to <id>` for another |
 | `dukoi remove [app] --yes` | Delete the app, its data and its settings. Ask the user first |
+| `dukoi db --json` | Every database: name, kind, status, connected apps, URLs |
+| `dukoi db create redis\|postgres --app a,b` | Make a database on the phone and give those apps `REDIS_URL` or `DATABASE_URL`. `--wifi` lets the user's computer connect too |
+| `dukoi db connect <db> <app>`, `disconnect` | Give or take an app's URL setting. Restarts the app |
+| `dukoi db url [db] [--wifi]` | Prints the full URL, password included. Only when the user wants it |
+| `dukoi db remove <db> --yes` | Delete a database and its data. Ask the user first |
 | `dukoi dashboard` | The web dashboard on this computer |
 | `dukoi bench --quick --json` | How fast the phone is: requests a second and p99 on Wi-Fi and through a tunnel. About 3 minutes; without `--quick`, 13. `--share` publishes it to dukoi.com/bench, so ask first |
 | `dukoi skill` | Install or update this skill for the coding agents on this computer |
@@ -161,10 +180,12 @@ Common errors:
 | `NATIVE_MODULE` | Swap the package for the pure JavaScript one in the hint |
 | `HEALTH_TIMEOUT` | Listen on `process.env.PORT` and answer `GET /`, or set `healthCheck` |
 | `CRASHED_ON_START` | Read `dukoi logs <app> --no-follow` for the stack trace |
+| `NOT_IN_THIS_BUILD` | The phone's Dukoi app is too old for that database. Ask the user to update it from dukoi.com/download |
+| `DATABASE_DIDNT_START` | Read `dukoi db logs <db> --no-follow` |
 
 ## Be careful
 
 - Never print or commit a secret. Pass it straight to `dukoi env set`.
-- `remove`, `rollback` and `expose` change what's live. Say what you'll do and get a yes first.
+- `remove`, `db remove`, `rollback` and `expose` change what's live or delete data. Say what you'll do and get a yes first.
 - A quick tunnel URL is public: anyone with it can reach the app. Add a check before exposing anything that writes data or shows private information.
 - Phones have little memory. Prefer small dependencies, stream big files and don't hold large datasets in memory.

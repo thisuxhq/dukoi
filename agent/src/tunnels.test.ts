@@ -50,6 +50,8 @@ const config = (adminPort: number): Config => ({
   adminPort,
   nodePath: process.execPath,
   cloudflaredPath: fake,
+  valkeyPath: null,
+  postgresScript: null,
   cloudflareApi: 'http://127.0.0.1:9',
   templatesDir: '/nonexistent',
   phone: { name: 'test-phone', model: 'Test', android: '16' },

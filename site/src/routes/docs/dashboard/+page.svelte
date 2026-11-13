@@ -22,9 +22,10 @@ Only this computer can open it. Press Ctrl+C to stop.`}
 
 <Section id="what-you-get" title="What you can do">
   <ul class="list">
-    <li>See every app with its status and public link.</li>
+    <li>See every app and database with its status and link.</li>
     <li>Open an app for its live logs, its releases and its URLs.</li>
     <li><strong>Restart</strong> an app, or <strong>Roll back</strong> to any release it still has.</li>
+    <li>In <strong>Templates</strong>, make a <a href="/docs/databases">Redis or Postgres database</a> for your apps, or put any template on the phone.</li>
     <li>In <strong>Settings</strong>, check the phone’s details and storage, disconnect it from Cloudflare, stop every app or unpair this computer.</li>
   </ul>
 </Section>

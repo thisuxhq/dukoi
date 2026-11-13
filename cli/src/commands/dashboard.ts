@@ -31,6 +31,9 @@ export async function dashboard(opts: DashboardOptions): Promise<void> {
       ...process.env,
       HOST: '127.0.0.1',
       PORT: String(port),
+      // Without it the server assumes https and refuses every button press
+      // (every action is a POST, and SvelteKit checks it came from this origin).
+      ORIGIN: url,
       DUKOI_DEVICE: phone.name,
       // The standalone CLI is a Bun program: this makes it run the server file
       // like `bun index.js`. Node ignores it.

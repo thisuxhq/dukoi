@@ -4,10 +4,13 @@
   "type": "module",
   "description": "Runs on the phone: admin API, process manager, deploys, logs and tunnels.",
   "scripts": {
-    "build": "bun build src/main.ts --target=node --format=esm --outfile=dist/agent.mjs",
-    "typecheck": "tsc -p ."
+    "build": "bun build src/main.ts --target=node --format=esm --outfile=dist/agent.mjs && bun run build:postgres",
+    "typecheck": "tsc -p .",
+    "build:postgres": "bun build src/postgres-server.ts --target=node --format=esm --outfile=dist/postgres/postgres.mjs && cp node_modules/@electric-sql/pglite/dist/pglite.wasm node_modules/@electric-sql/pglite/dist/pglite.data node_modules/@electric-sql/pglite/dist/initdb.wasm dist/postgres/"
   },
   "dependencies": {
-    "@dukoi/shared": "workspace:*"
+    "@dukoi/shared": "workspace:*",
+    "@electric-sql/pglite": "0.5.16",
+    "@electric-sql/pglite-socket": "0.2.19"
   }
 }

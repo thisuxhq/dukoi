@@ -12,6 +12,8 @@ const agent = new Agent({
   adminPort: port,
   nodePath: process.execPath,
   cloudflaredPath: null,
+  valkeyPath: null,
+  postgresScript: null,
   cloudflareApi: 'http://127.0.0.1:9',
   templatesDir: '/nonexistent',
   phone: { name: 'p', model: 'Test', android: '16' },

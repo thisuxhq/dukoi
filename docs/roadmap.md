@@ -34,7 +34,7 @@ Phase 2 features start only after these gates are met.
 - Quick tunnels and custom domains. See [networking.md](networking.md).
 - Releases with instant rollback.
 
-**Not in phase 1:** Docker, Python, Go, Rust, Postgres, Redis, multi-phone clusters, hardware APIs, the hosted relay, paid plans, the Play Store and uptime promises.
+**Not in phase 1:** Docker, Python, Go, Rust, multi-phone clusters, hardware APIs, the hosted relay, paid plans, the Play Store and uptime promises.
 
 ### Phase 1 success metrics
 
@@ -52,12 +52,13 @@ Phase 2 features start only after these gates are met.
 
 ## Phase 2: more to run
 
+- **Shipped early (0.6.0):** Redis (Valkey) and Postgres (PGlite) databases, made from the Templates page or `dukoi db create` (D-120, D-121)
+
 - GitHub deploys on push, with preview URLs per branch
 - Python with pip, then Go and Rust binaries
 - Cron jobs and background workers with failure alerts
-- SQLite browser, a Redis add-on, and Litestream backups to R2 or S3
+- SQLite browser and Litestream backups to R2 or S3
 - An S3-compatible file storage API backed by phone storage
-- A Postgres add-on with low connection limits
 - A remote builder for native npm modules
 - A Dukoi MCP server, so AI agents can deploy, restart and read logs
 - Local models through bundled llama.cpp with an OpenAI-compatible endpoint

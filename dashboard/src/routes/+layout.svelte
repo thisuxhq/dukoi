@@ -9,6 +9,16 @@ import type { LayoutProps } from './$types'
 let { children }: LayoutProps = $props()
 const overview = liveOverview()
 const data = $derived(overview.current)
+
+// Apps holds apps and databases, so an app's or a database's page is under it.
+const tabs = [
+  { href: '/', label: 'Apps' },
+  { href: '/templates', label: 'Templates' },
+]
+const active = (href: string) =>
+  href === '/templates'
+    ? page.url.pathname.startsWith('/templates')
+    : !page.url.pathname.startsWith('/templates') && !page.url.pathname.startsWith('/settings')
 </script>
 
 <svelte:head>
@@ -16,7 +26,20 @@ const data = $derived(overview.current)
 </svelte:head>
 
 <header class="flex h-16 items-center justify-between px-4 md:h-[72px] md:px-12">
-	<a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em]">Dukoi</a>
+	<div class="flex items-center gap-10">
+		<a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em]">Dukoi</a>
+		<nav class="hidden items-center gap-1 md:flex">
+			{#each tabs as tab (tab.href)}
+				<a
+					href={tab.href}
+					aria-current={active(tab.href) ? 'page' : undefined}
+					class="flex h-10 items-center px-3.5 text-sm {active(tab.href) ? 'bg-card font-semibold' : 'font-medium text-muted hover:text-ink'}"
+				>
+					{tab.label}
+				</a>
+			{/each}
+		</nav>
+	</div>
 	<div class="flex items-center gap-3 md:gap-4">
 		{#if data}
 			<div class="flex h-10 items-center gap-2.5 bg-card px-3.5">
@@ -35,6 +58,18 @@ const data = $derived(overview.current)
 		</a>
 	</div>
 </header>
+
+<nav class="mx-4 flex gap-px bg-divider md:hidden">
+	{#each tabs as tab (tab.href)}
+		<a
+			href={tab.href}
+			aria-current={active(tab.href) ? 'page' : undefined}
+			class="flex h-10 flex-1 items-center justify-center text-sm {active(tab.href) ? 'bg-card font-semibold' : 'bg-canvas font-medium text-muted'}"
+		>
+			{tab.label}
+		</a>
+	{/each}
+</nav>
 
 <main class="flex flex-col px-4 pt-4 pb-10 md:px-12 md:pt-8 md:pb-12">
 	{@render children()}

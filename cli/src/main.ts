@@ -4,6 +4,7 @@ import { DUKOI_VERSION, PROTOCOL_VERSION } from '@dukoi/shared'
 import { control, releases, remove, rollback } from './commands/apps.ts'
 import { bench } from './commands/bench.ts'
 import { dashboard } from './commands/dashboard.ts'
+import { db } from './commands/db.ts'
 import { deploy } from './commands/deploy.ts'
 import { env } from './commands/env.ts'
 import { expose } from './commands/expose.ts'
@@ -38,6 +39,20 @@ ${c.bold('Apps')}
   env set KEY=value    Save a setting on the phone, like a bot token (also: env list,
                        env unset KEY; --app picks the app)
 
+${c.bold('Databases')}
+  db                   Your databases: Redis and Postgres on the phone
+  db create <kind>     Make one: redis or postgres (--app web,worker gives them the URL,
+                       --wifi lets your computer connect too, --name picks a name)
+  db url [db]          Print the connection URL, password and all (--wifi for the one
+                       your computer uses)
+  db connect <db> <app>
+                       Give an app the URL as REDIS_URL or DATABASE_URL (db disconnect
+                       takes it away)
+  db wifi [db]         Let devices on your Wi-Fi connect (--off to stop)
+  db password [db]     Make a new password; connected apps get it
+  db logs [db]         Its log, like dukoi logs
+  db remove <db>       Delete it and its data (asks first; --yes to skip)
+
 ${c.bold('Watching')}
   ps                   All apps: status, CPU, memory, uptime, URL
   logs [app]           Recent lines, then live (--lines 200, --no-follow)
@@ -66,6 +81,7 @@ ${c.bold('Examples')}
   dukoi deploy
   dukoi expose
   dukoi expose --domain api.example.com
+  dukoi db create redis --app my-api
   dukoi rollback my-api
 `
 
@@ -81,6 +97,7 @@ async function main(argv: string[]): Promise<void> {
       name: { type: 'string' },
       to: { type: 'string' },
       off: { type: 'boolean', default: false },
+      wifi: { type: 'boolean', default: false },
       domain: { type: 'string' },
       lines: { type: 'string' },
       'no-follow': { type: 'boolean', default: false },
@@ -156,6 +173,18 @@ async function main(argv: string[]): Promise<void> {
         json,
       })
       return
+    case 'db':
+      return db(arg, positionals.slice(2), {
+        name: values.name,
+        app: values.app,
+        off: values.off ?? false,
+        wifi: values.wifi ?? false,
+        yes: values.yes ?? false,
+        lines: Number(values.lines ?? 100),
+        follow: !(values['no-follow'] ?? false) && process.stdout.isTTY === true,
+        device: values.device,
+        json,
+      })
     case 'dashboard':
       return dashboard({ device: values.device, open: !(values['no-open'] ?? false) })
     case 'skill':
