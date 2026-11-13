@@ -11,7 +11,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
 />
 
 <Section id="create" title="Make one">
-  <p>In the dashboard, open <strong>Templates</strong>, pick <strong>Redis</strong> or <strong>Postgres</strong>, tick the apps that need it and click <strong>Create</strong>. Or from your computer:</p>
+  <p>On the phone, tap <strong>Templates</strong> at the bottom, or open <strong>Templates</strong> in the dashboard. Pick <strong>Redis</strong> or <strong>Postgres</strong>, tick the apps that need it and tap <strong>Create</strong>. Or from your computer:</p>
   <Terminal
     command="dukoi db create redis --app my-api"
     output={`
@@ -45,7 +45,7 @@ await redis.incr('visits')`}</pre>
   <Terminal command="dukoi db wifi postgres" output={`✓ postgres is reachable on your Wi-Fi
   URL: dukoi db url postgres --wifi`} />
   <Terminal command={'psql "$(dukoi db url postgres --wifi)"'} />
-  <p>In the dashboard, it’s the <strong>Also reachable on Wi-Fi</strong> box on the database’s page. Databases never get a public link.</p>
+  <p>On the phone and in the dashboard, it’s the <strong>Also reachable on Wi-Fi</strong> box on the database’s page. Databases never get a public link.</p>
   <Note title="Use a network you trust">
     The password crosses your Wi-Fi in plain text, like it does for any Redis or Postgres without TLS. Turn Wi-Fi access off with <code>dukoi db wifi postgres --off</code> when you’re done.
   </Note>

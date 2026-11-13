@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thisux.dukoi.AppInfo
 import com.thisux.dukoi.AppState
+import com.thisux.dukoi.DatabaseInfo
 import com.thisux.dukoi.TemplateInfo
 import com.thisux.dukoi.Vitals
 import com.thisux.dukoi.ui.theme.Canvas
@@ -44,9 +45,12 @@ fun HomeScreen(
   vitals: Vitals,
   problem: Problem?,
   templates: List<TemplateInfo>,
+  databases: List<DatabaseInfo>,
   onFix: () -> Unit,
   onDeployed: (AppInfo) -> Unit,
   onOpenApp: (String) -> Unit,
+  onOpenDatabase: (String) -> Unit,
+  onTemplates: () -> Unit,
   onSettings: () -> Unit,
 ) {
   val title = when {
@@ -54,46 +58,57 @@ fun HomeScreen(
     apps.isNullOrEmpty() -> "No apps yet"
     else -> "Apps"
   }
-  Box(Modifier.fillMaxSize().background(Canvas).systemBarsPadding()) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Gutter)) {
-      Spacer(Modifier.height(28.dp))
-      Text(title, style = Styles.Title.copy(fontSize = 44.sp, lineHeight = 48.sp), modifier = Modifier.padding(end = 52.dp))
-      Spacer(Modifier.height(28.dp))
-      when {
-        problem != null -> ProblemBox(problem, onFix)
-        apps == null -> {}
-        // With templates bundled, a new phone can be live in a minute without a computer.
-        apps.isEmpty() && templates.isNotEmpty() -> TemplatesSection(templates, onDeployed)
-        apps.isEmpty() -> EmptyBox()
-        else -> {
-          StatsCard(
-            listOf(
-              (vitals.cpuPercent?.let { "$it%" } ?: "–") to "CPU",
-              (vitals.memoryPercent?.let { "$it%" } ?: "–") to "Memory",
-              (vitals.temperatureC?.let { "$it°C" } ?: "–") to "Temperature",
-            ),
-            big = true,
-          )
-          Spacer(Modifier.height(32.dp))
-          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            apps.forEach { AppRow(it) { onOpenApp(it.name) } }
+  Column(Modifier.fillMaxSize().background(Canvas)) {
+    Box(Modifier.weight(1f).statusBarsPadding()) {
+      Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Gutter)) {
+        Spacer(Modifier.height(28.dp))
+        Row(verticalAlignment = Alignment.Top) {
+          Text(title, style = Styles.Title.copy(fontSize = 44.sp, lineHeight = 48.sp), modifier = Modifier.weight(1f))
+          SettingsButton(Modifier.padding(top = 4.dp), onSettings)
+        }
+        Spacer(Modifier.height(28.dp))
+        when {
+          problem != null -> ProblemBox(problem, onFix)
+          apps == null -> {}
+          // With templates bundled, a new phone can be live in a minute without a computer.
+          apps.isEmpty() && databases.isEmpty() && templates.isNotEmpty() -> TemplatesSection(templates, onDeployed)
+          apps.isEmpty() && databases.isEmpty() -> EmptyBox()
+          else -> {
+            StatsCard(
+              listOf(
+                (vitals.cpuPercent?.let { "$it%" } ?: "–") to "CPU",
+                (vitals.memoryPercent?.let { "$it%" } ?: "–") to "Memory",
+                (vitals.temperatureC?.let { "$it°C" } ?: "–") to "Temperature",
+              ),
+              big = true,
+            )
+            if (apps.isNotEmpty()) {
+              Spacer(Modifier.height(32.dp))
+              Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                apps.forEach { AppRow(it) { onOpenApp(it.name) } }
+              }
+            }
+            if (databases.isNotEmpty()) {
+              Spacer(Modifier.height(32.dp))
+              Text("Databases", style = Styles.Section)
+              Spacer(Modifier.height(12.dp))
+              Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                databases.forEach { DatabaseRow(it) { onOpenDatabase(it.name) } }
+              }
+            }
           }
         }
+        Spacer(Modifier.height(28.dp))
       }
-      Spacer(Modifier.height(28.dp))
     }
-    // Settings sits top-right, level with the title.
-    Box(
-      Modifier.align(Alignment.TopEnd).padding(top = 32.dp, end = Gutter).size(40.dp).background(Card).tap(onSettings),
-      contentAlignment = Alignment.Center,
-    ) { Icon("settings-02", 20.dp, Ink) }
+    BottomNav(templates = false, onApps = {}, onTemplates = onTemplates)
   }
 }
 
 @Composable
 private fun AppRow(app: AppInfo, onClick: () -> Unit) {
   Row(
-    Modifier.fillMaxWidth().background(Card).tap(onClick).padding(horizontal = 20.dp, vertical = 18.dp),
+    Modifier.fillMaxWidth().background(Card).tap(onClick).padding(horizontal = 16.dp, vertical = 18.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {

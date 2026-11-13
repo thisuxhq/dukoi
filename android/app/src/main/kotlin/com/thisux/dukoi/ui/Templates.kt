@@ -47,6 +47,7 @@ import com.thisux.dukoi.ui.theme.Amber
 import com.thisux.dukoi.ui.theme.Blue
 import com.thisux.dukoi.ui.theme.Body
 import com.thisux.dukoi.ui.theme.Butter
+import com.thisux.dukoi.ui.theme.Crashed
 import com.thisux.dukoi.ui.theme.Border
 import com.thisux.dukoi.ui.theme.Canvas
 import com.thisux.dukoi.ui.theme.Card
@@ -64,6 +65,7 @@ import com.thisux.dukoi.ui.theme.Rose
 import com.thisux.dukoi.ui.theme.Running
 import com.thisux.dukoi.ui.theme.Sky
 import com.thisux.dukoi.ui.theme.Slate
+import com.thisux.dukoi.ui.theme.SoftRed
 import com.thisux.dukoi.ui.theme.SlateInk
 import com.thisux.dukoi.ui.theme.Styles
 import com.thisux.dukoi.ui.theme.Teal
@@ -74,9 +76,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** How a template looks on the phone, and what you get from it. */
-private class Look(val icon: String, val tile: Color, val tint: Color, val gets: List<String>)
+internal class Look(val icon: String, val tile: Color, val tint: Color, val gets: List<String>)
 
-private fun look(id: String) = when (id) {
+internal fun look(id: String) = when (id) {
   "static-site" -> Look("browser", Mint, Running, listOf("A link that works on your Wi-Fi", "A one-page site with your name", "Change it with one HTML file"))
   "notes-api" -> Look("api", Lilac, Violet, listOf("A link that works on your Wi-Fi", "Add, list and delete notes", "Notes saved on this phone"))
   "file-drop" -> Look("folder-01", Peach, Orange, listOf("An upload page on your Wi-Fi", "A link to share each file", "Files saved on this phone"))
@@ -85,6 +87,8 @@ private fun look(id: String) = when (id) {
   "webhook-inbox" -> Look("webhook", Teal, TealInk, listOf("An address to send webhooks to", "Each one shown as it arrives", "Saved on this phone"))
   "uptime-watch" -> Look("activity-03", Butter, Amber, listOf("Your sites checked every minute", "A push when one goes down", "Running all day on this phone"))
   "cron-jobs" -> Look("clock-01", Slate, SlateInk, listOf("Code that runs on a schedule", "How each run went, on a page", "Running all day on this phone"))
+  "redis" -> Look("database-lightning", SoftRed, Crashed, emptyList())
+  "postgres" -> Look("database", Sky, Blue, emptyList())
   else -> Look("api", Lilac, Violet, listOf("A link that works on your Wi-Fi"))
 }
 
@@ -92,7 +96,7 @@ private val Paragraph = Styles.Small.copy(fontSize = 14.sp, lineHeight = 20.sp)
 private val Line = Styles.Body.copy(fontWeight = FontWeight.Normal)
 
 @Composable
-private fun Chip(look: Look, size: Int) {
+internal fun Chip(look: Look, size: Int) {
   Box(Modifier.size(size.dp).background(look.tile), contentAlignment = Alignment.Center) {
     Icon(look.icon, (size / 2).dp, look.tint)
   }
@@ -122,7 +126,7 @@ fun TemplatesSection(templates: List<TemplateInfo>, onDeployed: (AppInfo) -> Uni
 }
 
 @Composable
-private fun TemplateRow(template: TemplateInfo, onClick: () -> Unit) {
+internal fun TemplateRow(template: TemplateInfo, onClick: () -> Unit) {
   val look = look(template.id)
   Row(
     Modifier.fillMaxWidth().background(Card).tap(onClick).padding(horizontal = 16.dp, vertical = 14.dp),
@@ -145,7 +149,7 @@ private fun TemplateRow(template: TemplateInfo, onClick: () -> Unit) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TemplateSheet(template: TemplateInfo, onDismiss: () -> Unit, onDeployed: (AppInfo) -> Unit) {
+internal fun TemplateSheet(template: TemplateInfo, onDismiss: () -> Unit, onDeployed: (AppInfo) -> Unit) {
   val scope = rememberCoroutineScope()
   val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
   val look = look(template.id)

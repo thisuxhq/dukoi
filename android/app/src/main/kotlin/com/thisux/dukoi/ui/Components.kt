@@ -62,7 +62,7 @@ import com.thisux.dukoi.ui.theme.Styles
 import com.thisux.dukoi.ui.theme.Violet
 import kotlinx.coroutines.delay
 
-val Gutter = 28.dp
+val Gutter = 16.dp
 
 /** Buttons press deeper than rows and give a light haptic tick, like a real key. */
 fun Modifier.press(onClick: () -> Unit): Modifier = composed {
@@ -214,7 +214,7 @@ fun Modifier.dashedBorder(color: Color) = drawBehind {
 @Composable
 fun BackLink(label: String, onClick: () -> Unit) {
   Row(
-    Modifier.padding(start = 22.dp, top = 12.dp).height(32.dp).tap(onClick),
+    Modifier.padding(start = 10.dp, top = 12.dp).height(32.dp).tap(onClick),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {

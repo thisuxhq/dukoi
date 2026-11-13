@@ -160,6 +160,12 @@ test('a new password reaches every connected app', async () => {
   expect(await say(after.port, `AUTH ${password}`)).toBe('+OK')
 })
 
+test('the phone app changes a database with POST, since it cannot send PATCH', async () => {
+  const { status, body } = await call<DatabaseInfo>('POST', '/databases/redis', { wifi: false })
+  expect(status).toBe(200)
+  expect(body.name).toBe('redis')
+})
+
 test('disconnecting takes the setting away', async () => {
   const { body } = await call<DatabaseInfo>('PATCH', '/databases/redis', { disconnect: ['worker'] })
   expect(body.apps).toEqual(['web'])

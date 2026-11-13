@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.thisux.dukoi.ui.AppScreen
 import com.thisux.dukoi.ui.BatteryCareScreen
+import com.thisux.dukoi.ui.DatabaseScreen
 import com.thisux.dukoi.ui.DisconnectCloudflareSheet
 import com.thisux.dukoi.ui.Durations
 import com.thisux.dukoi.ui.EaseOut
@@ -59,6 +60,7 @@ import com.thisux.dukoi.ui.PairingRequestScreen
 import com.thisux.dukoi.ui.PermissionScreen
 import com.thisux.dukoi.ui.Problem
 import com.thisux.dukoi.ui.SettingsScreen
+import com.thisux.dukoi.ui.TemplatesScreen
 import com.thisux.dukoi.ui.WelcomeScreen
 import com.thisux.dukoi.ui.theme.Canvas
 import com.thisux.dukoi.ui.theme.DukoiTheme
@@ -93,7 +95,9 @@ class MainActivity : ComponentActivity() {
 private sealed interface Screen {
   data class Onboarding(val step: OnboardingStep) : Screen
   data object Home : Screen
+  data object Templates : Screen
   data class App(val name: String) : Screen
+  data class Database(val name: String) : Screen
   data object Settings : Screen
   data object BatteryCare : Screen
 }
@@ -114,6 +118,8 @@ private fun App() {
   }
   var apps by remember { mutableStateOf<List<AppInfo>?>(null) }
   var templates by remember { mutableStateOf(emptyList<TemplateInfo>()) }
+  var kinds by remember { mutableStateOf(emptyList<DatabaseKind>()) }
+  var databases by remember { mutableStateOf(emptyList<DatabaseInfo>()) }
   var vitals by remember { mutableStateOf(Vitals(null, null, null)) }
   var care by remember { mutableStateOf(Battery.care(context)) }
   var pending by remember { mutableStateOf(emptyList<PairingRequest>()) }
@@ -129,8 +135,10 @@ private fun App() {
     while (true) {
       withContext(Dispatchers.IO) {
         apps = Phone.apps() ?: apps
-        // Only a phone with no apps offers templates; read them once.
-        if (apps?.isEmpty() == true && templates.isEmpty()) templates = Phone.templates()
+        databases = Phone.databases() ?: databases
+        // What the Templates screen offers doesn't change while the app runs; read it once.
+        if (templates.isEmpty()) templates = Phone.templates()
+        if (kinds.isEmpty()) kinds = Phone.databaseKinds()
         vitals = Phone.vitals(context)
         care = Battery.care(context)
         Pairing.load()?.let { (p, c) -> pending = p; computers = c }
@@ -161,6 +169,14 @@ private fun App() {
 
   val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
     if (granted) next(OnboardingStep.BACKGROUND) else openNotificationSettings(context)
+  }
+
+  // Show a new app straight away; the next read fills in the rest.
+  fun deployed(app: AppInfo) {
+    apps = apps.orEmpty().filter { it.name != app.name } + app
+    toast.show("${app.name} is live")
+    screen = Screen.App(app.name)
+    refresh++
   }
 
   // Every action confirms itself: a snackbar while it runs (if it takes a moment),
@@ -227,6 +243,7 @@ private fun App() {
       vitals = vitals,
       problem = problem(context, supervisor),
       templates = templates,
+      databases = databases,
       onFix = {
         if (supervisor.state == AgentSupervisor.State.FAILED) {
           AgentService.stop(context); AgentService.start(context)
@@ -235,15 +252,56 @@ private fun App() {
         }
       },
       onOpenApp = { screen = Screen.App(it) },
+      onOpenDatabase = { screen = Screen.Database(it) },
+      onTemplates = { screen = Screen.Templates },
       onSettings = { screen = Screen.Settings },
-      // Show the new app straight away; the next read fills in the rest.
-      onDeployed = { app ->
-        apps = apps.orEmpty().filter { it.name != app.name } + app
-        toast.show("${app.name} is live")
-        screen = Screen.App(app.name)
-        refresh++
-      },
+      onDeployed = ::deployed,
     )
+
+    Screen.Templates -> {
+      BackHandler { screen = Screen.Home }
+      TemplatesScreen(
+        kinds = kinds,
+        templates = templates,
+        appNames = apps.orEmpty().map { it.name },
+        databaseNames = databases.map { it.name },
+        phoneName = AgentSupervisor.phoneName(),
+        onApps = { screen = Screen.Home },
+        onSettings = { screen = Screen.Settings },
+        onDeployed = ::deployed,
+        onCreated = { db ->
+          databases = databases.filter { it.name != db.name } + db
+          toast.show("${db.name} is running")
+          screen = Screen.Database(db.name)
+          refresh++
+        },
+      )
+    }
+
+    is Screen.Database -> {
+      BackHandler { screen = Screen.Home }
+      val db = databases.firstOrNull { it.name == s.name }
+      var logs by remember(s.name) { mutableStateOf(emptyList<LogLine>()) }
+      LaunchedEffect(s.name, refresh) {
+        while (true) {
+          logs = withContext(Dispatchers.IO) { Phone.databaseLogs(s.name) }
+          delay(1500)
+        }
+      }
+      if (db == null) {
+        // Removed from the computer while open.
+        LaunchedEffect(databases) { delay(3000); if (databases.none { it.name == s.name }) screen = Screen.Home }
+      } else {
+        DatabaseScreen(
+          db = db,
+          logs = logs,
+          allApps = apps.orEmpty().map { it.name },
+          onBack = { screen = Screen.Home },
+          onChanged = { refresh++ },
+          onRemoved = { databases = databases.filter { it.name != db.name }; screen = Screen.Home; refresh++ },
+        )
+      }
+    }
 
     is Screen.App -> {
       BackHandler { screen = Screen.Home }
@@ -304,7 +362,8 @@ private fun App() {
 private fun depth(s: Any): Int = when (s) {
   is Screen.Onboarding -> s.step.ordinal
   Screen.Home -> 10
-  is Screen.App, Screen.Settings -> 11
+  Screen.Templates -> 10
+  is Screen.App, is Screen.Database, Screen.Settings -> 11
   Screen.BatteryCare -> 12
   else -> 20
 }
@@ -315,6 +374,11 @@ private fun transition(from: Any, to: Any): ContentTransform {
     val rising = to is PairingRequest
     return (slideInVertically(tween(Durations.SCREEN_IN, easing = EaseOut)) { if (rising) it / 8 else 0 } + fadeIn(tween(Durations.SCREEN_IN, easing = EaseOut)))
       .togetherWith(slideOutVertically(tween(Durations.SCREEN_OUT, easing = EaseOut)) { if (rising) 0 else it / 8 } + fadeOut(tween(Durations.SCREEN_OUT)))
+  }
+  // Apps and Templates are tabs in the bottom bar: switching between them just crossfades.
+  val tabs = setOf<Any>(Screen.Home, Screen.Templates)
+  if (from in tabs && to in tabs) {
+    return fadeIn(tween(Durations.SCREEN_IN, easing = EaseOut)).togetherWith(fadeOut(tween(Durations.SCREEN_OUT)))
   }
   val forward = depth(to) >= depth(from)
   // Enter with a strong ease-out; leave faster than you arrive.
