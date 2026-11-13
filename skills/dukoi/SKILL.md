@@ -169,7 +169,7 @@ Each one deploys with no edits. Start from the closest one and change its one fi
 1. Write the app following the rules above. Run it locally with `PORT=3000 node server.js` if Node is installed.
 2. `dukoi deploy --json`. On success, give the user `app.localUrl`, and `app.publicUrl` if there is one.
 3. If it fails, read `error.code` and `error.hint`, then `dukoi logs <app> --no-follow --json`. Fix and deploy again. The old release keeps serving until a new one is healthy.
-4. Need it on the internet (webhooks, sharing)? `dukoi expose`. Local URLs only work on the same Wi-Fi.
+4. Need it on the internet (webhooks, sharing)? `dukoi expose`. Local URLs only work on the same Wi-Fi, or on the user's tailnet if both devices run Tailscale.
 
 Common errors:
 
@@ -182,6 +182,7 @@ Common errors:
 | `CRASHED_ON_START` | Read `dukoi logs <app> --no-follow` for the stack trace |
 | `NOT_IN_THIS_BUILD` | The phone's Dukoi app is too old for that database. Ask the user to update it from dukoi.com/download |
 | `DATABASE_DIDNT_START` | Read `dukoi db logs <db> --no-follow` |
+| `PHONE_UNREACHABLE` | Do what the hint says (turn on Tailscale, open Dukoi, join the phone's Wi-Fi). You can't do it for the user, so ask |
 
 ## Be careful
 

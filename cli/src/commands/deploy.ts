@@ -7,6 +7,7 @@ import { parseVerified, pickPhone, unreachable } from '../client.ts'
 import { computerKey } from '../config.ts'
 import { c, info, ok } from '../output.ts'
 import { packApp } from '../pack-app.ts'
+import { reach } from '../reach.ts'
 
 export { CLI_VERSION } from '../pack-app.ts'
 
@@ -28,6 +29,7 @@ export async function deploy(opts: DeployOptions): Promise<DeployResult> {
   const app = readAppFolder(opts.folder, { name: opts.name, noHealthCheck: opts.noHealthCheck })
   const phone = pickPhone(opts.device)
   const t0 = Date.now()
+  await reach(phone)
 
   const upload = packApp(app, step, silent)
   const result = await send(phone, app.name, upload)

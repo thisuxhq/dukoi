@@ -3,6 +3,7 @@ import { call, pickPhone, type Target } from '../client.ts'
 import { computerKey, computerName, loadPhones, removePhone, savePhone } from '../config.ts'
 import { discover } from '../discover.ts'
 import { CliError, c, info, ok, table } from '../output.ts'
+import { probe, readTailnet } from '../reach.ts'
 
 export interface PairOptions {
   host?: string
@@ -64,6 +65,7 @@ export async function pair(opts: PairOptions): Promise<void> {
   savePhone({
     name,
     host: target.host,
+    hosts: [...new Set([target.host, ...(target.hosts ?? [])])],
     port: target.port,
     publicKey: phone.publicKey,
     model: phone.model,
@@ -84,13 +86,13 @@ async function findPhone(host: string | undefined, say: (s: string) => void): Pr
     const [h, p] = host.split(':')
     return { host: h as string, port: Number(p ?? ADMIN_PORT), publicKey: null }
   }
-  say('Looking for phones on this Wi-Fi…')
-  const found = await discover()
+  say('Looking for phones on this Wi-Fi and your tailnet…')
+  const found = await findAll()
   if (found.length === 0) {
     throw new CliError(
       'NO_PHONE_FOUND',
-      'No Dukoi phone found on this Wi-Fi.',
-      'Open Dukoi on the phone and check it’s on the same Wi-Fi. Or pass its address: dukoi pair --host 192.168.1.24',
+      'No Dukoi phone found on this Wi-Fi or your tailnet.',
+      'Open Dukoi on the phone and check it’s on the same Wi-Fi, or signed in to Tailscale. Or pass its address: dukoi pair --host 192.168.1.24',
     )
   }
   if (found.length > 1) {
@@ -102,7 +104,34 @@ async function findPhone(host: string | undefined, say: (s: string) => void): Pr
     )
   }
   const f = found[0] as (typeof found)[number]
-  return { host: f.host, port: f.port, publicKey: null }
+  return { host: f.host, port: f.port, hosts: f.hosts, publicKey: null }
+}
+
+/** Every Dukoi phone on this Wi-Fi (mDNS) or the tailnet, one entry per phone. */
+async function findAll(): Promise<{ name: string; host: string; hosts: string[]; port: number }[]> {
+  const [wifi, tailnet] = await Promise.all([discover(), readTailnet()])
+  const candidates = [
+    ...wifi.map((f) => ({ host: f.host, port: f.port })),
+    ...tailnet.phones.map((h) => ({ host: h, port: ADMIN_PORT })),
+  ]
+  const answers = await Promise.all(
+    candidates.map(async (c) => ({ ...c, info: await probe(c.host, c.port) })),
+  )
+  // A phone on both the Wi-Fi and the tailnet answers twice: keep one, Wi-Fi first.
+  const byKey = new Map<string, { name: string; host: string; hosts: string[]; port: number }>()
+  for (const a of answers) {
+    if (!a.info) continue
+    const seen = byKey.get(a.info.publicKey)
+    if (seen) seen.hosts.push(a.host)
+    else
+      byKey.set(a.info.publicKey, {
+        name: a.info.name,
+        host: a.host,
+        hosts: [a.host],
+        port: a.port,
+      })
+  }
+  return [...byKey.values()]
 }
 
 export async function devices(json: boolean): Promise<void> {

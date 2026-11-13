@@ -21,7 +21,7 @@ ${c.bold('Usage')}
   dukoi <command> [options]
 
 ${c.bold('Pairing')}
-  pair                 Find a phone on this Wi-Fi and link it to this computer
+  pair                 Find a phone on this Wi-Fi or your tailnet and link it
   devices              List paired phones
   unpair [phone]       Forget a phone
 
@@ -70,7 +70,7 @@ ${c.bold('This computer')}
 
 ${c.bold('Options')}
   --device <name>      Which phone (default: the last one used)
-  --host <ip[:port]>   Skip Wi-Fi discovery and use this address
+  --host <ip[:port]>   Skip the search and use this address
   --json               Machine-readable output
   -h, --help           Show help
   -v, --version        Show the version

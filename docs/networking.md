@@ -8,7 +8,7 @@ This doc explains how apps get a local URL, a public URL and a custom domain, an
 
 | Address | Example | Reachable from | Stable? |
 | --- | --- | --- | --- |
-| **Local URL** | `http://192.168.1.24:3000` | The same Wi-Fi | Until the phone's IP changes |
+| **Local URL** | `http://192.168.1.24:3000` | The same Wi-Fi, or anywhere on your tailnet | The CLI follows the phone when its IP changes |
 | **Quick tunnel** | `https://shy-river-42.trycloudflare.com` | Anywhere | **No.** It changes when the tunnel restarts. |
 | **Custom domain** | `https://api.example.com` | Anywhere | Yes |
 
@@ -19,8 +19,25 @@ Every deploy prints the local URL. A public URL appears once you run `dukoi expo
 ## Local URLs
 
 - Each app gets its own port on the phone.
-- The local URL uses the phone's Wi-Fi IP.
-- **Tip:** set a DHCP reservation on your router so the phone's IP doesn't change.
+- The phone builds the local URL from its Wi-Fi IP. The CLI and dashboard swap in the address they reached the phone on, so the URL they show opens from that computer.
+
+## Finding the phone
+
+The CLI saves every address a paired phone has answered on. Before each command it:
+
+1. Tries the saved addresses at once (2.5 seconds each) and uses the first that answers with the phone's key.
+2. If none answers, searches this Wi-Fi with mDNS and the tailnet with `tailscale status --json`, and asks each phone it finds for its key.
+3. Saves the address that worked, so the next command is instant.
+
+A phone is matched by the key pinned at pairing, never by its address, so a new address can't stand in for it. If nothing answers, the error says why: Tailscale off on this computer, the phone offline on Tailscale, or not found.
+
+## Away from home: Tailscale
+
+Install [Tailscale](https://tailscale.com) on the phone and the computer and sign in to the same account. The agent listens on every address, so it answers on its Tailscale address (`100.x.y.z`) with no setup, and `dukoi` reaches it from any network. Tailscale's free Personal plan is enough.
+
+- On the phone, turn on **Always-on VPN** for Tailscale and take it out of battery optimisation, or Android may stop it.
+- Phones on mobile data or a hotspot often can't take a direct connection, so Tailscale relays the traffic. It's slower (about 200 ms a round trip in our tests) but works.
+- The admin API isn't public: only devices on your tailnet reach it, and it still needs a signed request. Never use Tailscale Funnel for it.
 
 ## Why tunnels
 

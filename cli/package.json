@@ -20,6 +20,7 @@
   },
   "exports": {
     "./client": "./src/client.ts",
-    "./config": "./src/config.ts"
+    "./config": "./src/config.ts",
+    "./reach": "./src/reach.ts"
   }
 }

@@ -5,6 +5,7 @@ import { signRequest } from '@dukoi/shared'
 import { error } from '@sveltejs/kit'
 import { type CallOptions, call, pickPhone, unreachable } from 'dukoi/client'
 import { computerKey, type SavedPhone } from 'dukoi/config'
+import { forget, reach } from 'dukoi/reach'
 
 import type { Problem } from '#lib/problem.js'
 
@@ -44,6 +45,7 @@ export async function* followLogAt(
 ): AsyncGenerator<string[]> {
   const p = phone()
   const path = `${logPath}?lines=${lines}&follow=1`
+  await reach(p)
   let res: Response
   try {
     res = await fetch(`http://${p.host}:${p.port}${path}`, {
@@ -51,6 +53,7 @@ export async function* followLogAt(
       signal,
     })
   } catch (err) {
+    forget(p)
     throw unreachable(p, err)
   }
   if (!res.ok || !res.body) {
