@@ -8,12 +8,12 @@ import Section from '#lib/components/docs/Section.svelte'
   lead="Every error says what happened and what to do next. Here are the ones you’re most likely to see, with the fix."
 />
 
-<Section id="no-phone" title="“No Dukoi phone found on this Wi-Fi”">
-  <p>Open Dukoi on the phone and check both are on the same Wi-Fi. Guest networks and some mesh routers stop devices finding each other. Pass the phone’s address instead: <code>dukoi pair --host 192.168.0.112</code>.</p>
+<Section id="no-phone" title="“No Dukoi phone found on this Wi-Fi or your tailnet”">
+  <p>Open Dukoi on the phone and check both are on the same Wi-Fi, or both signed in to Tailscale. Guest networks and some mesh routers stop devices finding each other. Pass the phone’s address instead: <code>dukoi pair --host 192.168.0.112</code>.</p>
 </Section>
 
-<Section id="unreachable" title="“The phone at … is not reachable”">
-  <p>Check the phone is on, on the same Wi-Fi, and Dukoi is running. If all that’s fine and commands worked before, the phone’s address probably changed. Run <code>dukoi pair</code> again, then give the phone a fixed address on your router (a DHCP reservation) so it doesn’t happen again.</p>
+<Section id="unreachable" title="“Couldn’t find a024 on this Wi-Fi”">
+  <p>When the phone’s address changes, <code>dukoi</code> looks for it on this Wi-Fi and on your tailnet by itself. This error means it looked and the phone didn’t answer. Check the phone is on and Dukoi is running. If the message says Tailscale is off, turn it on on the computer; if it says the phone is offline on Tailscale, open Tailscale on the phone. Away from home without Tailscale, see <a href="/docs/pairing#away-from-home">Use it away from home</a>.</p>
 </Section>
 
 <Section id="health-timeout" title="“Your app started but didn’t answer on PORT”">

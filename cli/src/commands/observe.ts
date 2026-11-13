@@ -3,6 +3,7 @@ import { type AppInfo, type PhoneStatus, signRequest } from '@dukoi/shared'
 import { call, pickPhone, unreachable } from '../client.ts'
 import { computerKey, type SavedPhone } from '../config.ts'
 import { CliError, c, info, table } from '../output.ts'
+import { reach } from '../reach.ts'
 import { appName } from './apps.ts'
 
 export const STATE_COLOUR: Record<AppInfo['state'], (s: string) => string> = {
@@ -68,6 +69,7 @@ export async function printLogs(
 
   // Follow: a long-lived signed request; lines arrive as they're written.
   const followPath = `${base}&follow=1`
+  await reach(phone)
   let res: Response
   try {
     res = await fetch(`http://${phone.host}:${phone.port}${followPath}`, {

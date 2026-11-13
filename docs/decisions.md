@@ -235,6 +235,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** Every Android app on the phone can reach `127.0.0.1`, so a database without a password isn't private. Off by default keeps Safe by default; on is one tick for people who want to reach it from their laptop.
 - **Trade-off:** Passwords cross the Wi-Fi in plain text, as Redis `AUTH` and Postgres's plain password do. The dashboard and the Wi-Fi option say to use it on a trusted network.
 
+### D-123: The CLI finds a paired phone by its key, on Wi-Fi or Tailscale
+- **Status:** Decided
+- **Date:** 2026-11-13
+- **Decision:** A paired phone keeps a list of addresses it has answered on. Every command tries them at once, then searches mDNS and the computer's tailnet (`tailscale status --json`), and uses the first address where `/info` returns the pinned key. Remote access is Tailscale, installed by the user on both devices; Dukoi doesn't bundle it. App URLs are rewritten to the address that worked. See `docs/networking.md`.
+- **Why:** Phones change address all the time (DHCP, hotspots, leaving home), and a stale address meant a 15-second timeout and a wrong "same Wi-Fi" hint. The key already proves which phone answers, so moving to a new address is safe. Reading Tailscale from the computer needs no change to the phone app.
+- **Trade-off:** A command against a phone that moved waits up to about 5 seconds while it searches. Bundling Tailscale in the APK (tsnet) would remove the second app but adds a large binary and login keys to manage; we'll revisit if people ask.
+
 ## Open questions
 
 | Question | Options | Decides |

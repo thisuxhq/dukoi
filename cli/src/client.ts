@@ -4,10 +4,13 @@ import { randomBytes } from 'node:crypto'
 import { type ApiError, HEADER, PROTOCOL_VERSION, signRequest, verifyResponse } from '@dukoi/shared'
 import { computerKey, loadPhones, markUsed, type SavedPhone } from './config.ts'
 import { CliError } from './output.ts'
+import { forget, pointAt, reach } from './reach.ts'
 
 export interface Target {
   host: string
   port: number
+  /** Other addresses the phone has answered on, tried when `host` doesn't answer */
+  hosts?: string[]
   /** null before pairing, when we don't know the phone's key yet */
   publicKey: string | null
 }
@@ -23,6 +26,22 @@ export interface CallOptions {
 }
 
 export async function call<T>(target: Target, path: string, opts: CallOptions = {}): Promise<T> {
+  await reach(target)
+  try {
+    return await send<T>(target, path, opts)
+  } catch (err) {
+    if (!(err instanceof CliError) || err.code !== 'PHONE_UNREACHABLE' || !target.publicKey)
+      throw err
+    // The phone may have moved since we found it (the dashboard runs for hours).
+    // Look again, and repeat the request if it can't have changed anything.
+    forget(target)
+    await reach(target)
+    if ((opts.method ?? 'GET') !== 'GET') throw err
+    return send<T>(target, path, opts)
+  }
+}
+
+async function send<T>(target: Target, path: string, opts: CallOptions): Promise<T> {
   const method = opts.method ?? 'GET'
   const body = opts.rawBody ?? (opts.body === undefined ? '' : JSON.stringify(opts.body))
   const headers: Record<string, string> = { 'content-type': 'application/json' }
@@ -72,7 +91,7 @@ export function parseVerified<T>(target: Target, res: Response, text: string, no
     )
   }
   if (!res.ok) throw CliError.from(value as ApiError)
-  return value as T
+  return pointAt(value as T, target.host)
 }
 
 /** Stops before a CLI and a phone that don't speak the same admin API talk past each other. */
@@ -98,7 +117,7 @@ export function unreachable(target: Target, err: unknown): CliError {
   return new CliError(
     'PHONE_UNREACHABLE',
     `The phone at ${target.host}:${target.port} is ${reason}.`,
-    'Check the phone is on the same Wi-Fi and Dukoi is running, then try again.',
+    'Check the phone is on and Dukoi is running, then try again.',
   )
 }
 

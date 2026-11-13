@@ -4,6 +4,18 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-13
+
+### Added
+
+- Use Dukoi away from home with [Tailscale](https://tailscale.com). Sign the phone and the computer in to the same tailnet and every command reaches the phone from any network. `dukoi pair` finds phones on your tailnet too. See [Use it away from home](https://dukoi.com/docs/pairing#away-from-home).
+
+### Changed
+
+- The CLI and dashboard follow the phone when its address changes, on the same Wi-Fi, a hotspot or Tailscale. They find it by its key and remember the new address, so there's no timeout and no pairing again.
+- App and database URLs show the address this computer reaches the phone on, so they open from where you are.
+- When the phone can't be found, the error says why: Tailscale off on this computer, the phone offline on Tailscale, or not on this Wi-Fi. It fails in seconds, not 15.
+
 ## [0.7.0] - 2026-11-13
 
 ### Added
@@ -111,7 +123,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.7.0...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.8.0...main
+[0.8.0]: https://github.com/thisuxhq/dukoi/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/thisuxhq/dukoi/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/thisuxhq/dukoi/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/thisuxhq/dukoi/compare/v0.4.3...v0.5.0

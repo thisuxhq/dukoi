@@ -37,7 +37,7 @@ It puts everything in `~/.dukoi` and the command in `~/.dukoi/bin`, which it add
 
 ### `dukoi pair`
 
-Finds a phone on the same Wi-Fi and links it to this computer.
+Finds a phone on the same Wi-Fi or your tailnet (Tailscale) and links it to this computer. After that, every command finds the phone again by itself when its address changes.
 
 ```
 $ dukoi pair
@@ -52,7 +52,7 @@ $ dukoi pair
 | Flag | Meaning |
 | --- | --- |
 | `--name <name>` | Nickname for the phone. Defaults to the model name. |
-| `--host <ip>` | Skip discovery and connect to this address. |
+| `--host <ip>` | Skip the search and connect to this address. |
 
 ### `dukoi devices`
 

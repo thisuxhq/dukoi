@@ -15,7 +15,7 @@ import Terminal from '#lib/components/docs/Terminal.svelte'
   <Terminal
     command="dukoi pair"
     output={`
-Looking for phones on this Wi-Fi…
+Looking for phones on this Wi-Fi and your tailnet…
 ✓ Found a024 (Nothing A024, Android 16) at 192.168.0.112
 
   Code on your phone: 482 913
@@ -29,8 +29,14 @@ Looking for phones on this Wi-Fi…
 </Section>
 
 <Section id="no-phone-found" title="If it can’t find the phone">
-  <p>Check Dukoi is open on the phone and both are on the same Wi-Fi. Some routers block devices from finding each other. If yours does, pass the phone’s address. You’ll find it in the app.</p>
+  <p>Check Dukoi is open on the phone and both are on the same Wi-Fi, or both signed in to Tailscale. Some routers block devices from finding each other. If yours does, pass the phone’s address. You’ll find it in the app.</p>
   <Terminal command="dukoi pair --host 192.168.0.112" />
+</Section>
+
+<Section id="away-from-home" title="Use it away from home">
+  <p>Install <a href="https://tailscale.com">Tailscale</a> on the phone and the computer and sign in to the same account. That’s it: <code>dukoi</code> finds the phone on your tailnet whenever it isn’t on your Wi-Fi, and switches back when it is. The free Personal plan is enough.</p>
+  <p>On the phone, turn on <strong>Always-on VPN</strong> for Tailscale (Settings, Network, VPN) and take it out of battery optimisation, so Android doesn’t stop it.</p>
+  <p>App URLs follow too. On Tailscale, <code>dukoi deploy</code> prints an address like <code>http://100.74.25.113:3000</code> that opens from your computer.</p>
 </Section>
 
 <Section id="more-phones" title="More than one phone">

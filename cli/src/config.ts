@@ -7,7 +7,10 @@ import { generateKeyPair, type KeyPair } from '@dukoi/shared'
 
 export interface SavedPhone {
   name: string
+  /** The address that worked last */
   host: string
+  /** Every address the phone has answered on, newest first (Wi-Fi, Tailscale) */
+  hosts?: string[]
   port: number
   /** Pinned at pairing; every response must be signed by it */
   publicKey: string
@@ -89,6 +92,16 @@ export function removePhone(name: string): boolean {
   if (data.lastUsed === name) data.lastUsed = data.phones[0]?.name ?? null
   writePrivate(phonesFile(), data)
   return data.phones.length < before
+}
+
+/** The phone moved: use this address from now on, and keep the old ones to try later. */
+export function rememberHost(publicKey: string, host: string): void {
+  const data = loadPhones()
+  const phone = data.phones.find((p) => p.publicKey === publicKey)
+  if (!phone) return
+  phone.hosts = [...new Set([host, phone.host, ...(phone.hosts ?? [])])].slice(0, 6)
+  phone.host = host
+  writePrivate(phonesFile(), data)
 }
 
 export function markUsed(name: string): void {
