@@ -49,6 +49,34 @@ data class TemplateInfo(
   val secret: String?,
 )
 
+/** Redis or Postgres, and whether this build can run it. */
+data class DatabaseKind(
+  val id: String,
+  val name: String,
+  val description: String,
+  /** The setting connected apps get, REDIS_URL or DATABASE_URL */
+  val envName: String,
+  val available: Boolean,
+)
+
+/** A database on this phone. Its URLs hold the password, so only show them masked. */
+data class DatabaseInfo(
+  val name: String,
+  val kind: String,
+  val state: AppState,
+  val port: Int,
+  val startedAt: Instant?,
+  val cpuPercent: Double?,
+  val memoryMb: Double?,
+  val url: String,
+  val wifiUrl: String?,
+  val apps: List<String>,
+  val envName: String,
+)
+
+/** What a database action returned: the database as it is now, or the agent's own words. */
+data class DbOutcome(val db: DatabaseInfo?, val error: String?)
+
 /** What a template deploy returned: the new app, or the agent's own words. */
 data class Deployed(val app: AppInfo?, val error: String?)
 
@@ -103,6 +131,66 @@ object Phone {
     val hint = reply.optStringOrNull("hint")?.takeIf { '\n' !in it }
     return Deployed(null, if (hint != null) "$message $hint" else message)
   }
+
+  // ── Databases ─────────────────────────────────────────────────────────────
+
+  /** Redis and Postgres. Empty on an agent from before 0.6.0. */
+  fun databaseKinds(): List<DatabaseKind> = AgentClient.getArray("/local/database-kinds")?.objects()?.map {
+    DatabaseKind(it.getString("id"), it.getString("name"), it.optString("description"), it.optString("envName"), it.optBoolean("available"))
+  }.orEmpty()
+
+  fun databases(): List<DatabaseInfo>? = AgentClient.getArray("/local/databases")?.objects()?.map(::parseDatabase)
+
+  fun databaseLogs(name: String, lines: Int = 200): List<LogLine> =
+    AgentClient.get("/local/databases/${enc(name)}/logs?lines=$lines")
+      ?.optJSONArray("lines")
+      ?.let { arr -> (0 until arr.length()).mapNotNull { parseLog(arr.getString(it)) } }
+      .orEmpty()
+
+  /** Makes one and waits until it takes connections. PGlite's first start is slow, so allow two minutes. */
+  fun createDatabase(kind: String, name: String, apps: List<String>, wifi: Boolean): DbOutcome {
+    val body = JSONObject().put("kind", kind).put("apps", JSONArray(apps)).put("wifi", wifi)
+    if (name.isNotBlank()) body.put("name", name.trim())
+    return dbOutcome(AgentClient.post("/local/databases", body, timeoutMs = 120_000))
+  }
+
+  /** Wi-Fi on or off, a new password, or connect and disconnect apps. */
+  fun changeDatabase(name: String, change: JSONObject): DbOutcome =
+    dbOutcome(AgentClient.post("/local/databases/${enc(name)}", change, timeoutMs = 120_000))
+
+  /** start, stop or restart. */
+  fun controlDatabase(name: String, action: String): DbOutcome =
+    dbOutcome(AgentClient.post("/local/databases/${enc(name)}/$action", timeoutMs = 90_000))
+
+  /** Null on success, otherwise the agent's message. */
+  fun removeDatabase(name: String): String? {
+    val reply = AgentClient.delete("/local/databases/${enc(name)}", timeoutMs = 60_000) ?: return UNREACHABLE
+    return if (reply.has("removed")) null else reply.optString("message", "Something went wrong.")
+  }
+
+  private fun dbOutcome(reply: JSONObject?): DbOutcome = when {
+    reply == null -> DbOutcome(null, UNREACHABLE)
+    reply.has("kind") -> DbOutcome(parseDatabase(reply), null)
+    else -> {
+      val message = reply.optString("message", "Something went wrong.")
+      val hint = reply.optStringOrNull("hint")?.takeIf { '\n' !in it }
+      DbOutcome(null, if (hint != null) "$message $hint" else message)
+    }
+  }
+
+  private fun parseDatabase(o: JSONObject) = DatabaseInfo(
+    name = o.getString("name"),
+    kind = o.optString("kind"),
+    state = runCatching { AppState.valueOf(o.getString("state").uppercase()) }.getOrDefault(AppState.STOPPED),
+    port = o.optInt("port"),
+    startedAt = o.optStringOrNull("startedAt")?.let { runCatching { Instant.parse(it) }.getOrNull() },
+    cpuPercent = o.optDoubleOrNull("cpuPercent"),
+    memoryMb = o.optDoubleOrNull("memoryMb"),
+    url = o.optString("url"),
+    wifiUrl = o.optStringOrNull("wifiUrl"),
+    apps = o.optJSONArray("apps")?.let { a -> (0 until a.length()).map { a.getString(it) } }.orEmpty(),
+    envName = o.optString("envName"),
+  )
 
   // ── Public links ──────────────────────────────────────────────────────────
 

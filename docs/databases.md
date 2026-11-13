@@ -2,6 +2,8 @@
 
 This doc explains how Dukoi runs Redis and Postgres on the phone, next to the apps, and how apps get to them.
 
+**Where:** the phone app's Templates tab, the dashboard's Templates page, or `dukoi db create`.
+
 **The promise:** pick Redis or Postgres, tick the apps that need it, and they get a working URL as `REDIS_URL` or `DATABASE_URL`. Nothing to install, configure or copy by hand.
 
 ---
@@ -77,6 +79,7 @@ All on the admin API, signed by a paired computer, and under `/local` for the ph
 | `GET /databases/:name` | One |
 | `PATCH /databases/:name` | `{ wifi?, newPassword?, connect?, disconnect? }` |
 | `DELETE /databases/:name` | Stops it, deletes its data, takes its URL from the apps |
+| `POST /local/databases/:name` | The same as `PATCH`, for the phone app, whose HTTP client can't send `PATCH` |
 | `POST /databases/:name/start`, `stop`, `restart` | |
 | `GET /databases/:name/logs` | `?lines=` and `?follow=1`, like an app's logs |
 

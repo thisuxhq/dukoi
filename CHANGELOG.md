@@ -4,6 +4,16 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-13
+
+### Added
+
+- The phone app has Apps and Templates tabs at the bottom. Templates makes a Redis or Postgres database right on the phone, picks the apps that get its URL, and deploys any app template. Each database has its own screen with its URL, Wi-Fi access, a new password, the apps using it and its logs, and Home lists your databases under your apps.
+
+### Changed
+
+- The phone app's screens use narrower side margins, so more fits on a phone screen.
+
 ## [0.6.0] - 2026-11-13
 
 ### Added
@@ -101,7 +111,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.6.0...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.7.0...main
+[0.7.0]: https://github.com/thisuxhq/dukoi/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/thisuxhq/dukoi/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/thisuxhq/dukoi/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/thisuxhq/dukoi/compare/v0.4.1...v0.4.3

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -86,33 +87,42 @@ fun AppScreen(
   onAction: (String) -> Unit,
 ) {
   val crashed = app.state == AppState.CRASHED
+  WithLogs(app.name, logs, tall = crashed) {
+    BackLink("Apps", onBack)
+    Column(Modifier.padding(horizontal = Gutter)) {
+      Spacer(Modifier.height(12.dp))
+      Text(app.name, style = Styles.Title.copy(fontSize = 44.sp, lineHeight = 48.sp))
+      Spacer(Modifier.height(10.dp))
+      StateLabel(app.state, bold = true)
+      Spacer(Modifier.height(24.dp))
+      if (crashed) CrashBanner(crashReason(app, logs), onRollBack = { onAction("rollback") }, onRetry = { onAction("restart") })
+      else Details(app, onAction)
+    }
+  }
+}
+
+/**
+ * A screen with a dark logs sheet over its bottom: an app's or a database's.
+ * [tall] starts the sheet higher, for a crash.
+ */
+@Composable
+fun WithLogs(name: String, logs: List<LogLine>, tall: Boolean = false, content: @Composable ColumnScope.() -> Unit) {
   val density = LocalDensity.current
   val scope = rememberCoroutineScope()
 
   BoxWithConstraints(Modifier.fillMaxSize().background(Canvas)) {
     val (minPx, lowPx, highPx) = with(density) {
-      Triple(96.dp.toPx(), (if (crashed) 420.dp else 300.dp).toPx(), (maxHeight - 120.dp).toPx())
+      Triple(96.dp.toPx(), (if (tall) 420.dp else 300.dp).toPx(), (maxHeight - 120.dp).toPx())
     }
     // The sheet stays wherever it's dragged to. The chevron opens or closes it fully.
     var heightPx by remember { mutableFloatStateOf(lowPx) }
     var settle by remember { mutableStateOf<Job?>(null) }
     val open = heightPx >= highPx - 1f
 
-    Column(Modifier.fillMaxSize().statusBarsPadding()) {
-      BackLink("Apps", onBack)
-      Column(Modifier.padding(horizontal = Gutter)) {
-        Spacer(Modifier.height(12.dp))
-        Text(app.name, style = Styles.Title.copy(fontSize = 44.sp, lineHeight = 48.sp))
-        Spacer(Modifier.height(10.dp))
-        StateLabel(app.state, bold = true)
-        Spacer(Modifier.height(24.dp))
-        if (crashed) CrashBanner(crashReason(app, logs), onRollBack = { onAction("rollback") }, onRetry = { onAction("restart") })
-        else Details(app, onAction)
-      }
-    }
+    Column(Modifier.fillMaxSize().statusBarsPadding(), content = content)
 
     LogsSheet(
-      title = if (heightPx > (lowPx + highPx) / 2) "${app.name} logs" else "Logs",
+      title = if (heightPx > (lowPx + highPx) / 2) "$name logs" else "Logs",
       lines = logs,
       open = open,
       onToggle = {
@@ -275,7 +285,7 @@ private fun LogsSheet(
     Column(
       Modifier.fillMaxWidth()
         .draggable(drag, Orientation.Vertical, onDragStopped = { onRelease(it) })
-        .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 14.dp),
+        .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 14.dp),
     ) {
       Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { Box(Modifier.size(40.dp, 4.dp).background(NightGrip)) }
       Spacer(Modifier.height(10.dp))
@@ -290,9 +300,9 @@ private fun LogsSheet(
       }
     }
     if (lines.isEmpty()) {
-      Text("No logs yet", style = Styles.Log.copy(color = LogTime), modifier = Modifier.padding(horizontal = 20.dp))
+      Text("No logs yet", style = Styles.Log.copy(color = LogTime), modifier = Modifier.padding(horizontal = 16.dp))
     }
-    LazyColumn(state = list, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+    LazyColumn(state = list, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
       items(lines) { line -> LogRow(line) }
       item { Spacer(Modifier.height(16.dp)) }
     }

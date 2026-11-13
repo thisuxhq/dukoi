@@ -22,6 +22,10 @@ export function databaseRoutes(agent: Agent): void {
   both('PATCH', '/databases/:name', 'paired', (ctx) =>
     dbs.change(ctx.params.name ?? '', ctx.json<DatabaseChange>()),
   )
+  // The phone app's HTTP client can't send PATCH, so it changes a database with POST.
+  r.on('POST', '/local/databases/:name', 'local', (ctx) =>
+    dbs.change(ctx.params.name ?? '', ctx.json<DatabaseChange>()),
+  )
   both('DELETE', '/databases/:name', 'paired', (ctx) => dbs.remove(ctx.params.name ?? ''))
   both('POST', '/databases/:name/start', 'paired', (ctx) => dbs.start(ctx.params.name ?? ''))
   both('POST', '/databases/:name/stop', 'paired', (ctx) => dbs.stop(ctx.params.name ?? ''))
