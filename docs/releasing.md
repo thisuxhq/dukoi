@@ -28,7 +28,7 @@ Node.js and cloudflared for Android aren't part of a release. They're rebuilt on
 ## Release a version
 
 1. **Write the changelog.** Every PR adds its own version to `CHANGELOG.md`: a new `## [0.3.0] - 2026-12-01` section with that PR's notes, and the compare link at the bottom. See `AGENTS.md` for how to pick the number.
-2. **Merge it.** The [Release workflow](../.github/workflows/release.yml) sees a version with no tag and runs `scripts/release.sh 0.3.0` on a macOS runner. Watch it in the repo's **Actions** tab.
+2. **Merge it.** The [Release workflow](../.github/workflows/release.yml) sees a version with no tag and runs `scripts/release.sh 0.3.0` on a Blacksmith macOS runner. Watch it in the repo's **Actions** tab.
 
 So every change that lands on `main` ships. A push that doesn't add a new version releases nothing. To start a release by hand, for example after adding the secrets, open **Actions → Release → Run workflow**.
 
