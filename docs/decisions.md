@@ -242,6 +242,20 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** Phones change address all the time (DHCP, hotspots, leaving home), and a stale address meant a 15-second timeout and a wrong "same Wi-Fi" hint. The key already proves which phone answers, so moving to a new address is safe. Reading Tailscale from the computer needs no change to the phone app.
 - **Trade-off:** A command against a phone that moved waits up to about 5 seconds while it searches. Bundling Tailscale in the APK (tsnet) would remove the second app but adds a large binary and login keys to manage; we'll revisit if people ask.
 
+### D-124: HTTP request inspector and replay in the stable-port proxy
+- **Status:** Decided
+- **Date:** 2026-11-25
+- **Decision:** Each app's `StablePort` keeps the last 100 HTTP requests in memory (request and response bodies capped at 64 KB each, zero disk writes). Paired computers can stream summaries, inspect redacted details (`dukoi inspect`) and re-send a captured request to the live release (`dukoi replay`), both from the CLI and the dashboard's Requests tab.
+- **Why:** Every request already flows through `StablePort`, so capturing traffic needs no middleware or setup in user apps and makes debugging webhooks and APIs effortless. Keeping only 100 entries in RAM protects phone flash and memory, while redacting sensitive headers (`authorization`, `cookie`, `*-signature`, `*-token`, `*-key`) in API responses keeps secrets off the wire even though the phone keeps raw request headers in memory for replay.
+- **Trade-off:** Requests are lost when the agent restarts, and requests with bodies over 64 KB cannot be replayed because their body was truncated.
+
+### D-125: Zero-config private access in the stable-port proxy (`dukoi expose --auth`)
+- **Status:** Decided
+- **Date:** 2026-11-25
+- **Decision:** Turning on private access (`dukoi expose --auth`, or in the dashboard) generates a 192-bit `dk_*` access token stored on the phone and enforced by `StablePort` before forwarding HTTP or WebSocket traffic. Browsers sign in once through `/_dukoi/auth` (via the one-click link or built-in form) to receive an HMAC-signed 7-day `HttpOnly` cookie; API clients pass `Authorization: Bearer <token>` or `X-Dukoi-Token`.
+- **Why:** Personal tools like `file-drop`, `notes-api` and internal dashboards shouldn't sit open on the internet, yet wiring login into a weekend app adds friction. Enforcing auth in `StablePort` works for any Node or static app with zero code changes, strips Dukoi's own credentials before forwarding upstream, skips `RequestLog` on `/_dukoi/auth`, and lets `--rotate` invalidate every cookie at once.
+- **Trade-off:** It's a single shared access token per app, not multi-user accounts or OAuth. Apps that need per-user logins still implement their own.
+
 ## Open questions
 
 | Question | Options | Decides |

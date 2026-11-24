@@ -9,8 +9,15 @@ let {
   lines,
   connected,
   problem,
+  showTitle = true,
   class: className = '',
-}: { lines: LogLine[]; connected: boolean; problem: Problem | null; class?: string } = $props()
+}: {
+  lines: LogLine[]
+  connected: boolean
+  problem: Problem | null
+  showTitle?: boolean
+  class?: string
+} = $props()
 
 let panel = $state<HTMLElement>()
 let pinned = $state(true)
@@ -21,10 +28,12 @@ $effect(() => {
 </script>
 
 <section class="flex min-w-0 flex-col gap-4 bg-night px-4 py-4 md:px-6 md:py-5 {className}">
-	<h2 class="flex items-center gap-2 font-display text-xl font-medium text-white">
-		Logs
-		<span class="size-[7px] rounded-full {connected && !problem ? 'bg-log-live' : 'bg-log-time'}"></span>
-	</h2>
+	{#if showTitle}
+		<h2 class="flex items-center gap-2 font-display text-xl font-medium text-white">
+			Logs
+			<span class="size-[7px] rounded-full {connected && !problem ? 'bg-log-live' : 'bg-log-time'}"></span>
+		</h2>
+	{/if}
 	<div
 		bind:this={panel}
 		onscroll={() => panel && (pinned = panel.scrollHeight - panel.scrollTop - panel.clientHeight < 40)}

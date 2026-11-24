@@ -39,9 +39,18 @@ export function appRoutes(agent: Agent): void {
   // Public URLs: a quick tunnel, or a custom domain on the phone's named tunnel.
   both('POST', '/apps/:name/expose', 'paired', (ctx) => agent.tunnels.expose(ctx.params.name ?? ''))
   both('DELETE', '/apps/:name/expose', 'paired', async (ctx) => {
-    await agent.domains.remove(ctx.params.name ?? '')
-    return agent.tunnels.unexpose(ctx.params.name ?? '')
+    const name = ctx.params.name ?? ''
+    await agent.domains.remove(name)
+    await apps.disableAuth(name).catch(() => {})
+    return agent.tunnels.unexpose(name)
   })
+  // Zero-config private access (`dukoi expose --auth`).
+  both('GET', '/apps/:name/auth', 'paired', (ctx) => apps.authStatus(ctx.params.name ?? ''))
+  both('POST', '/apps/:name/auth', 'paired', (ctx) => {
+    const { rotate } = ctx.body.length ? ctx.json<{ rotate?: boolean }>() : {}
+    return apps.enableAuth(ctx.params.name ?? '', Boolean(rotate))
+  })
+  both('DELETE', '/apps/:name/auth', 'paired', (ctx) => apps.disableAuth(ctx.params.name ?? ''))
   // Settings, like a bot token. Names come back, values never do.
   both('GET', '/apps/:name/env', 'paired', (ctx) => apps.envNames(ctx.params.name ?? ''))
   both('PUT', '/apps/:name/env', 'paired', (ctx) =>

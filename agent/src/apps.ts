@@ -16,6 +16,7 @@ import { join } from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import {
   APP_NAME_PATTERN,
+  type AppAuthResult,
   type AppInfo,
   type DeployResult,
   ENV_NAME_PATTERN,
@@ -33,6 +34,7 @@ import { HttpError } from './http.ts'
 import { LogFile } from './log-file.ts'
 import { ProcStats, type Usage } from './proc-stats.ts'
 import { freePort, StablePort } from './proxy.ts'
+import { generateAuthToken } from './proxy-auth.ts'
 import type { SavedApp } from './store.ts'
 
 export const KEEP_RELEASES = 5
@@ -60,6 +62,7 @@ class AppRuntime {
   ) {
     this.log = new LogFile(join(dir, 'logs', 'app.log'))
     this.stable = new StablePort(saved.port, saved.name)
+    this.stable.authToken = saved.authToken ?? null
   }
 
   serial<T>(work: () => Promise<T>): Promise<T> {
@@ -544,6 +547,41 @@ export class Apps {
     return this.runtime(name).then((rt) => rt.log)
   }
 
+  requestLog(name: string) {
+    return this.runtime(name).then((rt) => rt.stable.requests)
+  }
+
+  replayRequest(name: string, id: string) {
+    return this.runtime(name).then((rt) => rt.stable.replay(id))
+  }
+
+  async authStatus(name: string): Promise<AppAuthResult> {
+    const rt = await this.runtime(name)
+    return { app: name, auth: Boolean(rt.saved.authToken), token: rt.saved.authToken ?? null }
+  }
+
+  async enableAuth(name: string, rotate = false): Promise<AppAuthResult> {
+    const rt = await this.runtime(name)
+    if (!rt.saved.authToken || rotate) {
+      rt.saved.authToken = generateAuthToken()
+      rt.stable.authToken = rt.saved.authToken
+      this.agent.store.save()
+      rt.log.note(rotate ? 'Access token rotated.' : 'Private access turned on.')
+    }
+    return { app: name, auth: true, token: rt.saved.authToken }
+  }
+
+  async disableAuth(name: string): Promise<AppAuthResult> {
+    const rt = await this.runtime(name)
+    if (rt.saved.authToken) {
+      delete rt.saved.authToken
+      rt.stable.authToken = null
+      this.agent.store.save()
+      rt.log.note('Private access turned off.')
+    }
+    return { app: name, auth: false, token: null }
+  }
+
   setPublicUrl(name: string, url: string | null): Promise<void> {
     return this.runtime(name).then((rt) => {
       rt.publicUrl = url
@@ -570,6 +608,7 @@ export class Apps {
       localUrl: `http://${wifiAddress()}:${rt.saved.port}`,
       publicUrl: rt.publicUrl,
       domain: rt.saved.domain ?? null,
+      auth: Boolean(rt.saved.authToken),
       template: rt.saved.template ?? null,
     }
   }

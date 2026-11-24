@@ -127,11 +127,14 @@ The app defaults to the one in the current folder, and the phone to the only or 
 | `dukoi deploy [folder]` | Builds, packs, uploads, starts and health-checks the app. Prints the URLs |
 | `dukoi ps` | Every app: status, CPU, memory, uptime, URL |
 | `dukoi logs [app] --no-follow --lines 200` | Recent log lines. Without `--no-follow` it streams |
+| `dukoi inspect [app] [id] --no-follow` | Recent HTTP requests (last 100 kept in memory), or full headers and bodies for one ID like `r_001`. `--clear` empties the list |
+| `dukoi replay [app] <id>` | Re-send a captured HTTP request to the live release and get the new status and body |
 | `dukoi status` | Phone health: memory, storage, uptime |
 | `dukoi start`, `stop`, `restart [app]` | Control an app. A stopped app stays stopped after a reboot |
 | `dukoi env set KEY=value` | Save a setting on the phone. Restarts the app |
 | `dukoi env list`, `env unset KEY` | Names only. Values never come back from the phone |
 | `dukoi expose [app]` | A public HTTPS URL through a Cloudflare quick tunnel. It can change |
+| `dukoi expose --auth` | Same, gated by a generated access token, one-click browser sign-in link and `Authorization: Bearer` check in Dukoi's proxy. Add `--rotate` for a new token or `--no-auth` to turn it off |
 | `dukoi expose --domain api.example.com` | A URL that never changes, on the user's own Cloudflare domain. Opens a browser to log in the first time |
 | `dukoi expose --off` | Remove the public URL |
 | `dukoi releases [app]` | The last 5 releases |
@@ -188,5 +191,5 @@ Common errors:
 
 - Never print or commit a secret. Pass it straight to `dukoi env set`.
 - `remove`, `db remove`, `rollback` and `expose` change what's live or delete data. Say what you'll do and get a yes first.
-- A quick tunnel URL is public: anyone with it can reach the app. Add a check before exposing anything that writes data or shows private information.
+- A quick tunnel URL is public: anyone with it can reach the app. Use `dukoi expose --auth` when exposing personal tools or anything that writes data or shows private information.
 - Phones have little memory. Prefer small dependencies, stream big files and don't hold large datasets in memory.

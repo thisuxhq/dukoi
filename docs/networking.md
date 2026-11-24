@@ -53,11 +53,13 @@ Visitor ──HTTPS──▶ Cloudflare edge ◀══outbound tunnel══ clou
 
 ```bash
 dukoi expose
+dukoi expose --auth
 ```
 
 - Instant, with no account needed.
 - The URL is random and **changes** whenever the tunnel restarts. Cloudflare gives no uptime promise for quick tunnels.
 - Good for demos, testing and webhooks you can update.
+- Add `--auth` to gate the app with a generated access token, a one-click sign-in link and a built-in sign-in page — no code changes in your app. Works with `--domain` too. `--rotate` makes a new token and signs everyone out; `--no-auth` turns it off without dropping the URL.
 - The CLI and dashboard always show the current URL.
 
 ### Our own cloudflared build

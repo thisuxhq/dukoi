@@ -96,6 +96,8 @@ export interface AppInfo {
   publicUrl: string | null
   /** Custom domain when the public URL is on one (stable), else null */
   domain: string | null
+  /** true when the app's proxy requires an access token (`dukoi expose --auth`) */
+  auth?: boolean
   /** The template it started from (deployed on the phone), else null */
   template: string | null
 }
@@ -128,12 +130,68 @@ export interface DeployResult {
 export interface ExposeResult {
   app: string
   publicUrl: string
+  /** true when proxy auth (`dukoi expose --auth`) is enabled on this app */
+  auth?: boolean
+}
+
+/** Answer to GET, POST and DELETE /apps/:name/auth */
+export interface AppAuthResult {
+  app: string
+  auth: boolean
+  /** Returned only when auth is enabled (never included in GET /apps) */
+  token: string | null
 }
 
 /** Query string for log requests */
 export interface LogQuery {
   lines?: number
   follow?: boolean
+}
+
+// ── Request inspector ────────────────────────────────────────────────────
+
+export const REQUEST_ID_PATTERN = /^r_\d+$/
+
+/** One HTTP request captured by an app's stable port. Summary shape (no bodies). */
+export interface RequestSummary {
+  /** Short ID like "r_1", unique for the agent's lifetime */
+  id: string
+  /** ISO timestamp when the request arrived */
+  at: string
+  method: string
+  /** Path and query string, e.g. "/webhooks/stripe?test=1" */
+  path: string
+  /** HTTP status code, or 0 if the client disconnected before a response */
+  status: number
+  /** Milliseconds from request start to response end */
+  durationMs: number
+  /** Original request body size in bytes */
+  reqBytes: number
+  /** Original response body size in bytes */
+  resBytes: number
+  /** Client IP (Cloudflare connecting IP, forwarded IP or peer address) */
+  from: string | null
+  /** If this request came from `dukoi replay`, the ID it replayed */
+  replayedFrom: string | null
+}
+
+/** Full captured request, with sensitive headers redacted and bodies capped at 64 KB. */
+export interface RequestDetail extends RequestSummary {
+  reqHeaders: Record<string, string>
+  /** UTF-8 text when readable, null for binary bodies */
+  reqBody: string | null
+  reqTruncated: boolean
+  reqBinary: boolean
+  resHeaders: Record<string, string>
+  resBody: string | null
+  resTruncated: boolean
+  resBinary: boolean
+}
+
+/** Answer to POST /apps/:name/requests/:id/replay */
+export interface ReplayResult {
+  /** The newly captured request created by replaying */
+  request: RequestDetail
 }
 
 // ── Releases ─────────────────────────────────────────────────────────────

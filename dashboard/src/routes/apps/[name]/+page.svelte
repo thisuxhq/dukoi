@@ -3,18 +3,29 @@ import CopyButton from '#lib/components/CopyButton.svelte'
 import Icon from '#lib/components/Icon.svelte'
 import LogPanel from '#lib/components/LogPanel.svelte'
 import ProblemNote from '#lib/components/ProblemNote.svelte'
+import RequestPanel from '#lib/components/RequestPanel.svelte'
 import StateLabel from '#lib/components/StateLabel.svelte'
 import Stats from '#lib/components/Stats.svelte'
 import { bare, since, when } from '#lib/format.js'
-import { control, liveApp, liveLogs, rollback } from '#lib/phone.remote.js'
+import {
+  control,
+  getAppAuth,
+  liveApp,
+  liveLogs,
+  liveRequests,
+  rollback,
+  setAppAuth,
+} from '#lib/phone.remote.js'
 import { toast } from '#lib/toast.svelte.js'
 import type { PageProps } from './$types'
 
 let { params }: PageProps = $props()
 const detail = $derived(liveApp(params.name))
 const logs = $derived(liveLogs(params.name))
+const requests = $derived(liveRequests(params.name))
 const app = $derived(detail.current?.app ?? null)
 let busy = $state<string | null>(null)
+let tab = $state<'logs' | 'requests'>('logs')
 
 // Every action confirms itself, like the phone app: a note while it runs, then what happened.
 async function act(label: string, done: string, run: () => Promise<void>) {
@@ -48,6 +59,39 @@ const rollTo = (id: string) =>
   act('Rolling back', `${params.name} is on release ${id}`, () =>
     rollback({ name: params.name, to: id }),
   )
+
+const toggleAuth = () =>
+  app?.auth
+    ? act(
+        'Turning off private access for',
+        `Private access is off for ${params.name}`,
+        async () => {
+          await setAppAuth({ name: params.name, action: 'disable' })
+        },
+      )
+    : act('Turning on private access for', `Private access is on for ${params.name}`, async () => {
+        await setAppAuth({ name: params.name, action: 'enable' })
+      })
+
+const rotateAuth = () =>
+  act('Rotating access token for', `New access token ready for ${params.name}`, async () => {
+    await setAppAuth({ name: params.name, action: 'rotate' })
+  })
+
+async function copyAuth(kind: 'link' | 'token') {
+  try {
+    const res = await getAppAuth(params.name)
+    if (!res.token) return toast.show('Private access is off.', true)
+    const base = app?.publicUrl ?? app?.localUrl ?? ''
+    const text =
+      kind === 'link' ? `${base}/_dukoi/auth?token=${encodeURIComponent(res.token)}` : res.token
+    await navigator.clipboard.writeText(text)
+    toast.show(kind === 'link' ? 'Copied sign-in link' : 'Copied access token')
+  } catch (err) {
+    const body = (err as { body?: { message?: string } }).body
+    toast.show(body?.message ?? 'Could not copy access token.', true)
+  }
+}
 
 const live = $derived(app?.state === 'running')
 // Newest first.
@@ -100,6 +144,22 @@ const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 						</div>
 						<CopyButton text={app.localUrl} label="URL" class="text-muted" />
 					</div>
+					<div class="flex items-center justify-between gap-2 bg-card px-4 py-3.5">
+						<div class="flex min-w-0 flex-col gap-0.5">
+							<span class="text-xs text-muted">Private access</span>
+							<span class="text-[13px] font-medium">{app.auth ? 'On' : 'Off'}</span>
+						</div>
+						<div class="flex flex-wrap items-center justify-end gap-3 text-xs font-semibold">
+							{#if app.auth}
+								<button type="button" onclick={() => copyAuth('link')} class="text-violet">Copy link</button>
+								<button type="button" onclick={() => copyAuth('token')} class="text-muted hover:text-ink">Token</button>
+								<button type="button" disabled={busy !== null} onclick={rotateAuth} class="text-muted hover:text-ink disabled:opacity-50">Rotate</button>
+								<button type="button" disabled={busy !== null} onclick={toggleAuth} class="text-muted hover:text-ink disabled:opacity-50">Turn off</button>
+							{:else}
+								<button type="button" disabled={busy !== null} onclick={toggleAuth} class="text-violet disabled:opacity-50">Turn on</button>
+							{/if}
+						</div>
+					</div>
 				</div>
 
 				<Stats
@@ -134,11 +194,49 @@ const releases = $derived([...(detail.current?.releases ?? [])].reverse())
 			{/if}
 		</div>
 
-		<LogPanel
-			lines={logs.current?.lines ?? []}
-			connected={logs.connected}
-			problem={logs.current?.problem ?? null}
-			class="h-[480px] lg:h-auto lg:flex-1"
-		/>
+		<div class="flex h-[480px] min-w-0 flex-col bg-night lg:h-auto lg:flex-1">
+			<div class="flex items-center gap-6 border-b border-white/10 px-4 py-3.5 md:px-6">
+				<button
+					type="button"
+					onclick={() => (tab = 'logs')}
+					class="flex items-center gap-2 font-display text-lg font-medium {tab === 'logs'
+						? 'text-white'
+						: 'text-log-time hover:text-log-text'}"
+				>
+					Logs
+					<span class="size-[7px] rounded-full {logs.connected && !logs.current?.problem ? 'bg-log-live' : 'bg-log-time'}"></span>
+				</button>
+				<button
+					type="button"
+					onclick={() => (tab = 'requests')}
+					class="flex items-center gap-2 font-display text-lg font-medium {tab === 'requests'
+						? 'text-white'
+						: 'text-log-time hover:text-log-text'}"
+				>
+					Requests
+					{#if (requests.current?.requests.length ?? 0) > 0}
+						<span class="font-mono text-xs text-log-note">{requests.current?.requests.length}</span>
+					{/if}
+					<span class="size-[7px] rounded-full {requests.connected && !requests.current?.problem ? 'bg-log-live' : 'bg-log-time'}"></span>
+				</button>
+			</div>
+
+			{#if tab === 'logs'}
+				<LogPanel
+					lines={logs.current?.lines ?? []}
+					connected={logs.connected}
+					problem={logs.current?.problem ?? null}
+					showTitle={false}
+					class="min-h-0 flex-1"
+				/>
+			{:else}
+				<RequestPanel
+					appName={params.name}
+					requests={requests.current?.requests ?? []}
+					problem={requests.current?.problem ?? null}
+					class="px-4 py-4 md:px-6 md:py-5"
+				/>
+			{/if}
+		</div>
 	</div>
 </div>

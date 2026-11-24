@@ -9,6 +9,7 @@ import { deploy } from './commands/deploy.ts'
 import { env } from './commands/env.ts'
 import { expose } from './commands/expose.ts'
 import { init } from './commands/init.ts'
+import { inspect, replay } from './commands/inspect.ts'
 import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { skill } from './commands/skill.ts'
@@ -35,7 +36,8 @@ ${c.bold('Apps')}
   rollback [app]       Go back to the previous release (--to <id> for another)
   remove [app]         Delete an app from the phone (asks first; --yes to skip)
   expose [app]         Give an app a public HTTPS URL (--domain api.example.com for
-                       one that never changes, --off to remove it)
+                       one that never changes, --auth for a private access token,
+                       --no-auth to remove it, --rotate for a new token, --off to stop)
   env set KEY=value    Save a setting on the phone, like a bot token (also: env list,
                        env unset KEY; --app picks the app)
 
@@ -56,6 +58,9 @@ ${c.bold('Databases')}
 ${c.bold('Watching')}
   ps                   All apps: status, CPU, memory, uptime, URL
   logs [app]           Recent lines, then live (--lines 200, --no-follow)
+  inspect [app] [id]   Live HTTP requests, or details of one request (--limit 50,
+                       --no-follow, --clear)
+  replay [app] <id>    Send a captured request to the live app again
   status               Phone health: memory, storage, uptime
   dashboard            Open the web dashboard on this computer (--no-open to skip the browser)
   bench                How fast is this phone? About 13 minutes (--quick for 3, --share to
@@ -98,8 +103,13 @@ async function main(argv: string[]): Promise<void> {
       to: { type: 'string' },
       off: { type: 'boolean', default: false },
       wifi: { type: 'boolean', default: false },
+      auth: { type: 'boolean', default: false },
+      'no-auth': { type: 'boolean', default: false },
+      rotate: { type: 'boolean', default: false },
       domain: { type: 'string' },
       lines: { type: 'string' },
+      limit: { type: 'string' },
+      clear: { type: 'boolean', default: false },
       'no-follow': { type: 'boolean', default: false },
       'no-open': { type: 'boolean', default: false },
       quiet: { type: 'boolean', default: false },
@@ -157,11 +167,31 @@ async function main(argv: string[]): Promise<void> {
         device: values.device,
         json,
       })
+    case 'inspect':
+      return inspect({
+        args: positionals.slice(1),
+        app: values.app,
+        limit: Number(values.limit ?? 50),
+        follow: !(values['no-follow'] ?? false) && process.stdout.isTTY === true,
+        clear: values.clear ?? false,
+        device: values.device,
+        json,
+      })
+    case 'replay':
+      return replay({
+        args: positionals.slice(1),
+        app: values.app,
+        device: values.device,
+        json,
+      })
     case 'expose':
       return expose({
         app: arg,
         off: values.off ?? false,
         domain: values.domain,
+        auth: values.auth ?? false,
+        noAuth: values['no-auth'] ?? false,
+        rotate: values.rotate ?? false,
         device: values.device,
         json,
       })

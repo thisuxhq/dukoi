@@ -185,7 +185,10 @@ Gives an app a public HTTPS URL through a Cloudflare quick tunnel. Quick tunnel 
 | Flag | Meaning |
 | --- | --- |
 | `--domain <domain>` | Use a named tunnel on your own Cloudflare domain. Opens a browser to log in to Cloudflare the first time. |
-| `--off` | Remove the public URL. |
+| `--auth` | Protect the app in Dukoi's proxy with an access token, a built-in browser sign-in page and a one-click sign-in link. Works with quick tunnels and `--domain`. |
+| `--rotate` | Generate a new access token and sign out existing browser sessions. |
+| `--no-auth` | Turn off private access while keeping the public URL live. |
+| `--off` | Remove the public URL (and turn off private access). |
 
 See [networking.md](networking.md).
 
@@ -196,6 +199,8 @@ See [networking.md](networking.md).
 | Command | What it does |
 | --- | --- |
 | `dukoi logs [app]` | Streams live logs. Use `--lines 200` for history and `--no-follow` to print and exit. |
+| `dukoi inspect [app] [id]` | Streams live HTTP requests for an app (last 100 kept in memory), or shows full headers and bodies for one ID like `r_043`. Use `--limit 50`, `--no-follow` or `--clear`. |
+| `dukoi replay [app] <id>` | Re-sends a captured request (like `r_043`) to the live release and prints the new response. |
 | `dukoi status` | Phone health: memory, storage, load, agent version and uptime |
 | `dukoi dashboard` | Opens the web dashboard on `127.0.0.1:7071` (or the next free port). Only this computer can reach it. `--no-open` skips the browser. |
 | `dukoi bench` | Deploys `dukoi-bench`, measures it on Wi-Fi, through a quick tunnel and after 10 minutes of load, then removes it. About 13 minutes. `--quick` skips the hot test. `--share` sends the result to dukoi.com/bench. See [benchmarks.md](benchmarks.md). |

@@ -27,7 +27,13 @@ export async function ps(device: string | undefined, json: boolean): Promise<voi
       a.memoryMb === null ? '–' : `${a.memoryMb} MB`,
       a.startedAt ? ago(a.startedAt) : '–',
       String(a.restarts),
-      a.publicUrl ?? a.localUrl,
+      a.publicUrl
+        ? a.auth
+          ? `${a.publicUrl} ${c.dim('(auth)')}`
+          : a.publicUrl
+        : a.auth
+          ? `${a.localUrl} ${c.dim('(auth)')}`
+          : a.localUrl,
     ])
   }
   info(table(rows))

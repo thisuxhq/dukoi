@@ -25,6 +25,19 @@ dukoi logs my-api
 - Rotation: **5 MB per app**. Older lines are dropped.
 - Secrets are masked before they're written.
 
+## Requests
+
+```bash
+dukoi inspect my-api           # live HTTP requests
+dukoi inspect r_043            # headers and body for one request
+dukoi replay r_043             # send it to the live app again
+```
+
+- Every app's stable port keeps the **last 100 HTTP requests** in memory. Nothing is written to disk, and restarting the agent clears the buffer.
+- Request and response bodies are capped at **64 KB** each. Binary bodies store only their size.
+- Sensitive headers (`authorization`, `cookie`, `set-cookie`, `*-signature`, `*-token`, `*-key`) are shown as `[redacted]` in the CLI and dashboard. The phone keeps the raw request headers in memory so `dukoi replay` (and the **Replay** button in the dashboard's **Requests** tab) can re-send webhooks and authenticated calls as they arrived.
+- Requests whose body was over 64 KB can't be replayed, because only the first 64 KB was kept.
+
 ## Device metrics
 
 | Metric | Shown where |

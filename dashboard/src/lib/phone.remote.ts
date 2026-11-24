@@ -2,13 +2,26 @@
 // local server, which signs each call with this computer's key.
 import {
   APP_NAME_PATTERN,
+  type AppAuthResult,
   type AppInfo,
   type DatabaseInfo,
   type PhoneStatus,
+  REQUEST_ID_PATTERN,
   type ReleaseInfo,
+  type ReplayResult,
+  type RequestDetail,
+  type RequestSummary,
 } from '@dukoi/shared'
 import * as v from 'valibot'
-import { fail, followLogAt, type Problem, phone, problem, signed } from '#lib/server/phone.js'
+import {
+  fail,
+  followLogAt,
+  followRequestsAt,
+  type Problem,
+  phone,
+  problem,
+  signed,
+} from '#lib/server/phone.js'
 import { command, getRequestEvent, query } from '$app/server'
 import { type LogLine, parseLogLine } from './log-line.js'
 
@@ -16,7 +29,9 @@ export type { LogLine }
 
 const REFRESH_MS = 2000
 const LOG_LINES = 500
+const MAX_REQUESTS = 100
 const AppName = v.pipe(v.string(), v.regex(APP_NAME_PATTERN))
+const RequestId = v.pipe(v.string(), v.regex(REQUEST_ID_PATTERN))
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -131,6 +146,101 @@ export const rollback = command(
   async ({ name, to }) => {
     try {
       await signed(`/apps/${name}/rollback`, { method: 'POST', body: { to }, timeoutMs: 60_000 })
+    } catch (err) {
+      fail(err)
+    }
+  },
+)
+
+export interface RequestsFeed {
+  requests: RequestSummary[]
+  problem: Problem | null
+}
+
+/** The last 100 HTTP requests for an app, then every new one as it arrives. */
+export const liveRequests = query.live(AppName, async function* (name) {
+  const { request } = getRequestEvent()
+  let requests: RequestSummary[] = []
+  while (!request.signal.aborted) {
+    try {
+      requests = []
+      for await (const event of followRequestsAt(
+        `/apps/${encodeURIComponent(name)}/requests`,
+        MAX_REQUESTS,
+        request.signal,
+      )) {
+        requests = event.kind === 'reset' ? [] : [...requests, ...event.items].slice(-MAX_REQUESTS)
+        yield { requests, problem: null } satisfies RequestsFeed
+      }
+    } catch (err) {
+      if (request.signal.aborted) return
+      yield { requests, problem: problem(err) } satisfies RequestsFeed
+    }
+    await sleep(3000)
+  }
+})
+
+/** Full headers and body of one captured request. */
+export const getRequestDetail = query(
+  v.object({ name: AppName, id: RequestId }),
+  async ({ name, id }): Promise<RequestDetail> => {
+    try {
+      return await signed<RequestDetail>(
+        `/apps/${encodeURIComponent(name)}/requests/${encodeURIComponent(id)}`,
+      )
+    } catch (err) {
+      fail(err)
+    }
+  },
+)
+
+/** Re-sends a captured request to the live app and returns the new captured request. */
+export const replayRequest = command(
+  v.object({ name: AppName, id: RequestId }),
+  async ({ name, id }): Promise<ReplayResult> => {
+    try {
+      return await signed<ReplayResult>(
+        `/apps/${encodeURIComponent(name)}/requests/${encodeURIComponent(id)}/replay`,
+        { method: 'POST', timeoutMs: 45_000 },
+      )
+    } catch (err) {
+      fail(err)
+    }
+  },
+)
+
+/** Clears captured requests for an app. */
+export const clearRequests = command(AppName, async (name) => {
+  try {
+    await signed(`/apps/${encodeURIComponent(name)}/requests`, { method: 'DELETE' })
+  } catch (err) {
+    fail(err)
+  }
+})
+
+/** Reads an app's proxy auth state and token (when enabled), for copying sign-in links. */
+export const getAppAuth = query(AppName, async (name): Promise<AppAuthResult> => {
+  try {
+    return await signed<AppAuthResult>(`/apps/${encodeURIComponent(name)}/auth`)
+  } catch (err) {
+    fail(err)
+  }
+})
+
+/** Turns private access on, off, or rotates its access token. */
+export const setAppAuth = command(
+  v.object({ name: AppName, action: v.picklist(['enable', 'disable', 'rotate']) }),
+  async ({ name, action }): Promise<AppAuthResult> => {
+    try {
+      if (action === 'disable') {
+        return await signed<AppAuthResult>(`/apps/${encodeURIComponent(name)}/auth`, {
+          method: 'DELETE',
+        })
+      }
+      return await signed<AppAuthResult>(`/apps/${encodeURIComponent(name)}/auth`, {
+        method: 'POST',
+        body: { rotate: action === 'rotate' },
+      })
     } catch (err) {
       fail(err)
     }

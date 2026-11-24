@@ -4,6 +4,15 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-25
+
+### Added
+
+- Built-in HTTP request inspector and replay. Each app's stable port now keeps the last 100 HTTP requests in memory (bodies capped at 64 KB, zero disk writes, sensitive headers redacted in output).
+- `dukoi inspect [app]` streams live requests, `dukoi inspect <id>` prints headers and bodies, `dukoi inspect --clear` clears the list, and `dukoi replay <id>` re-sends a captured request to the live app.
+- The web dashboard's app page now has a live **Requests** tab next to **Logs**, with full request/response inspection and a one-click **Replay** button.
+- Zero-config private access with `dukoi expose --auth` (and `--domain ... --auth`, `--rotate`, `--no-auth`). Dukoi's proxy gates HTTP and WebSocket traffic with a generated access token, a built-in browser sign-in page, a one-click sign-in link and `Authorization: Bearer` support — no app code changes needed. The dashboard's app page adds **Private access** controls to toggle, copy the sign-in link or token, and rotate it.
+
 ## [0.8.1] - 2026-11-13
 
 ### Changed
@@ -129,7 +138,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.8.1...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.9.0...main
+[0.9.0]: https://github.com/thisuxhq/dukoi/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/thisuxhq/dukoi/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/thisuxhq/dukoi/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/thisuxhq/dukoi/compare/v0.6.0...v0.7.0

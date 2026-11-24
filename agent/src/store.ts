@@ -23,6 +23,8 @@ export interface SavedApp {
   publicUrl?: string
   /** Custom domain, e.g. api.example.com, served by the phone's named tunnel */
   domain?: string
+  /** Proxy-level access token for `dukoi expose --auth`. Survives restarts. */
+  authToken?: string
   /** Settings passed to the app as environment variables, like TELEGRAM_BOT_TOKEN */
   env?: Record<string, string>
   /** The template it was deployed from on the phone */

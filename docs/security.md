@@ -92,7 +92,7 @@ We say these things in the docs and the app, not just here:
 
 - **There's no container isolation.** Apps run as the same Android user. A hostile app could read another app's files. Only deploy code you trust.
 - **This isn't a production SaaS host.** There are no uptime promises.
-- **Quick tunnel URLs are public to anyone who has the link.** Add auth in your app if it needs it.
+- **Quick tunnel URLs are public to anyone who has the link.** Use `dukoi expose --auth` to gate personal apps behind a generated access token and signed browser cookie, or add your own auth for multi-user apps.
 - **Your ISP's terms may forbid running servers.** Tunnels keep traffic outbound, but check your plan.
 - **SMS (later phases)** is for personal alerts only. Bulk or commercial SMS from a personal SIM breaks TRAI rules in India.
 
