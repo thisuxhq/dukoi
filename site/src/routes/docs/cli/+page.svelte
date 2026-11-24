@@ -84,6 +84,14 @@ const groups: { id: string; title: string; rows: [string, string][] }[] = [
         'skill',
         'Teach the coding agents on this computer (Claude Code, Codex, Cursor, Gemini CLI, OpenCode) to use Dukoi. The installer runs it for you. `--off` removes it.',
       ],
+      [
+        'mcp',
+        'Run a local MCP server over stdio so Claude Desktop, Cursor, Claude Code and other MCP clients can manage your paired phone directly. `--device <name>` sets the default phone.',
+      ],
+      [
+        'mcp install',
+        'Add Dukoi to installed MCP clients (Claude Desktop, Cursor, Claude Code) without touching other servers. `--off` removes it.',
+      ],
     ],
   },
   {

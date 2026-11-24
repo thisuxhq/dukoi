@@ -10,6 +10,7 @@ import { env } from './commands/env.ts'
 import { expose } from './commands/expose.ts'
 import { init } from './commands/init.ts'
 import { inspect, replay } from './commands/inspect.ts'
+import { mcp } from './commands/mcp.ts'
 import { logs, ps, status } from './commands/observe.ts'
 import { devices, pair, unpair } from './commands/pair.ts'
 import { skill } from './commands/skill.ts'
@@ -69,6 +70,8 @@ ${c.bold('Watching')}
 ${c.bold('AI agents')}
   skill                Teach Claude Code, Codex, Cursor and other coding agents on this
                        computer to use Dukoi (--off to remove it)
+  mcp                  Start the local MCP server over stdio (mcp install to register
+                       in Claude Desktop, Cursor and Claude Code; --off to remove)
 
 ${c.bold('This computer')}
   update               Update the dukoi command to the latest release
@@ -219,6 +222,8 @@ async function main(argv: string[]): Promise<void> {
       return dashboard({ device: values.device, open: !(values['no-open'] ?? false) })
     case 'skill':
       return skill({ off: values.off ?? false, quiet: values.quiet ?? false, json })
+    case 'mcp':
+      return mcp(arg, { device: values.device, off: values.off ?? false, json })
     case 'update':
       return update({ json })
     case 'releases':

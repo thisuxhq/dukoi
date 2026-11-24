@@ -236,6 +236,35 @@ It copies `skills/dukoi/SKILL.md` into the skills folder of each agent whose hom
 
 The same skill is on [skills.sh](https://skills.sh): `npx skills add thisuxhq/dukoi`. The site serves it at `dukoi.com/skill.md` for agents that read the web.
 
+### `dukoi mcp`
+
+Starts a local MCP (Model Context Protocol) server over stdio (D-126). MCP clients like Claude Desktop, Cursor and Claude Code can call Dukoi tools, read phone resources and run prompts directly without running shell commands. It reuses this computer's paired Ed25519 key over Wi-Fi or Tailscale; the admin API still never goes through a tunnel.
+
+Use `--device <name>` to set the default phone for the session.
+
+| Capability | Names |
+| --- | --- |
+| Read-only tools | `dukoi_devices`, `dukoi_status`, `dukoi_ps`, `dukoi_logs`, `dukoi_inspect`, `dukoi_releases`, `dukoi_env_list`, `dukoi_db_list` |
+| Action tools | `dukoi_deploy`, `dukoi_replay`, `dukoi_control`, `dukoi_rollback`, `dukoi_expose`, `dukoi_env_set`, `dukoi_db_create`, `dukoi_db_connect` |
+| Resources | `dukoi://devices`, `dukoi://phone/status`, `dukoi://apps`, `dukoi://apps/{app}/logs`, `dukoi://apps/{app}/requests` |
+| Prompts | `debug-app`, `deploy-check` |
+
+Secrets stay safe: `dukoi_env_list` returns names only, `dukoi_env_set` never echoes values, and database URLs mask passwords.
+
+### `dukoi mcp install`
+
+Adds Dukoi to the MCP configuration of installed clients on this computer (Claude Desktop, Cursor and Claude Code) without overwriting other servers. Restart the client afterwards so it picks up Dukoi.
+
+```
+$ dukoi mcp install
+✓ Added Dukoi MCP server to Claude Desktop and Cursor
+```
+
+| Flag | Meaning |
+| --- | --- |
+| `--off` | Remove Dukoi from every client config. |
+| `--json` | Machine-readable output. |
+
 ---
 
 ## This computer

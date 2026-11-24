@@ -256,6 +256,13 @@ This doc is the decision log. It records what we decided, why we decided it, and
 - **Why:** Personal tools like `file-drop`, `notes-api` and internal dashboards shouldn't sit open on the internet, yet wiring login into a weekend app adds friction. Enforcing auth in `StablePort` works for any Node or static app with zero code changes, strips Dukoi's own credentials before forwarding upstream, skips `RequestLog` on `/_dukoi/auth`, and lets `--rotate` invalidate every cookie at once.
 - **Trade-off:** It's a single shared access token per app, not multi-user accounts or OAuth. Apps that need per-user logins still implement their own.
 
+### D-126: Local MCP server via `dukoi mcp`
+- **Status:** Decided
+- **Date:** 2026-11-25
+- **Decision:** `dukoi mcp` runs a local Model Context Protocol (MCP) server over stdio in the CLI with zero new dependencies, reusing this computer's paired Ed25519 key over Wi-Fi or Tailscale. `dukoi mcp install` registers it in installed MCP clients (Claude Desktop, Cursor, Claude Code) without overwriting other servers, and `--off` removes it.
+- **Why:** MCP clients can inspect logs, replay requests, deploy folders and manage databases through structured tools, resources and prompts instead of running shell commands. Running the server locally in the CLI keeps the admin API off the internet (D-005), reuses existing pairing and phone discovery (D-123), and enforces secret safety: `dukoi_env_list` returns names only, `dukoi_env_set` never echoes values, and database URLs mask passwords.
+- **Trade-off:** It only runs on a paired computer with the CLI installed; web-only or remote MCP clients still can't reach the admin API directly.
+
 ## Open questions
 
 | Question | Options | Decides |

@@ -4,6 +4,14 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-25
+
+### Added
+
+- Local MCP server (`dukoi mcp`) over stdio so Claude Desktop, Cursor, Claude Code and other MCP clients can manage a paired phone directly over Wi-Fi or Tailscale using this computer's Ed25519 key (the admin API still never goes through a tunnel).
+- `dukoi mcp install` adds Dukoi to installed MCP clients (Claude Desktop, Cursor, Claude Code) without overwriting other servers, and `dukoi mcp install --off` removes it.
+- Sixteen MCP tools (`dukoi_devices`, `dukoi_status`, `dukoi_ps`, `dukoi_logs`, `dukoi_inspect`, `dukoi_releases`, `dukoi_env_list`, `dukoi_db_list`, `dukoi_deploy`, `dukoi_replay`, `dukoi_control`, `dukoi_rollback`, `dukoi_expose`, `dukoi_env_set`, `dukoi_db_create`, `dukoi_db_connect`), five resources (`dukoi://devices`, `dukoi://phone/status`, `dukoi://apps`, `dukoi://apps/{app}/logs`, `dukoi://apps/{app}/requests`) and two prompts (`debug-app`, `deploy-check`). Secrets stay safe: `dukoi_env_list` returns names only, `dukoi_env_set` never echoes values, and database URLs mask passwords.
+
 ## [0.9.0] - 2026-11-25
 
 ### Added
@@ -138,7 +146,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.9.0...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.10.0...main
+[0.10.0]: https://github.com/thisuxhq/dukoi/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/thisuxhq/dukoi/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/thisuxhq/dukoi/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/thisuxhq/dukoi/compare/v0.7.0...v0.8.0

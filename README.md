@@ -50,6 +50,7 @@ You get a Wi-Fi URL straight away. `dukoi expose` adds a public HTTPS URL throug
 | `dukoi rollback` | Go back to the previous release |
 | `dukoi dashboard` | Open the web dashboard on this computer |
 | `dukoi skill` | Teach your coding agents (Claude Code, Codex, Cursor) to use Dukoi |
+| `dukoi mcp` | Run a local MCP server for Claude Desktop, Cursor and Claude Code (`dukoi mcp install` sets it up) |
 
 Every command and flag is in [docs/cli-reference.md](docs/cli-reference.md).
 
