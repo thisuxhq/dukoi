@@ -8,10 +8,10 @@ let { template: t, wide = false }: { template: SiteTemplate; wide?: boolean } = 
 
 <a
   href="/docs/templates/{t.id}"
-  class="group flex flex-col justify-between gap-6 p-6 {t.tint} {wide ? 'md:col-span-2 lg:flex-row lg:items-end' : ''}"
+  class="template-card group flex flex-col justify-between gap-6 p-6 {t.tint} {wide ? 'md:col-span-2 lg:flex-row lg:items-end' : ''}"
 >
   <div class="flex flex-col gap-3 {wide ? 'lg:max-w-[340px]' : ''}">
-    <span class="grid size-11 place-items-center bg-white/70"><Icon name={t.icon} class="size-[22px] {t.ink}" /></span>
+    <span class="grid size-11 place-items-center bg-white/70"><Icon name={t.icon} class="template-icon size-[22px] {t.ink}" /></span>
     <h3 class="font-display text-[22px] leading-7 font-medium tracking-[-0.01em] group-hover:underline">{t.name}</h3>
     <p class="text-[15px] leading-[23px] text-body">{t.description}.</p>
   </div>

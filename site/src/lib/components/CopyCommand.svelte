@@ -35,16 +35,21 @@ async function copy() {
 >
   <!-- Scrolls sideways on a phone, where the install line is wider than the screen -->
   <code class="min-w-0 overflow-x-auto font-mono whitespace-pre [scrollbar-width:none] {size === 'sm' ? 'text-sm lg:text-[15px]' : size === 'md' ? 'text-[15px] lg:text-[17px]' : 'text-base lg:text-lg'}"
-    ><span class="text-prompt">$</span> {command}</code
+    ><span class="cmd-prompt text-prompt">$</span> {command}</code
   >
   {#if size !== 'sm'}
     <button
       type="button"
       onclick={copy}
       aria-label={copied ? 'Copied' : `Copy ${command}`}
-      class="grid size-9 shrink-0 place-items-center rounded transition-colors {tone === 'night' ? 'bg-night-raised hover:bg-night-high' : 'bg-night-high hover:bg-[#44434d]'}"
+      class="copy-trigger pressable grid size-9 shrink-0 cursor-pointer place-items-center rounded {tone === 'night' ? 'bg-night-raised hover:bg-night-high' : 'bg-night-high hover:bg-[#44434d]'} {copied ? 'shadow-[inset_0_0_0_1px_rgba(24,169,87,0.45)]' : ''}"
     >
-      <Icon name={copied ? 'tick-02' : 'copy-01'} class="size-[18px] {copied ? 'text-running' : ''}" />
+      <span class="swap-item grid place-items-center" data-active={!copied}>
+        <Icon name="copy-01" class="copy-icon-nudge size-[18px]" />
+      </span>
+      <span class="swap-item grid place-items-center" data-active={copied}>
+        <Icon name="tick-02" class="size-[18px] text-running" />
+      </span>
     </button>
     <span class="sr-only" aria-live="polite">{copied ? 'Copied to clipboard' : ''}</span>
   {/if}

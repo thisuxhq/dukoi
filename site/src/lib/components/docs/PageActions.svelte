@@ -48,29 +48,35 @@ function onWindowClick(event: MouseEvent) {
   <button
     type="button"
     onclick={copy}
-    class="flex h-9 items-center gap-2 rounded-l border border-line bg-card px-3 text-sm font-medium transition-colors hover:bg-canvas"
+    class="copy-trigger pressable grid h-9 cursor-pointer place-items-center rounded-l border border-line bg-card px-3 text-sm font-medium hover:bg-canvas"
   >
-    <Icon name={copied ? 'tick-02' : 'copy-01'} class="size-4 {copied ? 'text-running' : 'text-muted'}" />
-    {copied ? 'Copied' : 'Copy page'}
+    <span class="swap-item inline-flex items-center gap-2" data-active={!copied}>
+      <Icon name="copy-01" class="copy-icon-nudge size-4 text-muted" />
+      Copy page
+    </span>
+    <span class="swap-item inline-flex items-center gap-2" data-active={copied} aria-hidden={!copied}>
+      <Icon name="tick-02" class="size-4 text-running" />
+      Copied
+    </span>
   </button>
   <button
     type="button"
     onclick={() => (open = !open)}
     aria-label="More ways to use this page"
     aria-expanded={open}
-    class="grid h-9 w-9 place-items-center rounded-r border border-l-0 border-line bg-card transition-colors hover:bg-canvas"
+    class="pressable grid h-9 w-9 cursor-pointer place-items-center rounded-r border border-l-0 border-line bg-card hover:bg-canvas"
   >
-    <Icon name="arrow-down-01" class="size-4 text-muted transition-transform {open ? 'rotate-180' : ''}" />
+    <Icon name="arrow-down-01" class="popover-chevron size-4 text-muted {open ? 'rotate-180' : ''}" />
   </button>
   <span class="sr-only" aria-live="polite">{copied ? 'Page copied as Markdown' : ''}</span>
 
   {#if open}
-    <div class="absolute top-11 z-10 flex w-64 flex-col border border-line bg-card py-1.5 shadow-[0_8px_24px_rgba(22,22,26,0.08)] lg:right-0">
-      <button type="button" onclick={copy} class="flex items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-canvas">
+    <div class="popover-menu absolute top-11 z-10 flex w-64 origin-top-left flex-col border border-line bg-card py-1.5 shadow-[0_8px_24px_rgba(22,22,26,0.08)] lg:right-0 lg:origin-top-right">
+      <button type="button" onclick={copy} class="pressable-row flex cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-canvas">
         <Icon name="copy-01" class="size-[18px] text-muted" />Copy page as Markdown
       </button>
       {#each chats as chat (chat.name)}
-        <button type="button" onclick={() => openIn(chat.url)} class="flex items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-canvas">
+        <button type="button" onclick={() => openIn(chat.url)} class="pressable-row flex cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-canvas">
           <Icon name={chat.icon} class="size-[18px]" />Open in {chat.name}
         </button>
       {/each}

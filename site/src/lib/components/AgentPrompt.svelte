@@ -40,9 +40,19 @@ async function copy() {
 <button
   type="button"
   onclick={copy}
-  class="flex h-14 shrink-0 items-center justify-center gap-3 rounded bg-violet px-7 text-base font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#6a2fe0] lg:h-[60px] lg:text-[17px] {className}"
+  class="copy-trigger pressable grid h-14 shrink-0 cursor-pointer place-items-center rounded bg-violet px-7 text-base font-semibold whitespace-nowrap text-white hover:bg-[#6a2fe0] lg:h-[60px] lg:text-[17px] {className}"
 >
-  {copied ? 'Copied' : 'Copy prompt for agent'}
-  <Icon name={copied ? 'tick-02' : 'copy-01'} class="size-[18px]" />
+  <span class="swap-item inline-flex items-center justify-center gap-3" data-active={!copied}>
+    Copy prompt for agent
+    <Icon name="copy-01" class="copy-icon-nudge size-[18px]" />
+  </span>
+  <span
+    class="swap-item inline-flex items-center justify-center gap-2.5"
+    data-active={copied}
+    aria-hidden={!copied}
+  >
+    Copied
+    <Icon name="tick-02" class="size-[18px]" />
+  </span>
 </button>
 <span class="sr-only" aria-live="polite">{copied ? 'Prompt copied. Paste it to your agent.' : ''}</span>

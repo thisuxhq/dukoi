@@ -74,12 +74,437 @@
   --color-slate-ink: #3c4458;
 }
 
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
 html {
   background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   scroll-behavior: smooth;
+}
+
+/* Tactile press feedback for interactive controls (never transition: all). */
+.pressable {
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 180ms var(--ease-out);
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+.pressable-row {
+  transition:
+    transform 150ms var(--ease-out),
+    background-color 150ms ease;
+}
+.pressable-row:active {
+  transform: scale(0.99);
+}
+
+/* Asymmetric blur-masked state crossfade: snappy exit clears before crisp enter focuses in. */
+.swap-item {
+  grid-area: 1 / 1;
+}
+.swap-item[data-active="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0px);
+  transition:
+    opacity 180ms var(--ease-out) 40ms,
+    transform 200ms var(--ease-out) 40ms,
+    filter 180ms var(--ease-out) 40ms;
+}
+.swap-item[data-active="false"] {
+  opacity: 0;
+  transform: translateY(-2px) scale(0.94);
+  filter: blur(2px);
+  pointer-events: none;
+  transition:
+    opacity 90ms ease-out,
+    transform 105ms ease-out,
+    filter 90ms ease-out;
+}
+
+/* Origin-aware dropdown popover entrance using @starting-style (no scale(0)). */
+.popover-menu {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition:
+    opacity 170ms var(--ease-out),
+    transform 190ms var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+}
+
+.popover-chevron {
+  transition: transform 180ms var(--ease-out);
+}
+
+/* Active left indicator rail for live release rows. */
+.release-rail {
+  transform-origin: center;
+  transition:
+    transform 200ms var(--ease-out),
+    opacity 180ms var(--ease-out);
+}
+.release-rail[data-live="true"] {
+  opacity: 1;
+  transform: scaleY(1);
+}
+.release-rail[data-live="false"] {
+  opacity: 0;
+  transform: scaleY(0.25);
+}
+
+/* Hero initial entrance — pure CSS so it runs off the main thread during page load. */
+@keyframes dukoi-hero-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dukoi-hero-art {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-enter {
+  animation: dukoi-hero-up 480ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.hero-art-enter {
+  animation: dukoi-hero-art 560ms var(--ease-out) both;
+  animation-delay: var(--delay, 80ms);
+}
+
+/* Scroll-triggered reveals driven by IntersectionObserver (progressive enhancement). */
+[data-reveal] {
+  transition:
+    opacity 500ms var(--ease-out),
+    transform 500ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(14px);
+}
+[data-reveal="hidden"][data-reveal-scale] {
+  transform: translateY(14px) scale(0.985);
+}
+[data-reveal="visible"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Staggered terminal lines inside "Apps that stay up". */
+.log-line {
+  transition:
+    opacity 360ms var(--ease-out),
+    transform 360ms var(--ease-out);
+  transition-delay: var(--log-delay, 0ms);
+}
+[data-reveal="hidden"] .log-line,
+[data-replaying="true"] .log-line {
+  opacity: 0;
+  transform: translateY(6px);
+  transition-duration: 0ms;
+  transition-delay: 0ms;
+}
+[data-reveal="visible"] .log-line {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Quiet status beacons for live indicators. */
+@keyframes dukoi-beacon {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.status-beacon {
+  position: relative;
+}
+.status-beacon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: dukoi-beacon 2.8s var(--ease-out) infinite;
+}
+
+@keyframes dukoi-soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.status-pulse {
+  animation: dukoi-soft-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dukoi-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.terminal-caret {
+  animation: dukoi-caret 1.15s steps(1, end) infinite;
+}
+
+/* Desktop-only hover polish (never triggers sticky hover on touch devices). */
+.step-card {
+  transition:
+    transform 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.step-num {
+  transition: transform 200ms var(--ease-out);
+}
+.step-card .cmd-prompt {
+  transition: color 180ms ease;
+}
+
+.template-card {
+  transition:
+    transform 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out),
+    background-color 180ms ease;
+}
+.template-card .template-icon {
+  transition:
+    transform 200ms var(--ease-out),
+    color 180ms ease;
+}
+.template-card .template-title {
+  transition: color 160ms ease;
+}
+.template-card:active {
+  transform: scale(0.985);
+}
+
+.trust-pill {
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+}
+
+.url-bar {
+  transition:
+    transform 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+}
+
+.feature-chip-icon {
+  transition: transform 220ms var(--ease-out);
+}
+.feature-chip-icon[data-kick="undo"] {
+  transform: rotate(-32deg);
+}
+.feature-chip-icon[data-kick="battery"] {
+  transform: scale(1.14);
+}
+
+.apk-download-icon {
+  transition: transform 180ms var(--ease-out);
+}
+
+.copy-icon-nudge {
+  transition: transform 180ms var(--ease-out);
+}
+
+.nav-link {
+  transition:
+    color 150ms ease,
+    transform 150ms var(--ease-out);
+}
+.nav-link:active {
+  transform: scale(0.97);
+}
+.github-icon {
+  transition: transform 200ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .step-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px -18px rgba(22, 22, 26, 0.22);
+  }
+  .step-card:hover .step-num {
+    transform: translateY(-1.5px);
+  }
+  .step-card:hover .cmd-prompt {
+    color: var(--color-log-note);
+  }
+
+  .template-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -16px rgba(22, 22, 26, 0.22);
+  }
+  .template-card:hover .template-icon {
+    transform: scale(1.08);
+  }
+  .template-card:active {
+    transform: translateY(0) scale(0.985);
+  }
+
+  .trust-pill:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 16px -10px rgba(210, 65, 110, 0.28);
+  }
+
+  .url-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px -12px rgba(24, 169, 87, 0.35);
+  }
+
+  .feature-tile:hover [data-hover="spin"] .feature-chip-icon {
+    transform: rotate(35deg);
+  }
+  .feature-tile:hover [data-hover="undo"] .feature-chip-icon {
+    transform: translateX(-2px) rotate(-10deg);
+  }
+  .feature-tile:hover [data-hover="lift"] .feature-chip-icon {
+    transform: translateY(-2px);
+  }
+  .feature-tile:hover [data-hover="pop"] .feature-chip-icon {
+    transform: scale(1.08);
+  }
+
+  .apk-button:hover .apk-download-icon {
+    transform: translateY(2px);
+  }
+
+  .copy-trigger:hover .copy-icon-nudge {
+    transform: scale(1.08);
+  }
+
+  .nav-link:hover .github-icon {
+    transform: scale(1.08) rotate(-5deg);
+  }
+
+  .dash-row {
+    transition:
+      background-color 150ms ease,
+      transform 150ms var(--ease-out);
+  }
+  .dash-row:hover {
+    background-color: #ffffff;
+  }
+
+  .compare-row td,
+  .compare-row th {
+    transition: background-color 150ms ease;
+  }
+  .compare-row:hover .compare-cell-base {
+    background-color: #faf9fc;
+  }
+  .compare-row:hover .compare-cell-accent {
+    background-color: #e6defa;
+  }
+}
+
+/* Reduced motion: keep gentle opacity/color cues, remove movement and loops. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .hero-enter,
+  .hero-art-enter {
+    animation: dukoi-fade-only 220ms ease both;
+    animation-delay: 0ms;
+  }
+  [data-reveal],
+  .log-line {
+    transition: opacity 220ms ease;
+    transition-delay: 0ms;
+  }
+  [data-reveal="hidden"],
+  [data-reveal="hidden"][data-reveal-scale],
+  [data-reveal="hidden"] .log-line,
+  [data-replaying="true"] .log-line {
+    transform: none;
+  }
+  .pressable:active,
+  .pressable-row:active,
+  .step-card:hover,
+  .step-card:hover .step-num,
+  .template-card:hover,
+  .template-card:active,
+  .template-card:hover .template-icon,
+  .trust-pill:hover,
+  .url-bar:hover,
+  .feature-tile:hover [data-hover] .feature-chip-icon,
+  .feature-chip-icon[data-kick],
+  .apk-button:hover .apk-download-icon,
+  .copy-trigger:hover .copy-icon-nudge,
+  .nav-link:hover .github-icon,
+  .nav-link:active,
+  .popover-menu,
+  .release-rail[data-live="false"] {
+    transform: none;
+  }
+  .swap-item[data-active="true"],
+  .swap-item[data-active="false"] {
+    transform: none;
+    filter: none;
+    transition: opacity 140ms ease;
+  }
+  .status-beacon::after,
+  .status-pulse,
+  .terminal-caret {
+    animation: none;
+  }
+  .status-beacon::after {
+    opacity: 0;
+  }
+}
+
+@keyframes dukoi-fade-only {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Docs articles: body text, inline code, links and lists. Headings and blocks style themselves. */

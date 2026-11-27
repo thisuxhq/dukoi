@@ -59,13 +59,13 @@ const description =
 <!-- Content stays within 1440px and centred; the border lines run edge to edge. -->
 <div class={inDocsSection ? 'border-b border-line' : ''}>
   <header class="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 lg:h-20 lg:px-16">
-    <a href="/" class="font-display text-[22px] font-medium tracking-[-0.02em] lg:text-2xl">Dukoi</a>
+    <a href="/" class="nav-link font-display text-[22px] font-medium tracking-[-0.02em] lg:text-2xl">Dukoi</a>
     <nav class="flex items-center gap-5 text-[15px] font-medium lg:gap-8">
-      <a href="/docs/templates" class="hover:text-violet {inTemplates ? 'text-violet' : ''}">Templates</a>
-      <a href={DOCS} class="hover:text-violet {inDocs ? 'text-violet' : ''}">Docs</a>
-      <a href="/docs/releases" class="hidden hover:text-violet sm:inline {inChangelog ? 'text-violet' : ''}">Changelog</a>
-      <a href={REPO} class="flex items-center gap-2 hover:text-violet" aria-label="Dukoi on GitHub">
-        <Icon name="github" class="size-[22px] lg:size-5" />
+      <a href="/docs/templates" class="nav-link hover:text-violet {inTemplates ? 'text-violet' : ''}">Templates</a>
+      <a href={DOCS} class="nav-link hover:text-violet {inDocs ? 'text-violet' : ''}">Docs</a>
+      <a href="/docs/releases" class="nav-link hidden hover:text-violet sm:inline {inChangelog ? 'text-violet' : ''}">Changelog</a>
+      <a href={REPO} class="nav-link flex items-center gap-2 hover:text-violet" aria-label="Dukoi on GitHub">
+        <Icon name="github" class="github-icon size-[22px] lg:size-5" />
         <span class="hidden lg:inline">GitHub</span>
       </a>
     </nav>
@@ -82,7 +82,7 @@ const description =
         <div class="flex flex-col gap-3 lg:w-[168px]">
           <p class="text-muted">{column.title}</p>
           {#each column.links as link (link.label)}
-            <a href={link.href} class="font-medium hover:text-violet">{link.label}</a>
+            <a href={link.href} class="nav-link font-medium hover:text-violet">{link.label}</a>
           {/each}
         </div>
       {/each}

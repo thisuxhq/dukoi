@@ -4,6 +4,16 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-11-28
+
+### Changed
+
+- Added subtle entrance choreography, scroll reveals and tactile micro-interactions across the landing page and site components, including interactive feature previews, blur-masked copy/state transitions, origin-aware doc popovers and full `prefers-reduced-motion` support.
+
+### Fixed
+
+- Kept the app-status preview panel inside the "A dashboard on your computer" feature card from overflowing on desktop viewports.
+
 ## [0.10.0] - 2026-11-25
 
 ### Added
@@ -146,7 +156,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.10.0...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.10.1...main
+[0.10.1]: https://github.com/thisuxhq/dukoi/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/thisuxhq/dukoi/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/thisuxhq/dukoi/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/thisuxhq/dukoi/compare/v0.8.0...v0.8.1

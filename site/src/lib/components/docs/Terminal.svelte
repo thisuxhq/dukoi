@@ -32,9 +32,14 @@ async function copy() {
       type="button"
       onclick={copy}
       aria-label={copied ? 'Copied' : `Copy ${command}`}
-      class="grid size-8 shrink-0 place-items-center rounded bg-night-raised transition-colors hover:bg-night-high"
+      class="copy-trigger pressable grid size-8 shrink-0 cursor-pointer place-items-center rounded bg-night-raised hover:bg-night-high {copied ? 'shadow-[inset_0_0_0_1px_rgba(24,169,87,0.45)]' : ''}"
     >
-      <Icon name={copied ? 'tick-02' : 'copy-01'} class="size-4 {copied ? 'text-running' : ''}" />
+      <span class="swap-item grid place-items-center" data-active={!copied}>
+        <Icon name="copy-01" class="copy-icon-nudge size-4" />
+      </span>
+      <span class="swap-item grid place-items-center" data-active={copied}>
+        <Icon name="tick-02" class="size-4 text-running" />
+      </span>
     </button>
     <span class="sr-only" aria-live="polite">{copied ? 'Copied to clipboard' : ''}</span>
   </div>
