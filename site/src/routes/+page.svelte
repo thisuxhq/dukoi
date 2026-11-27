@@ -11,17 +11,17 @@ import { templates } from '#lib/templates.js'
 const steps = [
   {
     title: 'Install the app',
-    body: 'Put Dukoi on any spare Android phone. Four quick taps stop Android from putting your apps to sleep.',
+    body: 'Put Dukoi on a spare Android phone. Four taps keep your apps awake.',
     command: null,
   },
   {
     title: 'Pair your computer',
-    body: 'Run the install command on your computer, then connect over Wi-Fi. Tap Approve on the phone — no accounts or passwords.',
+    body: 'Install on your computer, then connect on the same Wi-Fi. Tap Approve. No passwords.',
     command: 'dukoi pair',
   },
   {
     title: 'Deploy',
-    body: 'Run dukoi deploy inside your project folder. Your app opens on your Wi-Fi right away, and one command makes it public.',
+    body: 'Run dukoi deploy in your project folder. Live on Wi-Fi right away, public in one command.',
     command: 'dukoi deploy',
   },
 ]
@@ -102,7 +102,7 @@ const compare = [
   ['CPU', '1 core', '8 cores'],
   ['Memory', '1 GB', '6 GB'],
   ['Storage', '25 GB', '128 GB'],
-  ['Power', 'Someone else’s data center', '2–5 watts, plus a built-in battery backup'],
+  ['Power', 'Someone else’s data center', '2 to 5 watts, plus built-in battery backup'],
 ]
 
 const sectionTitle =
@@ -124,7 +124,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       Turn your old phone into a server
     </h1>
     <p class="hero-enter text-[17px] leading-[26px] text-muted lg:max-w-[560px] lg:text-[19px] lg:leading-[30px]" style="--delay: 65ms">
-      Run real apps on that spare Android phone in your drawer and get a live link. No rooting, no Termux, no cloud bill.
+      Host real apps on your spare Android phone and get a live link. No rooting, no Termux, no cloud bill.
     </p>
     <!-- As wide as the install line, with the two buttons splitting it -->
     <div class="hero-enter flex flex-col gap-3 pt-1 sm:w-fit lg:gap-4 lg:pt-2" style="--delay: 130ms">
@@ -167,7 +167,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <span class={chip} data-hover="spin"><Icon name="refresh" class="feature-chip-icon size-6 text-violet" /></span>
         <h3 class="font-display text-[23px] leading-7 font-medium tracking-[-0.02em] lg:text-[30px] lg:leading-9">Apps that stay up</h3>
         <p class="text-[15px] leading-[23px] text-body lg:text-base lg:leading-6">
-          Android loves killing apps to save battery. Dukoi keeps yours awake, brings them back in seconds if they crash, and starts everything up again after a reboot.
+          Android kills apps to save battery. Dukoi keeps yours awake, restarts crashes in seconds, and starts back up after a reboot.
         </p>
       </div>
       <button
@@ -188,7 +188,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip} data-hover="pop"><Icon name="globe-02" class="feature-chip-icon size-6 text-running" /></span>
         <h3 class={tileTitle}>A public URL, no router setup</h3>
-        <p class={tileBody}>No port forwarding or router headaches — even on mobile hotspots and home Wi-Fi. Get a quick link in seconds, or connect your own domain with Cloudflare.</p>
+        <p class={tileBody}>No port forwarding, even on home Wi-Fi or hotspots. Grab a quick link or use your own domain.</p>
       </div>
       <p aria-hidden="true" class="url-bar flex items-center gap-2.5 bg-white px-4 py-3.5 font-mono text-sm">
         <span class="status-beacon size-2 shrink-0 rounded-full bg-running text-running"></span><span class="truncate">hono-api.example.com</span>
@@ -203,7 +203,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
           </span>
         </span>
         <h3 class={tileTitle}>Roll back in seconds</h3>
-        <p class={tileBody}>Every deploy saves the last working version. Ship a bug? One command puts things right back.</p>
+        <p class={tileBody}>Every deploy saves the last working version. Ship a bug? One command rolls it back.</p>
       </div>
       <div data-md-skip class="flex flex-col gap-px">
         {#each releases as release (release)}
@@ -233,7 +233,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip} data-hover="pop"><Icon name="terminal" class="feature-chip-icon size-6 text-blue" /></span>
         <h3 class={tileTitle}>Live logs, anywhere</h3>
-        <p class={tileBody}>Watch your app’s logs live on your phone, in your terminal, or in your browser. New output shows up in under a second.</p>
+        <p class={tileBody}>Watch live logs on your phone, terminal, or browser. New lines appear in under a second.</p>
       </div>
       <button
         type="button"
@@ -257,7 +257,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip} data-hover="lift"><Icon name="shield-02" class="feature-chip-icon size-6 text-pink" /></span>
         <h3 class={tileTitle}>Safe by default</h3>
-        <p class={tileBody}>Your phone and computer pair directly — no accounts, no passwords. Only your computer can manage the phone, never the open internet.</p>
+        <p class={tileBody}>Your phone and computer pair directly with no passwords. Only your computer can manage it.</p>
       </div>
       <ul class="flex flex-wrap gap-2 text-[13px] font-medium">
         {#each ['No passwords', 'Stays on your Wi-Fi', 'No tracking by default'] as label (label)}
@@ -270,7 +270,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex w-[250px] shrink-0 flex-col gap-3.5 xl:w-[300px]">
         <span class="grid size-12 place-items-center bg-lavender" data-hover="pop"><Icon name="dashboard-square-01" class="feature-chip-icon size-6 text-violet" /></span>
         <h3 class={tileTitle}>A dashboard on your computer</h3>
-        <p class={tileBody}>See every app, its status, and its logs in your browser. Restart or roll back with one click — and nobody else can open it.</p>
+        <p class={tileBody}>See your apps, status, and logs in one place. Restart or roll back in a click. Private to your computer.</p>
       </div>
       <div data-md-skip class="flex min-w-0 flex-1 flex-col gap-px self-center bg-divider">
         {#each dashboardApps as app (app.name)}
@@ -304,7 +304,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
           </span>
         </span>
         <h3 class={tileTitle}>Battery care</h3>
-        <p class={tileBody}>Leaving a phone plugged in all day wears the battery out. Dukoi keeps an eye on it and helps cap the charge at 80%.</p>
+        <p class={tileBody}>Plugged in all day wears out a battery. Dukoi watches it and helps cap the charge at 80%.</p>
       </div>
       <button
         type="button"
@@ -354,7 +354,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
   <div use:reveal class="flex flex-col gap-3 lg:w-[440px] lg:shrink-0 lg:gap-4">
     <h2 class={sectionTitle}>Your old phone beats a $5 server</h2>
     <p class="text-[15px] leading-[23px] text-muted lg:text-[17px] lg:leading-[26px]">
-      Even a 2019 phone has more CPU, RAM, and storage than the $5 server most side projects rent. Plus, you already own it.
+      Even a 2019 phone has more CPU, RAM, and storage than a $5 server. And you already own it.
     </p>
   </div>
   <table use:reveal={{ delay: 70 }} class="w-full flex-1 table-fixed border-collapse self-start text-left">
@@ -387,7 +387,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         There’s a server in your drawer
       </h2>
       <p class="text-[15px] leading-[23px] text-night-muted lg:text-[17px] lg:leading-[26px]">
-        Install the app, pair once, and deploy. You’ll have a live link in two minutes.
+        Install the app, pair once, and deploy. Your first live link is two minutes away.
       </p>
     </div>
     <div class="flex flex-col gap-3 lg:w-fit lg:shrink-0 lg:gap-3.5">

@@ -44,7 +44,7 @@ const footer = [
   },
 ]
 const description =
-  'Run real apps on that spare Android phone in your drawer and get a live link. No rooting, no Termux, no cloud bill.'
+  'Host real apps on your spare Android phone and get a live link. No rooting, no Termux, no cloud bill.'
 </script>
 
 <svelte:head>

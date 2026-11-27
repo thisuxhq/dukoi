@@ -4,6 +4,12 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.10.3] - 2026-11-28
+
+### Changed
+
+- Tightened landing page copy for faster scanning and removed all em dashes.
+
 ## [0.10.2] - 2026-11-28
 
 ### Changed
@@ -162,7 +168,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.10.2...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.10.3...main
+[0.10.3]: https://github.com/thisuxhq/dukoi/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/thisuxhq/dukoi/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/thisuxhq/dukoi/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/thisuxhq/dukoi/compare/v0.9.0...v0.10.0
