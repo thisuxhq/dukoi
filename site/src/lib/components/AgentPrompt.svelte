@@ -43,7 +43,7 @@ async function copy() {
   class="copy-trigger pressable grid h-14 shrink-0 cursor-pointer place-items-center rounded bg-violet px-7 text-base font-semibold whitespace-nowrap text-white hover:bg-[#6a2fe0] lg:h-[60px] lg:text-[17px] {className}"
 >
   <span class="swap-item inline-flex items-center justify-center gap-3" data-active={!copied}>
-    Copy prompt for agent
+    Copy setup prompt for AI
     <Icon name="copy-01" class="copy-icon-nudge size-[18px]" />
   </span>
   <span

@@ -44,13 +44,13 @@ const footer = [
   },
 ]
 const description =
-  'Deploy real apps to the Android phone in your drawer and get a live URL. No root, no Termux, no cloud bill.'
+  'Run real apps on that spare Android phone in your drawer and get a live link. No rooting, no Termux, no cloud bill.'
 </script>
 
 <svelte:head>
-  <title>Dukoi: turn an old phone into a server</title>
+  <title>Dukoi: turn your old phone into a server</title>
   <meta name="description" content={description} />
-  <meta property="og:title" content="Dukoi: turn an old phone into a server" />
+  <meta property="og:title" content="Dukoi: turn your old phone into a server" />
   <meta property="og:description" content={description} />
   <meta name="theme-color" content="#f1f0f4" />
   <link rel="alternate" type="text/markdown" href={markdown} />

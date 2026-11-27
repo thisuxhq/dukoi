@@ -23,7 +23,7 @@ export const templates: SiteTemplate[] = [
   {
     id: 'notes-api',
     name: 'Notes API',
-    description: 'A small JSON API with a database',
+    description: 'A small notes API with a built-in database',
     icon: 'api',
     tint: 'bg-lavender',
     ink: 'text-violet',
@@ -47,7 +47,7 @@ export const templates: SiteTemplate[] = [
   {
     id: 'telegram-bot',
     name: 'Telegram bot',
-    description: 'A bot that replies, always on',
+    description: 'A bot that stays online 24/7',
     icon: 'telegram',
     tint: 'bg-sky',
     ink: 'text-blue',

@@ -11,17 +11,17 @@ import { templates } from '#lib/templates.js'
 const steps = [
   {
     title: 'Install the app',
-    body: 'On a spare Android phone. Four taps get it past the battery savers that kill servers.',
+    body: 'Put Dukoi on any spare Android phone. Four quick taps stop Android from putting your apps to sleep.',
     command: null,
   },
   {
     title: 'Pair your computer',
-    body: 'Install the CLI, then pair on the same Wi-Fi. Tap Approve on the phone. No passwords.',
+    body: 'Run the install command on your computer, then connect over Wi-Fi. Tap Approve on the phone — no accounts or passwords.',
     command: 'dukoi pair',
   },
   {
     title: 'Deploy',
-    body: 'From your app’s folder. You get a URL, and a public one when you want it.',
+    body: 'Run dukoi deploy inside your project folder. Your app opens on your Wi-Fi right away, and one command makes it public.',
     command: 'dukoi deploy',
   },
 ]
@@ -99,10 +99,10 @@ function toggleBatteryCap() {
 
 const compare = [
   ['Each month', '$5', '$0'],
-  ['CPU', '1 vCPU', '8 cores'],
+  ['CPU', '1 core', '8 cores'],
   ['Memory', '1 GB', '6 GB'],
   ['Storage', '25 GB', '128 GB'],
-  ['Power', 'Someone else’s data centre', '2 to 5 watts, with a battery for power cuts'],
+  ['Power', 'Someone else’s data center', '2–5 watts, plus a built-in battery backup'],
 ]
 
 const sectionTitle =
@@ -121,10 +121,10 @@ const chip = 'grid size-12 place-items-center bg-white/70'
   </div>
   <div class="flex flex-col gap-5 lg:w-[700px] lg:shrink-0 lg:gap-7">
     <h1 class="hero-enter font-display text-[44px] leading-[46px] font-medium tracking-[-0.04em] text-balance sm:text-5xl sm:leading-[50px] lg:text-[88px] lg:leading-[88px] lg:text-wrap" style="--delay: 0ms">
-      Turn an old phone into a server
+      Turn your old phone into a server
     </h1>
     <p class="hero-enter text-[17px] leading-[26px] text-muted lg:max-w-[560px] lg:text-[19px] lg:leading-[30px]" style="--delay: 65ms">
-      Deploy real apps to the Android phone in your drawer and get a live URL. No root, no Termux, no cloud bill.
+      Run real apps on that spare Android phone in your drawer and get a live link. No rooting, no Termux, no cloud bill.
     </p>
     <!-- As wide as the install line, with the two buttons splitting it -->
     <div class="hero-enter flex flex-col gap-3 pt-1 sm:w-fit lg:gap-4 lg:pt-2" style="--delay: 130ms">
@@ -167,7 +167,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         <span class={chip} data-hover="spin"><Icon name="refresh" class="feature-chip-icon size-6 text-violet" /></span>
         <h3 class="font-display text-[23px] leading-7 font-medium tracking-[-0.02em] lg:text-[30px] lg:leading-9">Apps that stay up</h3>
         <p class="text-[15px] leading-[23px] text-body lg:text-base lg:leading-6">
-          Android kills background apps to save battery. Dukoi runs as a foreground service, restarts anything that stops within seconds, and starts it all again after a reboot.
+          Android loves killing apps to save battery. Dukoi keeps yours awake, brings them back in seconds if they crash, and starts everything up again after a reboot.
         </p>
       </div>
       <button
@@ -188,7 +188,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip} data-hover="pop"><Icon name="globe-02" class="feature-chip-icon size-6 text-running" /></span>
         <h3 class={tileTitle}>A public URL, no router setup</h3>
-        <p class={tileBody}>Works behind CGNAT. A quick link in seconds, or your own domain through Cloudflare.</p>
+        <p class={tileBody}>No port forwarding or router headaches — even on mobile hotspots and home Wi-Fi. Get a quick link in seconds, or connect your own domain with Cloudflare.</p>
       </div>
       <p aria-hidden="true" class="url-bar flex items-center gap-2.5 bg-white px-4 py-3.5 font-mono text-sm">
         <span class="status-beacon size-2 shrink-0 rounded-full bg-running text-running"></span><span class="truncate">hono-api.example.com</span>
@@ -203,7 +203,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
           </span>
         </span>
         <h3 class={tileTitle}>Roll back in seconds</h3>
-        <p class={tileBody}>Every deploy is a release. A bad one is one command away from gone.</p>
+        <p class={tileBody}>Every deploy saves the last working version. Ship a bug? One command puts things right back.</p>
       </div>
       <div data-md-skip class="flex flex-col gap-px">
         {#each releases as release (release)}
@@ -233,7 +233,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip} data-hover="pop"><Icon name="terminal" class="feature-chip-icon size-6 text-blue" /></span>
         <h3 class={tileTitle}>Live logs, anywhere</h3>
-        <p class={tileBody}>On the phone, in your terminal and in the web dashboard. New lines in under a second.</p>
+        <p class={tileBody}>Watch your app’s logs live on your phone, in your terminal, or in your browser. New output shows up in under a second.</p>
       </div>
       <button
         type="button"
@@ -257,10 +257,10 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex flex-col gap-3.5">
         <span class={chip} data-hover="lift"><Icon name="shield-02" class="feature-chip-icon size-6 text-pink" /></span>
         <h3 class={tileTitle}>Safe by default</h3>
-        <p class={tileBody}>Pairing with keys, not passwords. Controls stay on your Wi-Fi and never go through a tunnel.</p>
+        <p class={tileBody}>Your phone and computer pair directly — no accounts, no passwords. Only your computer can manage the phone, never the open internet.</p>
       </div>
       <ul class="flex flex-wrap gap-2 text-[13px] font-medium">
-        {#each ['No passwords', 'Signed requests', 'Opt-in telemetry'] as label (label)}
+        {#each ['No passwords', 'Stays on your Wi-Fi', 'No tracking by default'] as label (label)}
           <li class="trust-pill bg-white px-3 py-2">{label}</li>
         {/each}
       </ul>
@@ -270,7 +270,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
       <div class="flex w-[250px] shrink-0 flex-col gap-3.5 xl:w-[300px]">
         <span class="grid size-12 place-items-center bg-lavender" data-hover="pop"><Icon name="dashboard-square-01" class="feature-chip-icon size-6 text-violet" /></span>
         <h3 class={tileTitle}>A dashboard on your computer</h3>
-        <p class={tileBody}>Every app, its status and its logs, with Restart and Roll back a click away. Only your computer can open it.</p>
+        <p class={tileBody}>See every app, its status, and its logs in your browser. Restart or roll back with one click — and nobody else can open it.</p>
       </div>
       <div data-md-skip class="flex min-w-0 flex-1 flex-col gap-px self-center bg-divider">
         {#each dashboardApps as app (app.name)}
@@ -304,7 +304,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
           </span>
         </span>
         <h3 class={tileTitle}>Battery care</h3>
-        <p class={tileBody}>A phone on charge all day wears out its battery. Dukoi watches it and helps you cap it at 80%.</p>
+        <p class={tileBody}>Leaving a phone plugged in all day wears the battery out. Dukoi keeps an eye on it and helps cap the charge at 80%.</p>
       </div>
       <button
         type="button"
@@ -331,7 +331,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
 <!-- Starters -->
 <section class="flex flex-col gap-5 px-5 pb-14 lg:gap-8 lg:px-16 lg:pb-24">
   <div use:reveal class="flex flex-col gap-3">
-    <h2 class={sectionTitle}>Templates that deploy with zero edits</h2>
+    <h2 class={sectionTitle}>Ready-to-run templates</h2>
     <p class="hidden text-[17px] leading-[26px] text-muted lg:block">Pick one, and it’s live on your phone in under a minute.</p>
   </div>
   <ul class="flex flex-col gap-px bg-divider md:grid md:grid-cols-2 md:gap-3 md:bg-transparent lg:grid-cols-4 lg:gap-4">
@@ -354,7 +354,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
   <div use:reveal class="flex flex-col gap-3 lg:w-[440px] lg:shrink-0 lg:gap-4">
     <h2 class={sectionTitle}>Your old phone beats a $5 server</h2>
     <p class="text-[15px] leading-[23px] text-muted lg:text-[17px] lg:leading-[26px]">
-      A flagship from 2019 has more cores, memory and storage than the server most side projects rent. And it’s already paid for.
+      Even a 2019 phone has more CPU, RAM, and storage than the $5 server most side projects rent. Plus, you already own it.
     </p>
   </div>
   <table use:reveal={{ delay: 70 }} class="w-full flex-1 table-fixed border-collapse self-start text-left">
@@ -387,7 +387,7 @@ const chip = 'grid size-12 place-items-center bg-white/70'
         There’s a server in your drawer
       </h2>
       <p class="text-[15px] leading-[23px] text-night-muted lg:text-[17px] lg:leading-[26px]">
-        Install the app, pair once, and deploy. Your first URL is two minutes away.
+        Install the app, pair once, and deploy. You’ll have a live link in two minutes.
       </p>
     </div>
     <div class="flex flex-col gap-3 lg:w-fit lg:shrink-0 lg:gap-3.5">
