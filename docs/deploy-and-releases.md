@@ -67,7 +67,7 @@ apps/my-api/releases/0006/
 ### 7. Start
 
 - The process manager starts the new release on a free internal port and passes it as `PORT` (with `HOST=127.0.0.1`).
-- Each app also has a **stable port** (3000, 3001 and so on) that never changes. A small proxy in the agent forwards it to whichever release is live, including WebSockets.
+- Each app also has a **stable port** (3000, 3001 and so on) that never changes. A small proxy in the agent forwards it to whichever release is live, including WebSockets. On every request and WebSocket upgrade it sets `x-forwarded-for` to the address that really connected, replacing any the client sent, so an app can tell the phone itself (`127.0.0.1`) from a device on the Wi-Fi. Visitors through a public URL also connect from `127.0.0.1`, because `cloudflared` runs on the phone, but they carry `cf-connecting-ip`.
 - Secrets are decrypted and passed as environment variables.
 - `NODE_ENV=production` is set.
 - Static sites are served by a small built-in static server.

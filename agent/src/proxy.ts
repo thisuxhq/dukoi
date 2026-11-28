@@ -84,6 +84,8 @@ export class StablePort {
           const val = req.rawHeaders[i + 1] as string
           const lower = name.toLowerCase()
           if (lower === 'x-dukoi-token') continue
+          // Set below from the socket, as for HTTP, so a client can't pretend to be the phone.
+          if (lower === 'x-forwarded-for') continue
           if (authMethod === 'bearer' && lower === 'authorization') continue
           if (lower === 'cookie' && this.authToken) {
             const kept = val
@@ -95,6 +97,7 @@ export class StablePort {
           }
           lines.push(`${name}: ${val}`)
         }
+        lines.push(`X-Forwarded-For: ${req.socket.remoteAddress ?? ''}`)
         up.write(`${lines.join('\r\n')}\r\n\r\n`)
         if (head.length) up.write(head)
         up.pipe(socket).pipe(up)
