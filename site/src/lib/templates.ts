@@ -76,6 +76,14 @@ export const templates: SiteTemplate[] = [
     tint: 'bg-slate',
     ink: 'text-slate-ink',
   },
+  {
+    id: 'door-cam',
+    name: 'Door cam',
+    description: 'Watch live, get a photo when something moves',
+    icon: 'cctv-camera',
+    tint: 'bg-coral',
+    ink: 'text-coral-ink',
+  },
 ]
 
 export const template = (id: string) => templates.find((t) => t.id === id) as SiteTemplate

@@ -166,6 +166,7 @@ Each one deploys with no edits. Start from the closest one and change its one fi
 | `webhook-inbox` | Shows every request to `/hook` as it arrives | `handle.js` |
 | `uptime-watch` | Checks sites every minute and sends push alerts | `sites.js` |
 | `cron-jobs` | Scheduled jobs with their last result | `jobs.js` |
+| `door-cam` | The phone's own camera: `/live`, `/snapshot.jpg`, motion alerts with a photo, timelapse. The user opens `http://localhost:<port>/camera` in Chrome on the phone | `settings.js` |
 
 `telegram-bot` needs `TELEGRAM_BOT_TOKEN`. When `init` isn't run in a terminal it skips the question, so ask the user to run `dukoi env set TELEGRAM_BOT_TOKEN=...` themselves, or pass the token they give you straight to it.
 

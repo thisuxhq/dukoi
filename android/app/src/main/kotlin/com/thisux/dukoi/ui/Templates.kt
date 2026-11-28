@@ -87,6 +87,7 @@ internal fun look(id: String) = when (id) {
   "webhook-inbox" -> Look("webhook", Teal, TealInk, listOf("An address to send webhooks to", "Each one shown as it arrives", "Saved on this phone"))
   "uptime-watch" -> Look("activity-03", Butter, Amber, listOf("Your sites checked every minute", "A push when one goes down", "Running all day on this phone"))
   "cron-jobs" -> Look("clock-01", Slate, SlateInk, listOf("Code that runs on a schedule", "How each run went, on a page", "Running all day on this phone"))
+  "door-cam" -> Look("cctv-camera", SoftRed, Crashed, listOf("This phone's camera, live from anywhere", "A photo when something moves", "A timelapse of every day"))
   "redis" -> Look("database-lightning", SoftRed, Crashed, emptyList())
   "postgres" -> Look("database", Sky, Blue, emptyList())
   else -> Look("api", Lilac, Violet, listOf("A link that works on your Wi-Fi"))

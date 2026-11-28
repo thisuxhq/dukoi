@@ -154,7 +154,7 @@ dukoi/
 ├── cli/              # dukoi CLI (TypeScript)
 ├── dashboard/        # Web dashboard (SvelteKit 3 server with remote functions)
 ├── shared/           # Admin API types and protocol, shared by agent, cli and dashboard
-├── starters/         # the templates: static-site, notes-api, file-drop, mcp-server, telegram-bot, webhook-inbox, uptime-watch, cron-jobs
+├── starters/         # the templates: static-site, notes-api, file-drop, mcp-server, telegram-bot, webhook-inbox, uptime-watch, cron-jobs, door-cam
 ├── skills/dukoi/     # the agent skill that `dukoi skill` installs (D-117)
 ├── scripts/          # Fetch and pack Node + cloudflared into jniLibs
 └── docs/             # You are here

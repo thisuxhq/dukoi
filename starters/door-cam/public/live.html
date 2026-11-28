@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>Door cam: live</title>
+    <style>
+      html, body { height: 100%; }
+      body { display: flex; flex-direction: column; margin: 0; background: #000; color: #fff; font: 15px/1.5 system-ui, sans-serif; }
+      header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+      header a { color: #fff; text-decoration: none; font-weight: 600; }
+      .live { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 4px; background: #c42e2e; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+      .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: blink 1.6s infinite; }
+      .live.off { background: #2a2a31; }
+      .live.off::before { animation: none; opacity: 0.5; }
+      #note { margin-left: auto; color: #a7a6b0; font-size: 14px; }
+      .stage { position: relative; display: flex; flex-grow: 1; min-height: 0; align-items: center; justify-content: center; }
+      img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      #clock { position: absolute; right: 16px; bottom: 16px; padding: 2px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.55); font: 13px ui-monospace, 'SF Mono', Menlo, monospace; }
+      #off { display: none; max-width: 360px; padding: 0 24px; color: #a7a6b0; text-align: center; }
+      @keyframes blink { 50% { opacity: 0.2; } }
+      @media (prefers-reduced-motion: reduce) { .live::before { animation: none; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/">← Door cam</a>
+      <span id="badge" class="live">LIVE</span>
+      <span id="note"></span>
+    </header>
+    <div class="stage">
+      <img id="stream" alt="What the camera sees right now" />
+      <p id="off">The camera is off. Open <code>/camera</code> in Chrome on the phone to turn it on.</p>
+      <span id="clock"></span>
+    </div>
+    <script>
+      const img = document.getElementById('stream')
+      const off = document.getElementById('off')
+
+      // The browser keeps one connection open and swaps in each photo as it arrives (MJPEG).
+      function play() {
+        img.src = `/live.mjpeg?t=${Date.now()}`
+      }
+      img.onerror = () => setTimeout(play, 3000)
+      play()
+
+      setInterval(() => {
+        document.getElementById('clock').textContent = new Date().toLocaleTimeString()
+      }, 1000)
+
+      async function refresh() {
+        const res = await fetch('/status').catch(() => null)
+        if (res?.ok) {
+          const { online, watching } = await res.json()
+          document.getElementById('badge').className = online ? 'live' : 'live off'
+          img.style.display = online ? '' : 'none'
+          off.style.display = online ? 'none' : 'block'
+          document.getElementById('note').textContent =
+            watching > 1 ? `${watching} people watching` : ''
+        }
+        setTimeout(refresh, 5000)
+      }
+      refresh()
+    </script>
+  </body>
+</html>

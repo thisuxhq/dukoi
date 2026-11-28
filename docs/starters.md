@@ -1,6 +1,6 @@
 # Templates
 
-This doc describes the eight templates (the folders in `starters/`), how people start from one, and the rules every template follows.
+This doc describes the nine templates (the folders in `starters/`), how people start from one, and the rules every template follows.
 
 **The promise:** every template deploys with **zero edits**, and you change **one file** to make it yours.
 
@@ -19,7 +19,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 
 ---
 
-## The eight templates
+## The nine templates
 
 | Template | What you see when it's live | The file to edit |
 | --- | --- | --- |
@@ -31,6 +31,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 | `webhook-inbox` | A page that shows every request to `/hook` as it arrives | `handle.js` |
 | `uptime-watch` | A status page for a few sites, checked every minute, with push alerts | `sites.js` |
 | `cron-jobs` | A page of scheduled jobs with their next run and last result | `jobs.js` |
+| `door-cam` | The phone's camera: the newest photo, a `/live` view, motion events with photos and a daily timelapse | `settings.js` |
 
 ### Notes
 
@@ -40,6 +41,7 @@ A template app deployed from the phone remembers it (`AppInfo.template`); the ne
 - **`static-site`** has no `package.json`, so Dukoi serves the folder as it is.
 - **`webhook-inbox`** saves any method on `/hook` and `/hook/*` (last 200, bodies cut at 64 KB) and then calls `handle()`, whose return value is the reply. The page polls every two seconds. It shows headers, which can hold secrets, so the README says not to share the URL. It needs `dukoi expose` to receive webhooks from the internet.
 - **`uptime-watch`** checks each site every minute (10 s timeout, status below 400 is up). A site is down after 2 failed checks in a row, worked out from the saved checks so a restart doesn't alert twice. Alerts go to `https://ntfy.sh/<topic>`: the topic is made up on first run and kept in `DATA_DIR`, or set with `NTFY_TOPIC`. Checks are kept for 7 days.
+- **`door-cam`** uses the phone's camera with no change to the phone app. Chrome on the phone opens `http://localhost:<port>/camera` (browsers only allow the camera on `localhost` or HTTPS), keeps the screen awake and black with the Wake Lock API, and sends JPEGs over one WebSocket to `/camera/feed`, so photos don't fill the request inspector. It sends 1 photo a second, or 8 while someone has `/live` open; `/live.mjpeg` is MJPEG, which any `<img>` plays. Motion is found in the browser by comparing 64×48 grey frames with a slow-moving average, and sent as a message; the server waits `motionCooldown` between alerts. Only the phone can send photos: `/camera` answers only to a loopback `x-forwarded-for` with no `cf-connecting-ip`, and only that page gets the camera key (kept in `DATA_DIR`) that the socket must send first. The proxy doesn't set `x-forwarded-for` on WebSocket upgrades, which is why the key is needed. No photo for 30 seconds counts as off and sends an alert. Alerts go to ntfy like `uptime-watch`, with the photo attached. Motion photos keep the last 200 events; timelapse photos (every 60 s) keep 7 days. It's the first template with a third package, `ws`, which `@hono/node-server` needs for WebSockets; it's plain JavaScript.
 - **`cron-jobs`** reads standard 5-part cron schedules (plus `@hourly`, `@daily`, `@weekly`, `@monthly`) with its own 70-line `schedule.js`, so there's no extra package. It wakes at the start of each minute, skips a job that's still running, and keeps the last 50 runs per job. Times use the phone's time zone, which Node finds on Android by itself.
 
 ---
