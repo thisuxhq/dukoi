@@ -26,6 +26,7 @@ export const sections: { title: string; pages: DocPage[] }[] = [
       { slug: 'templates/webhook-inbox', title: 'Webhook inbox' },
       { slug: 'templates/uptime-watch', title: 'Uptime watch' },
       { slug: 'templates/cron-jobs', title: 'Cron jobs' },
+      { slug: 'templates/door-cam', title: 'Door cam' },
     ],
   },
   {

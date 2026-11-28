@@ -283,6 +283,13 @@ export const TEMPLATES: TemplateInfo[] = [
     secret: null,
     edit: 'jobs.js',
   },
+  {
+    id: 'door-cam',
+    name: 'Door cam',
+    description: 'Watch live, get a photo when something moves',
+    secret: null,
+    edit: 'settings.js',
+  },
 ]
 
 /** Body of POST /local/templates/:id/deploy */

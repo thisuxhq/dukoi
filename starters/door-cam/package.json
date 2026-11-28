@@ -1,0 +1,16 @@
+{
+  "name": "door-cam",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Watch a room live and get a photo when something moves. Deploys to a Dukoi phone with no edits.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.6",
+    "hono": "4.13.17",
+    "ws": "8.23.1"
+  }
+}

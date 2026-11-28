@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>Door cam: camera</title>
+    <style>
+      html, body { height: 100%; }
+      body { margin: 0; background: #000; color: #fff; font: 16px/1.5 system-ui, sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+      a { color: #b794ff; font-weight: 600; }
+      code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; overflow-wrap: anywhere; }
+      .setup { display: flex; flex-direction: column; justify-content: center; gap: 16px; height: 100%; max-width: 480px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
+      h1 { margin: 0; font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+      p { margin: 0; color: #a7a6b0; }
+      ul { margin: 0; padding-left: 20px; color: #a7a6b0; }
+      button { height: 48px; padding: 0 20px; border: 0; border-radius: 4px; background: #7b3ff2; color: #fff; font: 600 16px system-ui, sans-serif; cursor: pointer; }
+      button.quiet { background: #2a2a31; }
+      .error { color: #ff8a8a; }
+      /* Running: a black screen. OLED pixels that show black are off, so it uses almost no power. */
+      #running { position: fixed; inset: 0; display: none; }
+      #status { position: absolute; color: #fff; opacity: 0.35; font-size: 13px; white-space: nowrap; transition: top 1s, left 1s; }
+      #preview { position: absolute; inset: 0; display: none; flex-direction: column; background: #000; }
+      #preview video { flex-grow: 1; min-height: 0; width: 100%; object-fit: contain; }
+      #preview .bar { display: flex; gap: 8px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+      #preview .bar button { flex: 1; }
+      #preview p { padding: 12px 16px 0; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <div id="setup" class="setup"></div>
+
+    <div id="running">
+      <span id="status">Camera on</span>
+      <div id="preview">
+        <p>The screen goes black again in 10 seconds to stay cool. Tap it any time to look.</p>
+        <video id="video" playsinline muted></video>
+        <div class="bar">
+          <button id="switch" class="quiet" type="button">Switch camera</button>
+          <button id="stop" class="quiet" type="button">Turn off</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const allowed = __ALLOWED__
+      const key = '__CAMERA_KEY__'
+      const here = `http://localhost:${location.port || '3000'}/camera`
+
+      const setup = document.getElementById('setup')
+      const running = document.getElementById('running')
+      const status = document.getElementById('status')
+      const preview = document.getElementById('preview')
+      const video = document.getElementById('video')
+
+      // What the server asks for. It sends more photos while someone watches /live.
+      let wanted = { fps: 1, width: 640, quality: 0.7, motionArea: 0.03, watching: false }
+      let facing = 'environment'
+      try {
+        facing = localStorage.getItem('door-cam-facing') || facing
+      } catch {}
+      let stream = null
+      let socket = null
+      let on = false
+      let sentAt = 0
+
+      function show(html) {
+        setup.innerHTML = html
+        setup.style.display = 'flex'
+        running.style.display = 'none'
+      }
+
+      function showStart(problem) {
+        show(`
+          <h1>Turn this phone into a camera</h1>
+          <p>Stand the phone where it can see your door, plug it in and tap below. The screen stays on but turns black, and photos go to the door-cam app on this phone.</p>
+          <ul>
+            <li>Keep Chrome open on this page. If Chrome closes, you get an alert.</li>
+            <li>Tap the black screen to see what the camera sees.</li>
+          </ul>
+          <p class="error" id="problem"></p>
+          <button id="start" type="button">Turn on the camera</button>`)
+        document.getElementById('problem').textContent = problem ?? ''
+        document.getElementById('start').onclick = start
+      }
+
+      // Opened from another device, or from this phone's Wi-Fi address instead of localhost.
+      if (!allowed || !window.isSecureContext || !navigator.mediaDevices) {
+        show(`
+          <h1>Open this on the camera phone</h1>
+          <p>The camera only works in Chrome on the phone that runs Dukoi, at this address:</p>
+          <p><a href="${here}"><code>${here}</code></a></p>
+          <p>Browsers only allow the camera on <code>localhost</code> or HTTPS, and only the phone itself can send photos to this app.</p>
+          <p><a href="/">See the camera</a></p>`)
+      } else {
+        // Chrome remembers that you allowed the camera, so a reload starts on its own.
+        navigator.permissions
+          ?.query({ name: 'camera' })
+          .then((p) => (p.state === 'granted' ? start() : showStart()))
+          .catch(() => showStart())
+      }
+
+      // Opens the camera. The first time, it also starts sending photos and watching for motion.
+      async function start() {
+        try {
+          stopTracks()
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: false,
+          })
+        } catch (err) {
+          const why = err.name === 'NotAllowedError'
+            ? 'Chrome is blocking the camera. Tap the icon left of the address, allow Camera, then try again.'
+            : `The camera didn't start: ${err.message}`
+          return showStart(why)
+        }
+        stream.getVideoTracks()[0].onended = () => {
+          // Another app took the camera. Try again in a few seconds.
+          setTimeout(() => on && start(), 3000)
+        }
+        video.srcObject = stream
+        await video.play()
+        background = null
+        checks = 0
+        setup.style.display = 'none'
+        running.style.display = 'block'
+        if (on) return
+        on = true
+        keepAwake()
+        connect()
+        sendLoop()
+        motionLoop()
+        moveStatus()
+      }
+
+      function stopTracks() {
+        for (const track of stream?.getTracks() ?? []) track.stop()
+      }
+
+      function stop() {
+        on = false
+        stopTracks()
+        socket?.close()
+        showStart()
+      }
+
+      // Keep the screen on. Android releases the lock when the page is hidden, so take it again.
+      async function keepAwake() {
+        try {
+          await navigator.wakeLock?.request('screen')
+        } catch {}
+      }
+      document.addEventListener('visibilitychange', () => {
+        if (on && document.visibilityState === 'visible') keepAwake()
+      })
+
+      function connect() {
+        if (!on) return
+        socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/camera/feed`)
+        socket.onopen = () => socket.send(JSON.stringify({ type: 'hello', key }))
+        socket.onmessage = (e) => {
+          const message = JSON.parse(e.data)
+          if (message.type === 'settings') wanted = message
+        }
+        socket.onclose = (e) => {
+          if (e.reason === 'Another camera page took over') {
+            on = false
+            stopTracks()
+            return show('<h1>Another camera took over</h1><p>A camera page opened somewhere else. Reload this page to use this one again.</p>')
+          }
+          // The app restarted or redeployed. Keep trying.
+          setTimeout(connect, 2000)
+        }
+      }
+
+      const photo = document.createElement('canvas')
+      function sendLoop() {
+        if (!on) return
+        const ready = socket?.readyState === WebSocket.OPEN && video.videoWidth
+        // Skip a photo if the last ones haven't gone out yet, so a slow Wi-Fi doesn't pile them up.
+        if (ready && socket.bufferedAmount < 512 * 1024) {
+          photo.width = wanted.width
+          photo.height = Math.round((wanted.width * video.videoHeight) / video.videoWidth)
+          photo.getContext('2d').drawImage(video, 0, 0, photo.width, photo.height)
+          photo.toBlob((blob) => {
+            if (blob && socket.readyState === WebSocket.OPEN) {
+              socket.send(blob)
+              sentAt = Date.now()
+            }
+          }, 'image/jpeg', wanted.quality)
+        }
+        setTimeout(sendLoop, 1000 / Math.max(0.2, wanted.fps))
+      }
+
+      // Motion: shrink each frame to 64×48 grey pixels and compare it with a slow-moving average,
+      // so a light slowly changing doesn't count but someone walking past does.
+      const tiny = document.createElement('canvas')
+      tiny.width = 64
+      tiny.height = 48
+      const tinyContext = tiny.getContext('2d', { willReadFrequently: true })
+      let background = null
+      let checks = 0
+      let movingChecks = 0
+      function motionLoop() {
+        if (!on) return
+        if (video.videoWidth) {
+          tinyContext.drawImage(video, 0, 0, 64, 48)
+          const rgba = tinyContext.getImageData(0, 0, 64, 48).data
+          const grey = new Float32Array(64 * 48)
+          for (let i = 0; i < grey.length; i++) grey[i] = (rgba[i * 4] + rgba[i * 4 + 1] + rgba[i * 4 + 2]) / 3
+          if (background) {
+            let changed = 0
+            for (let i = 0; i < grey.length; i++) {
+              if (Math.abs(grey[i] - background[i]) > 25) changed++
+              background[i] = background[i] * 0.95 + grey[i] * 0.05
+            }
+            // Ignore the first few seconds while the camera sets its exposure.
+            checks++
+            movingChecks = changed / grey.length > wanted.motionArea ? movingChecks + 1 : 0
+            if (checks > 12 && movingChecks === 2 && socket?.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify({ type: 'motion' }))
+            }
+          } else {
+            background = grey
+          }
+        }
+        setTimeout(motionLoop, 250)
+      }
+
+      // Update the status text every 2 seconds, and move it every 20 so it never burns into the screen.
+      let ticks = 0
+      function moveStatus() {
+        if (!on) return
+        const connected = socket?.readyState === WebSocket.OPEN
+        const fresh = Date.now() - sentAt < 5000
+        status.textContent = !connected
+          ? 'Connecting to the app…'
+          : !fresh ? 'Camera on · waiting for photos'
+          : wanted.watching ? 'Camera on · someone is watching live' : 'Camera on'
+        if (ticks++ % 10 === 0) {
+          status.style.left = `${8 + Math.random() * 50}%`
+          status.style.top = `${8 + Math.random() * 80}%`
+        }
+        setTimeout(moveStatus, 2000)
+      }
+
+      let hideTimer = null
+      running.addEventListener('click', (e) => {
+        if (e.target.closest('button')) return
+        preview.style.display = 'flex'
+        clearTimeout(hideTimer)
+        hideTimer = setTimeout(() => (preview.style.display = 'none'), 10_000)
+      })
+      document.getElementById('switch').onclick = () => {
+        facing = facing === 'environment' ? 'user' : 'environment'
+        try {
+          localStorage.setItem('door-cam-facing', facing)
+        } catch {}
+        start()
+      }
+      document.getElementById('stop').onclick = stop
+    </script>
+  </body>
+</html>

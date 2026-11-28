@@ -50,6 +50,7 @@ let upstreamPort = 0
 let stable: StablePort
 let stablePortNum = 0
 let lastHeaders: Record<string, string | string[] | undefined> = {}
+let lastUpgradeHeaders: Record<string, string | string[] | undefined> = {}
 
 beforeAll(async () => {
   upstreamPort = await freePort()
@@ -58,7 +59,8 @@ beforeAll(async () => {
     res.writeHead(200, { 'content-type': 'application/json' })
     res.end(JSON.stringify({ ok: true, path: req.url }))
   })
-  upstream.on('upgrade', (_req, socket) => {
+  upstream.on('upgrade', (req, socket) => {
+    lastUpgradeHeaders = req.headers
     socket.write(
       'HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n',
     )
@@ -147,6 +149,30 @@ test('StablePort gates HTTP and WebSocket traffic when authToken is set', async 
   const replayed = await stable.replay(lastAuthedId)
   expect(replayed.status).toBe(200)
   expect(replayed.replayedFrom).toBe(lastAuthedId)
+})
+
+test('StablePort sets x-forwarded-for from the socket on HTTP and WebSocket upgrades', async () => {
+  stable.authToken = null
+  const fake = { 'X-Forwarded-For': '127.0.0.1' }
+
+  // Plain HTTP: a made-up header is replaced with the real address.
+  await fetch(`http://127.0.0.1:${stablePortNum}/`, { headers: { 'x-forwarded-for': '10.9.9.9' } })
+  expect(lastHeaders['x-forwarded-for']).toBe('127.0.0.1')
+
+  // WebSocket upgrade: same, with exactly one header, so apps can tell who connected.
+  lastUpgradeHeaders = {}
+  const ws = await rawUpgrade(stablePortNum, '/ws', { 'X-Forwarded-For': '10.9.9.9' })
+  expect(ws).toContain('101 Switching Protocols')
+  expect(lastUpgradeHeaders['x-forwarded-for']).toBe('127.0.0.1')
+
+  // It holds with auth on too.
+  const token = generateAuthToken()
+  stable.authToken = token
+  lastUpgradeHeaders = {}
+  await rawUpgrade(stablePortNum, '/ws', { ...fake, Authorization: `Bearer ${token}` })
+  expect(lastUpgradeHeaders['x-forwarded-for']).toBe('127.0.0.1')
+  expect(lastUpgradeHeaders.authorization).toBeUndefined()
+  stable.authToken = null
 })
 
 test('Agent /apps/:name/auth routes persist, rotate and disable auth', async () => {

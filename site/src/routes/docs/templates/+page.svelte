@@ -33,7 +33,8 @@ Pick a template:
   6  webhook-inbox  See every webhook as it arrives
   7  uptime-watch   Get a ping when a site goes down
   8  cron-jobs      Run code on a schedule
-Number (1-8): 2
+  9  door-cam       Watch live, get a photo when something moves
+Number (1-9): 2
 ✓ Created notes-api/
 ✓ Installed dependencies
 ✓ Packed notes-api (1.9 MB)

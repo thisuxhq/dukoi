@@ -19,6 +19,7 @@ const looks: Record<string, Look> = {
   'webhook-inbox': { icon: 'webhook', tile: '#DCF1EF', tint: '#0F7F75' },
   'uptime-watch': { icon: 'activity-03', tile: '#FBEFD2', tint: '#A86A0C' },
   'cron-jobs': { icon: 'clock-01', tile: '#E4E6EC', tint: '#3C4458' },
+  'door-cam': { icon: 'cctv-camera', tile: '#FBE2E4', tint: '#C62A2F' },
   redis: { icon: 'database-lightning', tile: '#FBE2E4', tint: '#C62A2F' },
   postgres: { icon: 'database', tile: '#E0ECFB', tint: '#2F6FD6' },
 }

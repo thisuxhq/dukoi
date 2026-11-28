@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Door cam</title>
+    <style>
+      body { margin: 0; background: #f1f0f4; color: #16161a; font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
+      h1 { margin: 0 0 8px; font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; }
+      h2 { margin: 48px 0 12px; font-size: 20px; font-weight: 600; }
+      p { margin: 0; color: #6e6d78; }
+      code, .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+      a { color: #7b3ff2; font-weight: 600; }
+      .frame { position: relative; margin-top: 32px; aspect-ratio: 4 / 3; background: #16161a; overflow: hidden; }
+      .frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
+      .frame .empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; color: #a7a6b0; text-align: center; }
+      .frame [hidden] { display: none; }
+      .actions { display: flex; gap: 8px; margin-top: 12px; }
+      .button { display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border: 0; border-radius: 4px; background: #7b3ff2; color: #fff; font: 600 15px system-ui, sans-serif; text-decoration: none; cursor: pointer; }
+      .button.quiet { background: #fff; color: #16161a; box-shadow: inset 0 0 0 1px #dddce3; }
+      .setup { margin-top: 16px; padding: 16px; background: #fff; }
+      .setup ol { margin: 8px 0 0; padding-left: 20px; color: #6e6d78; }
+      .setup code { color: #16161a; overflow-wrap: anywhere; }
+      ul.events { display: flex; flex-direction: column; gap: 1px; margin: 0; padding: 0; list-style: none; background: #ecebf0; }
+      ul.events li { display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: #fff; }
+      ul.events img { width: 80px; height: 60px; flex-shrink: 0; object-fit: cover; background: #16161a; }
+      ul.events .dot { width: 80px; flex-shrink: 0; text-align: center; color: #6e6d78; font-size: 13px; }
+      ul.events .what { flex-grow: 1; font-weight: 600; }
+      ul.events .when { color: #6e6d78; font-size: 14px; }
+      .lapse { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+      .lapse select { height: 44px; padding: 0 12px; border: 0; border-radius: 4px; box-shadow: inset 0 0 0 1px #dddce3; background: #fff; font: 15px system-ui, sans-serif; }
+      .lapse input { flex-grow: 1; accent-color: #7b3ff2; }
+      .lapse .mono { width: 72px; flex-shrink: 0; text-align: right; color: #6e6d78; font-size: 14px; }
+      .topic { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 6px 6px 6px 16px; background: #16161a; color: #fff; border-radius: 4px; font-size: 14px; }
+      .topic button { flex-shrink: 0; height: 36px; padding: 0 14px; border: 0; border-radius: 4px; background: #2a2a31; color: #fff; font: 500 14px system-ui, sans-serif; cursor: pointer; }
+      .warning { margin-top: 48px; padding: 16px; background: #fbefd2; color: #5c3d06; }
+      .warning code { color: #16161a; }
+      @media (max-width: 640px) {
+        main { padding: 48px 16px; }
+        h1 { font-size: 32px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 id="headline">Door cam</h1>
+      <p id="sub">Loading…</p>
+
+      <div class="frame">
+        <img id="snapshot" alt="What the camera sees now" hidden />
+        <div class="empty" id="empty">No photo yet</div>
+      </div>
+      <div class="actions">
+        <a class="button" href="/live">Watch live</a>
+        <a class="button quiet" href="/snapshot.jpg" target="_blank" rel="noreferrer">Open photo</a>
+      </div>
+
+      <div class="setup" id="setup" hidden>
+        <strong>Turn the camera on</strong>
+        <ol>
+          <li>Stand the phone where it can see your door and plug it in.</li>
+          <li>On the phone, open Chrome at <code id="camera-url"></code> and tap <strong>Turn on the camera</strong>.</li>
+          <li>Leave Chrome open. The screen stays on but goes black.</li>
+        </ol>
+      </div>
+
+      <h2>What happened</h2>
+      <ul class="events" id="events"></ul>
+      <p id="no-events">Nothing yet. Motion shows up here with a photo.</p>
+
+      <h2>Timelapse</h2>
+      <p id="lapse-about">Photos saved through the day, kept for 7 days.</p>
+      <div class="lapse">
+        <select id="day" aria-label="Day"></select>
+        <button class="button quiet" id="play" type="button">Play</button>
+      </div>
+      <div class="frame">
+        <img id="lapse" alt="The camera at the chosen time" hidden />
+        <div class="empty" id="lapse-empty">No timelapse photos yet</div>
+      </div>
+      <div class="lapse">
+        <input id="scrub" type="range" min="0" max="0" value="0" aria-label="Time" />
+        <span class="mono" id="lapse-time"></span>
+      </div>
+
+      <h2>Get alerts on your phone</h2>
+      <p>Install the free <a href="https://ntfy.sh" target="_blank" rel="noreferrer">ntfy</a> app and subscribe to this topic. You get a photo when something moves, and a ping if the camera goes off.</p>
+      <div class="topic">
+        <code id="topic"></code>
+        <button id="copy" type="button">Copy</button>
+      </div>
+
+      <p class="warning">Anyone who can open this page can see your camera. Before you share a public URL, run <code>dukoi expose --auth</code> so only you can sign in.</p>
+    </main>
+
+    <script>
+      function el(tag, className, text) {
+        const node = document.createElement(tag)
+        if (className) node.className = className
+        if (text !== undefined) node.textContent = text
+        return node
+      }
+
+      function ago(iso) {
+        const s = Math.round((Date.now() - new Date(iso)) / 1000)
+        if (s < 60) return s <= 1 ? 'just now' : `${s} seconds ago`
+        if (s < 3600) return `${Math.round(s / 60)} min ago`
+        return new Date(iso).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })
+      }
+
+      const labels = {
+        motion: 'Motion',
+        offline: 'Camera went off',
+        online: 'Camera came on',
+      }
+
+      let shownDays = ''
+      function render(s) {
+        document.getElementById('headline').textContent = s.online ? 'The camera is on' : 'The camera is off'
+        document.getElementById('sub').textContent = s.online
+          ? `Newest photo ${ago(s.lastPhotoAt)}.${s.watching ? ` ${s.watching} watching live.` : ''}`
+          : s.lastPhotoAt
+            ? `Last photo ${ago(s.lastPhotoAt)}. Check that Chrome is still open on the phone.`
+            : 'Turn it on from the phone to start.'
+
+        const snapshot = document.getElementById('snapshot')
+        if (s.online) snapshot.src = `/snapshot.jpg?t=${Date.now()}`
+        snapshot.hidden = !s.online
+        document.getElementById('empty').hidden = s.online
+
+        // Chrome only allows the camera on localhost, so this has to be opened on the phone itself.
+        const port = s.localPort || location.port || '3000'
+        document.getElementById('camera-url').textContent = `http://localhost:${port}/camera`
+        document.getElementById('setup').hidden = s.online
+
+        document.getElementById('events').replaceChildren(...s.events.map((e) => {
+          const item = el('li')
+          if (e.photo) {
+            const link = el('a')
+            link.href = `/events/${e.id}.jpg`
+            link.target = '_blank'
+            const thumb = el('img')
+            thumb.src = `/events/${e.id}.jpg`
+            thumb.alt = ''
+            thumb.loading = 'lazy'
+            link.append(thumb)
+            item.append(link)
+          } else {
+            item.append(el('span', 'dot', '•'))
+          }
+          item.append(el('span', 'what', labels[e.kind] ?? e.kind), el('span', 'when', ago(e.at)))
+          return item
+        }))
+        document.getElementById('no-events').hidden = s.events.length > 0
+
+        const every = s.timelapseEvery === 60 ? 'minute' : `${s.timelapseEvery} seconds`
+        document.getElementById('lapse-about').textContent = `A photo every ${every}, kept for 7 days.`
+
+        document.getElementById('topic').textContent = s.topic
+        const copy = document.getElementById('copy')
+        copy.onclick = () => navigator.clipboard.writeText(s.topic).then(() => (copy.textContent = 'Copied'))
+
+        if (s.days.join() !== shownDays) {
+          shownDays = s.days.join()
+          const select = document.getElementById('day')
+          const picked = select.value
+          select.replaceChildren(...s.days.map((d) => {
+            const option = el('option', '', new Date(`${d}T12:00`).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }))
+            option.value = d
+            return option
+          }))
+          if (picked && s.days.includes(picked)) select.value = picked
+          loadDay()
+        }
+      }
+
+      // Timelapse: load a day's photo names, then step through them.
+      let frames = []
+      let timer = null
+      const lapse = document.getElementById('lapse')
+      const scrub = document.getElementById('scrub')
+
+      async function loadDay() {
+        stopPlaying()
+        const day = document.getElementById('day').value
+        frames = day ? await fetch(`/timelapse/${day}`).then((r) => r.json()).catch(() => []) : []
+        scrub.max = Math.max(0, frames.length - 1)
+        showFrame(frames.length - 1)
+      }
+
+      function showFrame(i) {
+        const has = frames.length > 0
+        lapse.hidden = !has
+        document.getElementById('lapse-empty').hidden = has
+        if (!has) {
+          document.getElementById('lapse-time').textContent = ''
+          return
+        }
+        scrub.value = i
+        const name = frames[i]
+        lapse.src = `/timelapse/${document.getElementById('day').value}/${name}`
+        document.getElementById('lapse-time').textContent = name.slice(0, 5).replace('-', ':')
+      }
+
+      function stopPlaying() {
+        clearInterval(timer)
+        timer = null
+        document.getElementById('play').textContent = 'Play'
+      }
+
+      document.getElementById('play').onclick = () => {
+        if (timer) return stopPlaying()
+        if (!frames.length) return
+        let i = Number(scrub.value) >= frames.length - 1 ? 0 : Number(scrub.value)
+        document.getElementById('play').textContent = 'Pause'
+        // About 12 photos a second, so an hour of photos plays in 5 seconds.
+        timer = setInterval(() => {
+          showFrame(i)
+          if (++i >= frames.length) stopPlaying()
+        }, 80)
+      }
+      scrub.oninput = () => {
+        stopPlaying()
+        showFrame(Number(scrub.value))
+      }
+      document.getElementById('day').onchange = loadDay
+
+      async function refresh() {
+        const res = await fetch('/status').catch(() => null)
+        if (res?.ok) render(await res.json())
+        setTimeout(refresh, 3000)
+      }
+      refresh()
+    </script>
+  </body>
+</html>

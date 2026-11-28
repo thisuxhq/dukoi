@@ -4,6 +4,16 @@ All notable changes to Dukoi are listed here. The format follows [Keep a Changel
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-28
+
+### Added
+
+- A **Door cam** template that turns the phone's own camera into a camera you can watch from anywhere, with no change to the phone app. Open `http://localhost:<port>/camera` in Chrome on the phone and the screen goes black while it sends photos to the app. `/live` shows it live at about 8 photos a second while someone watches, `/snapshot.jpg` gives the newest photo, and the main page shows motion events with photos and a timelapse of each day, kept for 7 days. Motion and "camera went off" alerts reach your phone through ntfy, with the photo attached. Only the phone itself can send photos, and the docs say to use `dukoi expose --auth` before sharing a public URL. Start it with `dukoi init door-cam`, from the dashboard's Templates page or from Try a template on the phone (update the phone app to see it there).
+
+### Fixed
+
+- Apps now see who opened a WebSocket. Dukoi's proxy sets `x-forwarded-for` to the real address on WebSocket upgrades, as it already did for other requests, and drops any value the client made up. Before, an app couldn't tell the phone itself from someone on the Wi-Fi pretending to be it. Update the phone app to get it.
+
 ## [0.10.3] - 2026-11-28
 
 ### Changed
@@ -168,7 +178,8 @@ The first version. Get the phone app from [dukoi.com/download/dukoi.apk](https:/
 
 - DroidHost is now called Dukoi. The command is `dukoi`, the app ID is `com.thisux.dukoi` and the config folder is `~/.config/dukoi`. The CLI moves an old `~/.config/droidhost` folder over by itself. Phones with DroidHost installed need the new APK and a fresh pairing.
 
-[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.10.3...main
+[Unreleased]: https://github.com/thisuxhq/dukoi/compare/v0.11.0...main
+[0.11.0]: https://github.com/thisuxhq/dukoi/compare/v0.10.3...v0.11.0
 [0.10.3]: https://github.com/thisuxhq/dukoi/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/thisuxhq/dukoi/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/thisuxhq/dukoi/compare/v0.10.0...v0.10.1
